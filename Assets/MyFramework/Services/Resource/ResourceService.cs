@@ -1,42 +1,45 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using Object = UnityEngine.Object;
 
 namespace MyFramework.Services.Resource
 {
     public sealed class ResourceService : AService
     {
-        private Dictionary<string, ResourceReference> references;
+        private Dictionary<string, IResourceObject> resourceObjects;
         public override void OnCreated()
         {
-            references = new Dictionary<string, ResourceReference>();
+            resourceObjects = new Dictionary<string, IResourceObject>();
         }
 
         public override void OnDestroy()
         {
-            foreach (var referencesValue in references.Values)
-            {
-                referencesValue.Dispose();
-            }
-
-            references.Clear();
         }
 
-        public T InstantiateResource<T>(string path) where T : Object
+        public T InstantiateResource<T>(string schemaPath) where T : Object
         {
-            ResourceReference reference = null;
-            if (!references.TryGetValue(path, out reference))
+            IResourceObject resourceObject;
+            if (!resourceObjects.TryGetValue(schemaPath, out resourceObject))
             {
-                reference = CreateResourceReference(path);
-                references[path] = reference;
+                resourceObject = CreateResourceObject(schemaPath);
+                resourceObjects[schemaPath] = resourceObject;
             }
-            return reference.Instantiate<T>();
+
+            return resourceObject.Instantiate<T>();
         }
 
-        private ResourceReference CreateResourceReference(string path)
+        private IResourceObject CreateResourceObject(string schemaPath)
         {
-            var rawObject = Resources.Load<GameObject>(path);
-            ResourceReference reference = null; //new ResourceReference(path, rawObject, 0);
-            return reference;
+            var resourcePath = new ResourcePath(schemaPath);
+            switch (resourcePath.schema)
+            {
+                case ResourcePath.RESOURCE_SCHEMA:
+                    return new ResourceObject(resourcePath);
+                case ResourcePath.ASSET_BUNDLE_SCHEMA:
+                    return new AssetBundleResourceObject(resourcePath);
+            }
+
+            throw new Exception($"create resource object failed, schema path: {schemaPath}");
         }
     }
 }

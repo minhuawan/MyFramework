@@ -20,72 +20,8 @@ namespace MyFramework
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void startup()
         {
-            // Initialize();
-            // UnityEngine.Application.quitting += OnUnityAppQuit;
-
-            // var playerLoop = PlayerLoop.GetCurrentPlayerLoop();
-            // var target = typeof(UnityEngine.PlayerLoop.Update);
-            // var updateLoopIndex = Array.FindIndex(playerLoop.subSystemList, s => s.type == target);
-            // var updateLoop = playerLoop.subSystemList[updateLoopIndex];
-            // var subSystemList = updateLoop.subSystemList.ToList();
-            // subSystemList.Add(new PlayerLoopSystem()
-            // {
-            //     type = typeof(Application),
-            //     updateDelegate = () =>
-            //     {
-            //         Debug.LogError("MySelf subsystem update");   
-            //     }
-            // });
-            // var array = subSystemList.ToArray();
-            // updateLoop.subSystemList = array;
-            // playerLoop.subSystemList[updateLoopIndex] = updateLoop;
-            PlayerLoop.SetPlayerLoop(new PlayerLoopSystem()
-            {
-                subSystemList = new PlayerLoopSystem[]{},
-                type = typeof(Application),
-                updateDelegate = () =>
-                {
-                    Debug.LogError("MySelf subsystem update");   
-                }
-            });
-            
-            // var playerloop = PlayerLoop.GetCurrentPlayerLoop();
-            // var loop = new PlayerLoopSystem
-            // {
-            //     type = typeof(Application),
-            //     updateDelegate = ()=>
-            //     {
-            //         Debug.LogError("MySelf subsystem update");   
-            //     }
-            // };
-            // //1. 找到 Update Loop System
-            // int index = Array.FindIndex(playerloop.subSystemList, v => v.type == typeof(UnityEngine.PlayerLoop.Update));
-            // //2.  将咱们的 loop 插入到 Update loop 中
-            // var updateloop = playerloop.subSystemList[index];
-            // var temp = updateloop.subSystemList.ToList();
-            // temp.Add(loop);
-            // updateloop.subSystemList = temp.ToArray();
-            // playerloop.subSystemList[index] = updateloop;
-            // //3. 设置自定义的 Loop 到 Unity 引擎
-            // PlayerLoop.SetPlayerLoop(playerloop);
-            
-            
-            // int ident = 0;
-            // void ShowSystem(PlayerLoopSystem system)
-            // {
-            //     ident++;
-            //     foreach (var item in system.subSystemList)
-            //     {
-            //         Debug.Log($"{new string('\t',ident)}{item .type}");
-            //         if (item.subSystemList?.Length>0)
-            //         {
-            //             ShowSystem(item);
-            //         }
-            //     }
-            //     ident--;
-            // }
-            // var system = PlayerLoop.GetCurrentPlayerLoop();
-            // ShowSystem(system);
+            Initialize();
+            UnityEngine.Application.quitting += OnUnityAppQuit;
         }
 
         private static Dictionary<Type, AService> services;

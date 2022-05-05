@@ -8,7 +8,8 @@ using Application = MyFramework.Application;
 
 namespace App.UI.Presenter.Launch
 {
-    [ViewPath("UILaunchView")]
+    // [ViewPath("Assets/AppData/Prefab/UI/View/UILaunchView.prefab")]
+    [ViewPath("ab://Assets/assetbundleoutput/uilaunchview.assetbundle")]
     public class UILaunchPresenter : UIPresenter
     {
         private UILaunchView launchView;
