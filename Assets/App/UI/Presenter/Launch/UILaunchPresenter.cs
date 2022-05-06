@@ -8,8 +8,7 @@ using Application = MyFramework.Application;
 
 namespace App.UI.Presenter.Launch
 {
-    // [ViewPath("Assets/AppData/Prefab/UI/View/UILaunchView.prefab")]
-    [ViewPath("ab://Assets/assetbundleoutput/uilaunchview.assetbundle")]
+    [ViewPath("Assets/AppData/Prefab/UI/View/UILaunchView")]
     public class UILaunchPresenter : UIPresenter
     {
         private UILaunchView launchView;
@@ -28,6 +27,7 @@ namespace App.UI.Presenter.Launch
 
         public override void OnDestroy()
         {
+            
         }
 
         public override void OnOpened()

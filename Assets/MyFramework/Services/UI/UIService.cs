@@ -28,12 +28,8 @@ namespace MyFramework.Services.UI
         {
             var presenter = new T();
             var resourceService = Application.GetService<ResourceService>();
-            var schemaPath = UIPresenter.GetPrefabPath<T>();
-            if (UnityEngine.Application.isEditor)
-            {
-                // schemaPath = "res://" + schemaPath;
-            }
-            var uiView = resourceService.InstantiateResource<UIView>(schemaPath);
+            var prefabPath = UIPresenter.GetPrefabPath<T>();
+            var uiView = resourceService.InstantiateResource<UIView>(prefabPath);
             presenter.OnCreated(uiView);
             presenter.OnOpened();
             stack.Push(presenter);

@@ -1,0 +1,12 @@
+{
+    "patch": "1.0.0.alpha",
+    "resources": [
+        {
+            "hash128": "06ac51ba8e598ebb48acccf72f1661ff",
+            "path": "Assets/AppData\\Prefab\\UI\\View\\UILaunchView.bundle",
+            "asset_names": [
+                "Assets/AppData\\Prefab\\UI\\View\\UILaunchView.prefab"
+            ]
+        }
+    ]
+}

@@ -5,11 +5,16 @@ namespace MyFramework.Services.Resource
 {
     public class AssetBundleResourceObject : IResourceObject
     {
+        private static string prefixPath;
         private AssetBundle assetBundle;
         private ResourceReference resourceReference;
         public AssetBundleResourceObject(ResourcePath resourcePath)
         {
             resourceReference = new ResourceReference(resourcePath);
+            if (prefixPath == null)
+            {
+                prefixPath = ResourcePath.AssetBundleRootPath;
+            }
         }
 
         public void Load()

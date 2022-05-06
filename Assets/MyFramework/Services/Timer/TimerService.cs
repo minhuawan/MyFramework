@@ -13,7 +13,7 @@ namespace MyFramework.Services.Timer
         private TimeKeeper keeper;
         public override void OnCreated()
         {
-            var go = new GameObject(nameof(TimerService));
+            var go = new GameObject($"{this.GetType().FullName}");
             GameObject.DontDestroyOnLoad(go);
             keeper = go.AddComponent<TimeKeeper>();
             keeper.OnUpdateEvent.Subscribe(OnUpdateTick);

@@ -1,4 +1,6 @@
-﻿namespace MyFramework.Services.UI
+﻿using System.Linq;
+
+namespace MyFramework.Services.UI
 {
     public abstract class UIPresenter
     {
@@ -16,7 +18,7 @@
             {
                 if (attribute is ViewPath viewPath)
                 {
-                    return viewPath.Path;
+                    return viewPath.GetPath();
                 }
             }
 

@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 
 namespace MyFramework.Services.Resource
 {
     public class ResourcePath
     {
+        public static string StreamingAssetPath => UnityEngine.Application.streamingAssetsPath;
+        public static string PersistentPath => UnityEngine.Application.persistentDataPath;
+        public static string AssetBundleRootPath =>
+            Path.Combine(UnityEngine.Application.dataPath, "..", "asset_bundle");
+
         public const string RESOURCE_SCHEMA = "res://";
         public const string ASSET_BUNDLE_SCHEMA = "ab://";
         public string fullPath { get; private set; }
@@ -27,6 +33,7 @@ namespace MyFramework.Services.Resource
             {
                 throw new Exception($"schema not found in full path: {fullPath}");
             }
+
             path = fullPath.Substring(schema.Length);
         }
     }

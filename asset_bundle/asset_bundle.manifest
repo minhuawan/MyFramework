@@ -1,7 +1,7 @@
 ManifestFileVersion: 0
-CRC: 2558726464
+CRC: 860594636
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: assets/appdata/prefab/ui/view/uilaunchview.prefab
+      Name: assets/appdata/prefab/ui/view/uilaunchview.bundle
       Dependencies: {}
