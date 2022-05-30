@@ -1,5 +1,8 @@
-﻿using App.UI.View.Launch;
+﻿using App.Network.Http;
+using App.UI.View.Launch;
 using MyFramework.Services.Event;
+using MyFramework.Services.Network;
+using MyFramework.Services.Network.HTTP;
 using MyFramework.Services.Resource;
 using MyFramework.Services.Timer;
 using MyFramework.Services.UI;
@@ -17,11 +20,18 @@ namespace App.UI.Presenter.Launch
         public override void OnCreated(UIView view)
         {
             launchView = view as UILaunchView;
-            launchView.Initialize("FUCK OFF");
+            launchView.Initialize();
             int sec = 0;
             Application.GetService<TimerService>().EverySecond.Subscribe(ts =>
             {
-                launchView.Initialize(sec++.ToString());
+                launchView.SetMessage(sec++.ToString());
+            });
+            launchView.ButtonClick.Subscribe(async btn =>
+            {
+                Debug.LogError("button clicked");
+                var request = new TestRequest();
+                var response = await Application.GetService<NetworkService>().Communicate<TestResponse>(request);
+                Debug.LogError("message from net" + response.message);
             });
         }
 
