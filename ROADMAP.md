@@ -7,7 +7,7 @@
 - ...
 
 ### Network
-- HTTP/HTTPS
+- HTTP/HTTPS (HTTP已完成， 差加密)
 - TCP
 	
 ### VirtualFileSystem
