@@ -12,26 +12,38 @@ using Application = MyFramework.Application;
 namespace App.UI.Presenter.Launch
 {
     [ViewPath("Assets/AppData/Prefab/UI/View/UILaunchView")]
-    public class UILaunchPresenter : UIPresenter
+    public class UILaunchPresenter : UIPresenter, IHttpResponseHandler<TestResponse>, IHttpResponseHandler<HelloResponse>
     {
         private UILaunchView launchView;
         public ObservableEvent<UILaunchPresenter> OnLaunchFinished = new ObservableEvent<UILaunchPresenter>();
 
         public override void OnCreated(UIView view)
         {
+            var networkService = Application.GetService<NetworkService>();
+            networkService.RegisterHttpResponseHandler<TestResponse>(this);
+            networkService.RegisterHttpResponseHandler<HelloResponse>(this);
+
             launchView = view as UILaunchView;
             launchView.Initialize();
             int sec = 0;
-            Application.GetService<TimerService>().EverySecond.Subscribe(ts =>
+            Application.GetService<TimerService>().EveryFrame.Subscribe(ts =>
             {
+                sec++;
                 launchView.SetMessage(sec++.ToString());
             });
-            launchView.ButtonClick.Subscribe(async btn =>
+            launchView.AsyncClick.Subscribe(async btn =>
             {
-                Debug.LogError("button clicked");
+                Debug.LogError("AsyncClick clicked");
                 var request = new TestRequest();
-                var response = await Application.GetService<NetworkService>().Communicate<TestResponse>(request);
-                Debug.LogError("message from net" + response.message);
+                var response = await networkService.CommunicateAsync<TestResponse>(request);
+                Debug.LogError("message from await/async: " + response.message);
+            });
+            
+            launchView.SyncClick.Subscribe(b =>
+            {
+                Debug.LogError("SyncClick clicked");
+                networkService.CommunicateAsync<TestResponse>(new TestRequest());
+                Debug.LogError("SyncClick clicked next");
             });
         }
 
@@ -46,6 +58,16 @@ namespace App.UI.Presenter.Launch
 
         public override void OnClose()
         {
+        }
+
+        public void OnHttpResponse(TestResponse response)
+        {
+            Debug.LogError("message from OnHttpResponse: " + response.message);
+        }
+
+        public void OnHttpResponse(HelloResponse response)
+        {
+            Debug.LogError("message from OnHttpResponse: " + response.message);
         }
     }
 }

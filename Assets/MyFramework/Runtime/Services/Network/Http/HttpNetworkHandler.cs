@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -11,6 +12,9 @@ namespace MyFramework.Services.Network.HTTP
         public const string Protocol = "http";
         public const string Host = "localhost:8080";
 
+        private Dictionary<Type, object> responseHandlers =
+            new Dictionary<Type, object>();
+
         public async Task<T> SendAsync<T>(INetworkRequest request) where T : INetworkResponse
         {
             var httpRequest = request as HttpRequest;
@@ -22,13 +26,37 @@ namespace MyFramework.Services.Network.HTTP
                 return await Task.FromException<T>(new Exception($"request path is empty type: {typeof(T)}"));
             }
 
+            T response;
             switch (httpRequest.Method)
             {
-                case HttpMethod.GET: return await Get<T>(httpRequest);
-                case HttpMethod.POST: return await Post<T>(httpRequest);
+                case HttpMethod.GET: response = await Get<T>(httpRequest);
+                    break;
+                case HttpMethod.POST: response = await Post<T>(httpRequest);
+                    break;
                 default:
                     return await Task.FromException<T>(
                         new Exception($"unsupported http method {httpRequest.Method} type: {typeof(T)}"));
+            }
+
+            var key = typeof(T);
+            if (responseHandlers.TryGetValue(key, out var handler))
+            {
+                var responseHandler = handler as IHttpResponseHandler<T>;
+                responseHandler.OnHttpResponse(response);
+            }
+            return response;
+        }
+
+        public void RegisterHttpResponseHandler<T>(IHttpResponseHandler<T> handler) where T : HttpResponse
+        {
+            responseHandlers[typeof(T)] = handler;
+        }
+        public void UnregisterHttpResponseHandler<T>(IHttpResponseHandler<T> handler) where T : HttpResponse
+        {
+            var key = typeof(T);
+            if (responseHandlers.ContainsKey(key))
+            {
+                responseHandlers.Remove(key);
             }
         }
 
@@ -51,7 +79,7 @@ namespace MyFramework.Services.Network.HTTP
             throw new NotImplementedException();
         }
 
-        public static string BuildUrl(string protocol, string host, HttpRequest request, IHttpRequestParam param)
+        private string BuildUrl(string protocol, string host, HttpRequest request, IHttpRequestParam param)
         {
             var sb = new StringBuilder(128);
             sb.Append(protocol);
