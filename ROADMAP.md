@@ -7,8 +7,8 @@
 - ...
 
 ### Network
-- HTTP/HTTPS (HTTP已完成， 差加密)
-- TCP
+- HTTP/HTTPS 0531 (HTTP已完成， 加密接口（codec）已经弄完) 暂时就不继续做这个了
+- TCP 
 	
 ### VirtualFileSystem
 - CreateTempFile
