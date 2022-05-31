@@ -62,6 +62,11 @@ namespace MyFramework.Services.Network.HTTP
         private static string BuildUrl<T>(string protocol, string host, HttpRequest<T> request, IHttpRequestParam param)
             where T : HttpResponse
         {
+            if (request.RequestPath.StartsWith("http"))
+            {
+                return request.RequestPath;
+            }
+
             var sb = new StringBuilder(128);
             sb.Append(protocol);
             sb.Append("://");

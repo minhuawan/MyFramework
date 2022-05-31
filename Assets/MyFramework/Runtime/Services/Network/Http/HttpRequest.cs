@@ -12,7 +12,7 @@ namespace MyFramework.Services.Network.HTTP
         POST,
     }
 
-    public abstract class HttpRequest<T> where T : INetworkResponse
+    public abstract class HttpRequest<T> where T : HttpResponse
     {
         public abstract HttpMethod Method { get; }
         public abstract string RequestPath { get; }

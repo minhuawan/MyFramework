@@ -67,6 +67,20 @@ namespace App.UI.Presenter.Launch
                     Debug.Log("AsyncPost clicked fetch failed, message: " + response.Message);
                 }
             });
+
+            launchView.AsyncGetBaidu.Subscribe(async view =>
+            {
+                Debug.Log("AsyncGetBaidu clicked");
+                var response = await networkService.CommunicateAsync(new BaiduHttpRequest());
+                if (response.IsSuccessful)
+                {
+                    Debug.Log("AsyncGetBaidu clicked fetch ok, responded: " + response.Message);
+                }
+                else
+                {
+                    Debug.Log("AsyncGetBaidu clicked fetch failed, message: " + response.Message);
+                }
+            });
         }
 
         public override void OnDestroy()
