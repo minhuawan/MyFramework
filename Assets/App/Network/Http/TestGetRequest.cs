@@ -2,9 +2,9 @@
 
 namespace App.Network.Http
 {
-    public class TestRequest : HttpRequest
+    public class TestGetRequest : HttpRequest<TestGetResponse>
     {
         public override HttpMethod Method => HttpMethod.GET;
-        public override string RequestPath => "/test";
+        public override string RequestPath => "/test/get";
     }
 }

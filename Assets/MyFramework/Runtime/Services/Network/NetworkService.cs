@@ -16,15 +16,15 @@ namespace MyFramework.Services.Network
         {
         }
 
-        public async Task<T> CommunicateAsync<T>(HttpRequest httpRequest) where T : HttpResponse
+        public async Task<T> CommunicateAsync<T>(HttpRequest<T> httpRequest) where T : HttpResponse
         {
             var response = await httpNetworkHandler.SendAsync<T>(httpRequest);
             return response;
         }
 
-        public void Communicate<T>(HttpRequest httpRequest) where T : HttpResponse
+        public void Communicate<T>(HttpRequest<T> httpRequest) where T : HttpResponse
         {
-            httpNetworkHandler.SendAsync<T>(httpRequest);
+            _ = httpNetworkHandler.SendAsync<T>(httpRequest);
         }
 
         public void RegisterHttpResponseHandler<T>(IHttpResponseHandler<T> handler) where T : HttpResponse

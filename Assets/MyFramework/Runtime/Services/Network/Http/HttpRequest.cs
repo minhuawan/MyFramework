@@ -12,12 +12,12 @@ namespace MyFramework.Services.Network.HTTP
         POST,
     }
 
-    public abstract class HttpRequest : INetworkRequest
+    public abstract class HttpRequest<T> where T : INetworkResponse
     {
         public abstract HttpMethod Method { get; }
         public abstract string RequestPath { get; }
 
-        
+
         public virtual void SetRequestParam(IHttpRequestParam requestParam)
         {
         }

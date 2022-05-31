@@ -12,7 +12,8 @@ using Application = MyFramework.Application;
 namespace App.UI.Presenter.Launch
 {
     [ViewPath("Assets/AppData/Prefab/UI/View/UILaunchView")]
-    public class UILaunchPresenter : UIPresenter, IHttpResponseHandler<TestResponse>, IHttpResponseHandler<HelloResponse>
+    public class UILaunchPresenter : UIPresenter, IHttpResponseHandler<TestGetResponse>,
+        IHttpResponseHandler<TestPostResponse>
     {
         private UILaunchView launchView;
         public ObservableEvent<UILaunchPresenter> OnLaunchFinished = new ObservableEvent<UILaunchPresenter>();
@@ -20,36 +21,56 @@ namespace App.UI.Presenter.Launch
         public override void OnCreated(UIView view)
         {
             var networkService = Application.GetService<NetworkService>();
-            networkService.RegisterHttpResponseHandler<TestResponse>(this);
-            networkService.RegisterHttpResponseHandler<HelloResponse>(this);
+            networkService.RegisterHttpResponseHandler<TestGetResponse>(this);
+            networkService.RegisterHttpResponseHandler<TestPostResponse>(this);
 
             launchView = view as UILaunchView;
             launchView.Initialize();
             int sec = 0;
-            Application.GetService<TimerService>().EveryFrame.Subscribe(ts =>
+            Application.GetService<TimerService>().EverySecond.Subscribe(ts =>
             {
                 sec++;
                 launchView.SetMessage(sec++.ToString());
             });
-            launchView.AsyncClick.Subscribe(async btn =>
+            launchView.AsyncGet.Subscribe(async view =>
             {
-                Debug.LogError("AsyncClick clicked");
-                var request = new TestRequest();
-                var response = await networkService.CommunicateAsync<TestResponse>(request);
-                Debug.LogError("message from await/async: " + response.message);
+                Debug.Log("AsyncGet clicked");
+                var request = new TestGetRequest();
+                var response = await networkService.CommunicateAsync(request);
+                if (response.IsSuccessful)
+                {
+                    Debug.Log("AsyncGet clicked fetch ok, from await/async responded: " + response.GetMessage);
+                }
+                else
+                {
+                    Debug.Log("AsyncGet clicked fetch failed, message: " + response.Message);
+                }
             });
-            
-            launchView.SyncClick.Subscribe(b =>
+
+            launchView.SyncGet.Subscribe(view =>
             {
-                Debug.LogError("SyncClick clicked");
-                networkService.CommunicateAsync<TestResponse>(new TestRequest());
-                Debug.LogError("SyncClick clicked next");
+                Debug.Log("SyncGet clicked");
+                networkService.Communicate(new TestGetRequest());
+                Debug.Log("SyncClick clicked next");
+            });
+
+            launchView.AsyncPost.Subscribe(async view =>
+            {
+                Debug.Log("AsyncPost clicked");
+                var response = await networkService.CommunicateAsync(new TestPostRequest());
+                if (response.IsSuccessful)
+                {
+                    Debug.Log("AsyncPost clicked fetch ok, responded: " + response.PostMessage);
+                }
+                else
+                {
+                    Debug.Log("AsyncPost clicked fetch failed, message: " + response.Message);
+                }
             });
         }
 
         public override void OnDestroy()
         {
-            
         }
 
         public override void OnOpened()
@@ -60,14 +81,14 @@ namespace App.UI.Presenter.Launch
         {
         }
 
-        public void OnHttpResponse(TestResponse response)
+        public void OnHttpResponse(TestGetResponse response)
         {
-            Debug.LogError("message from OnHttpResponse: " + response.message);
+            Debug.Log("message from OnHttpResponse, get respond: " + response.GetMessage);
         }
 
-        public void OnHttpResponse(HelloResponse response)
+        public void OnHttpResponse(TestPostResponse response)
         {
-            Debug.LogError("message from OnHttpResponse: " + response.message);
+            Debug.Log("message from OnHttpResponse, post respond: : " + response.PostMessage);
         }
     }
 }

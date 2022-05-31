@@ -1,21 +1,29 @@
-﻿using UnityEngine;
+﻿using System;
+using Newtonsoft.Json;
+using UnityEngine;
 
 namespace MyFramework.Services.Network.HTTP
 {
-    public class HttpCodec : INetworkCodec
+    public class HttpCodec
     {
-        public byte[] Encode(INetworkRequest request)
+        public static byte[] Encode<T>(HttpRequest<T> httpRequest) where T : HttpResponse
         {
-            var jsonStr = JsonUtility.ToJson(request);
-            var bytes = System.Text.Encoding.UTF8.GetBytes(jsonStr);
-            return bytes;
+            if (httpRequest.Method == HttpMethod.POST)
+            {
+                var httpPostParam = new HttpPostParam();
+                httpRequest.SetRequestParam(httpPostParam);
+                var bytes = httpPostParam.data;
+                return bytes;
+            }
+
+            return null;
         }
 
-        public T Decode<T>(byte[] bytes) where T : INetworkResponse
+        public static T Decode<T>(byte[] bytes) where T : INetworkResponse
         {
             var jsonStr = System.Text.Encoding.UTF8.GetString(bytes);
-            var obj = JsonUtility.FromJson<T>(jsonStr);
-            return obj;
+            var response = JsonConvert.DeserializeObject<T>(jsonStr);
+            return response;
         }
     }
 }
