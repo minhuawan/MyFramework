@@ -5,7 +5,7 @@ using UnityEditorInternal;
 
 namespace MyFramework.Services.Network.HTTP
 {
-    public class HttpResponse : INetworkResponse
+    public class HttpResponse
     {
         [JsonProperty("response_code")] public long ResponseCode;
         [JsonProperty("message")] public string Message;

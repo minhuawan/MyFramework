@@ -19,7 +19,7 @@ namespace MyFramework.Services.Network.HTTP
             return null;
         }
 
-        public static T Decode<T>(byte[] bytes) where T : INetworkResponse
+        public static T Decode<T>(byte[] bytes) where T : HttpResponse
         {
             var jsonStr = System.Text.Encoding.UTF8.GetString(bytes);
             var response = JsonConvert.DeserializeObject<T>(jsonStr);
