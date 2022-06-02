@@ -42,7 +42,7 @@ namespace MyFramework.Services.Network.Tcp
             return true;
         }
 
-        public void Erase(int begin, int eraseCount, out bool ok)
+        public void Erase(int begin, int eraseCount)
         {
             if (begin < 0 || eraseCount <= 0)
                 return;
@@ -58,19 +58,20 @@ namespace MyFramework.Services.Network.Tcp
             }
 
             dataLength -= eraseCount;
-            ok = true;
         }
 
-        public void ReadFromNetworkStream(NetworkStream ns)
+        public int ReadFromNetworkStream(NetworkStream ns)
         {
             if (ns == null || ns.Length == 0)
-                return;
+                return 0;
             var size = capacity - dataLength;
             var readCount = ns.Read(data, dataLength, size);
             if (readCount > 0)
             {
                 dataLength += readCount;
             }
+
+            return readCount;
         }
 
         public void WriteToNetworkStream(NetworkStream ns)
