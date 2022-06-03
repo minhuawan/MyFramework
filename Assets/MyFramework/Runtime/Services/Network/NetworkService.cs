@@ -1,35 +1,22 @@
 ﻿using System.Threading.Tasks;
 using MyFramework.Services.Network.HTTP;
+using MyFramework.Services.Network.Tcp;
 
 namespace MyFramework.Services.Network
 {
     public class NetworkService : AbstractService
     {
-        private HTTPNetworkHandler httpNetworkHandler;
+        public HttpNetworkHandler Http { get; private set; }
+        public TcpSocketHandler Tcp { get; private set;  }
 
         public override void OnCreated()
         {
-            httpNetworkHandler = new HTTPNetworkHandler();
+            Tcp = new TcpSocketHandler(new TcpConfiguration("localhost", 1234));
+            Http = new HttpNetworkHandler();
         }
 
         public override void OnDestroy()
         {
-        }
-
-        public async Task<T> CommunicateAsync<T>(HttpRequest<T> httpRequest) where T : HttpResponse
-        {
-            var response = await httpNetworkHandler.SendAsync<T>(httpRequest);
-            return response;
-        }
-
-        public void Communicate<T>(HttpRequest<T> httpRequest) where T : HttpResponse
-        {
-            _ = httpNetworkHandler.SendAsync<T>(httpRequest);
-        }
-
-        public void RegisterHttpResponseHandler<T>(IHttpResponseHandler<T> handler) where T : HttpResponse
-        {
-            httpNetworkHandler.RegisterHttpResponseHandler(handler);
         }
     }
 }

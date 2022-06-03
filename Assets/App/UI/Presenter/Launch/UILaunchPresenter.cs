@@ -1,4 +1,5 @@
 ﻿using App.Network.Http;
+using App.Network.Tcp;
 using App.UI.View.Launch;
 using MyFramework.Services.Event;
 using MyFramework.Services.Network;
@@ -21,8 +22,8 @@ namespace App.UI.Presenter.Launch
         public override void OnCreated(UIView view)
         {
             var networkService = Application.GetService<NetworkService>();
-            networkService.RegisterHttpResponseHandler<TestGetResponse>(this);
-            networkService.RegisterHttpResponseHandler<TestPostResponse>(this);
+            networkService.Http.RegisterHttpResponseHandler<TestGetResponse>(this);
+            networkService.Http.RegisterHttpResponseHandler<TestPostResponse>(this);
 
             launchView = view as UILaunchView;
             launchView.Initialize();
@@ -36,7 +37,7 @@ namespace App.UI.Presenter.Launch
             {
                 Debug.Log("AsyncGet clicked");
                 var request = new TestGetRequest();
-                var response = await networkService.CommunicateAsync(request);
+                var response = await networkService.Http.SendAsync(request);
                 if (response.IsSuccessful)
                 {
                     Debug.Log("AsyncGet clicked fetch ok, from await/async responded: " + response.GetMessage);
@@ -50,14 +51,14 @@ namespace App.UI.Presenter.Launch
             launchView.SyncGet.Subscribe(view =>
             {
                 Debug.Log("SyncGet clicked");
-                networkService.Communicate(new TestGetRequest());
+                _ = networkService.Http.SendAsync(new TestGetRequest());
                 Debug.Log("SyncClick clicked next");
             });
 
             launchView.AsyncPost.Subscribe(async view =>
             {
                 Debug.Log("AsyncPost clicked");
-                var response = await networkService.CommunicateAsync(new TestPostRequest());
+                var response = await networkService.Http.SendAsync(new TestPostRequest());
                 if (response.IsSuccessful)
                 {
                     Debug.Log("AsyncPost clicked fetch ok, responded: " + response.PostMessage);
@@ -70,16 +71,8 @@ namespace App.UI.Presenter.Launch
 
             launchView.AsyncGetBaidu.Subscribe(async view =>
             {
-                Debug.Log("AsyncGetBaidu clicked");
-                var response = await networkService.CommunicateAsync(new BaiduHttpRequest());
-                if (response.IsSuccessful)
-                {
-                    Debug.Log("AsyncGetBaidu clicked fetch ok, responded: " + response.Message);
-                }
-                else
-                {
-                    Debug.Log("AsyncGetBaidu clicked fetch failed, message: " + response.Message);
-                }
+                await Application.GetService<NetworkService>().Tcp.ConnectAsync();
+                await Application.GetService<NetworkService>().Tcp.SendAsync(new TestTcpRequest());
             });
         }
 

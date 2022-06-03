@@ -1,8 +1,6 @@
 ﻿namespace MyFramework.Services.Network.Tcp
 {
-    public class TcpResponse
+    public class TcpResponse : TcpProtocol
     {
-        public int sequence; // assign from client 
-        public int messageId; // assign from client
     }
 }

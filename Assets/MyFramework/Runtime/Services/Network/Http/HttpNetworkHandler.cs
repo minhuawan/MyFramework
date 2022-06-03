@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 
 namespace MyFramework.Services.Network.HTTP
 {
-    public class HTTPNetworkHandler
+    public class HttpNetworkHandler
     {
         public const string Protocol = "http";
         public const string Host = "localhost:5000";
