@@ -1,4 +1,5 @@
-﻿using App.Network.Http;
+﻿using System;
+using App.Network.Http;
 using App.Network.Tcp;
 using App.UI.View.Launch;
 using MyFramework.Services.Event;
@@ -73,10 +74,22 @@ namespace App.UI.Presenter.Launch
                 }
             });
 
+            var b = false;
             launchView.AsyncGetBaidu.Subscribe(async view =>
             {
-                await Application.GetService<NetworkService>().Tcp.ConnectAsync();
-                await Application.GetService<NetworkService>().Tcp.SendAsync(new TestTcpRequest());
+                // await Application.GetService<NetworkService>().Tcp.ConnectAsync();
+                // await Application.GetService<NetworkService>().Tcp.SendAsync(new TestTcpRequest());
+
+                var webSocket = Application.GetService<NetworkService>().WebSocket;
+                if (!b)
+                {
+                    await webSocket.ConnectAsync(new Uri(
+                        "wss://demo.piesocket.com/v3/channel_1?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self"));
+                        // "ws://127.0.0.1:1111"));
+                    // b = true;
+                }
+                
+                webSocket.SendAsync("message from my framework. 中文测试! 😄");
             });
         }
 

@@ -28,7 +28,7 @@ namespace MyFramework.Services.Network.Tcp
         Unknown = 5,
     }
 
-    public class TcpSocketHandler
+    public class TcpSocketHandler: IDisposable
     {
         private TcpClient tcpClient;
         private TcpConfiguration configuration;
@@ -43,6 +43,7 @@ namespace MyFramework.Services.Network.Tcp
         public TcpProtocolDispatcher Dispatcher => configuration.ProtocolDispatcher;
         public TcpSocketHandler(TcpConfiguration configuration)
         {
+            this.configuration = configuration;
             Cleanup();
         }
 
@@ -201,6 +202,11 @@ namespace MyFramework.Services.Network.Tcp
                     break;
                 configuration.ProtocolDispatcher.Dispatch(tcpProtocol);
             }
+        }
+
+        public void Dispose()
+        {
+            tcpClient?.Dispose();
         }
     }
 }

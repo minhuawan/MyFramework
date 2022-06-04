@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 
 namespace MyFramework.Services.Network.HTTP
 {
-    public class HttpNetworkHandler
+    public class HttpNetworkHandler : IDisposable
     {
         public const string Protocol = "http";
         public const string Host = "localhost:5000";
@@ -71,5 +71,8 @@ namespace MyFramework.Services.Network.HTTP
             }
         }
 
+        public void Dispose()
+        {
+        }
     }
 }
