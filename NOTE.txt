@@ -16,3 +16,7 @@ https://www.cnblogs.com/gaochundong/p/csharp_tcp_service_models.html#tap
 C# 也有很多种写法。。。
 那乘着端午假期，就尽量把网络模块完善了把
 当前进度应该是： tcp 逻辑部分算 80% 完成把， 把 frame -> protocol 的部分写完就好
+
+2022年6月4日
+今天下午把 Tcp 算是弄差不多了，差自测了吧，不过还需要弄一个测试服务器，略麻烦。。
+先继续开发 WebSocket 吧
