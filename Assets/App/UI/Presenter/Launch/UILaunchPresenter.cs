@@ -4,6 +4,7 @@ using App.UI.View.Launch;
 using MyFramework.Services.Event;
 using MyFramework.Services.Network;
 using MyFramework.Services.Network.HTTP;
+using MyFramework.Services.Network.Tcp;
 using MyFramework.Services.Resource;
 using MyFramework.Services.Timer;
 using MyFramework.Services.UI;
@@ -13,8 +14,10 @@ using Application = MyFramework.Application;
 namespace App.UI.Presenter.Launch
 {
     [ViewPath("Assets/AppData/Prefab/UI/View/UILaunchView")]
-    public class UILaunchPresenter : UIPresenter, IHttpResponseHandler<TestGetResponse>,
-        IHttpResponseHandler<TestPostResponse>
+    public class UILaunchPresenter : UIPresenter, 
+        IHttpResponseHandler<TestGetResponse>,
+        IHttpResponseHandler<TestPostResponse>,
+        ITcpProtocolHandler<TestTcpResponse>
     {
         private UILaunchView launchView;
         public ObservableEvent<UILaunchPresenter> OnLaunchFinished = new ObservableEvent<UILaunchPresenter>();
@@ -24,6 +27,7 @@ namespace App.UI.Presenter.Launch
             var networkService = Application.GetService<NetworkService>();
             networkService.Http.RegisterHttpResponseHandler<TestGetResponse>(this);
             networkService.Http.RegisterHttpResponseHandler<TestPostResponse>(this);
+            networkService.Tcp.Dispatcher.RegisterTcpProtocolHandler<TestTcpResponse>(this);
 
             launchView = view as UILaunchView;
             launchView.Initialize();
@@ -96,6 +100,11 @@ namespace App.UI.Presenter.Launch
         public void OnHttpResponse(TestPostResponse response)
         {
             Debug.Log("message from OnHttpResponse, post respond: : " + response.PostMessage);
+        }
+
+        public void OnTcpProtocol(TestTcpResponse protocol)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

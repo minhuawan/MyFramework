@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using Newtonsoft.Json;
@@ -30,6 +32,17 @@ namespace MyFramework.Services.Network.Tcp
     public class TcpProtocolCodec
     {
         private int increaseConnId;
+        private Dictionary<int, Type> protocolTypes;
+
+        public TcpProtocolCodec()
+        {
+            protocolTypes = new Dictionary<int, Type>();
+        }
+
+        public void RegisterProtocolType(int protocolId, Type t)
+        {
+            protocolTypes[protocolId] = t;
+        }
 
         public void Encode(
             TcpLengthBasedFrameCodec codec,
@@ -52,7 +65,113 @@ namespace MyFramework.Services.Network.Tcp
 
         public TcpProtocol Decode(ConcurrentQueue<TcpLengthBasedFrame> frames)
         {
-            return null; // todo
+            if (frames.IsEmpty)
+                return null;
+            var continueDecode = false;
+            if (frames.TryPeek(out var first))
+            {
+                if (first.length < 12)
+                    return null;
+
+                var frameLengthSum = frames.Sum(f => f.length);
+                using (var ms = new MemoryStream(first.data))
+                {
+                    using (var reader = new BinaryReader(ms))
+                    {
+                        var protocolLength = IPAddress.NetworkToHostOrder(reader.ReadInt32());
+                        var protocolId = IPAddress.NetworkToHostOrder(reader.ReadInt32());
+                        if (frameLengthSum < protocolLength)
+                        {
+                            return null;
+                        }else if (!protocolTypes.ContainsKey(protocolId))
+                        {
+                            throw new Exception($"exception on protocol decode, protocol id not registered. [{protocolId}]");
+                        }
+
+                        continueDecode = true;
+                    }
+                }
+            }
+
+            if (continueDecode)
+            {
+                return DecodeInternal(frames);
+            }
+
+            return null;
+        }
+
+        private TcpProtocol DecodeInternal(ConcurrentQueue<TcpLengthBasedFrame> frames)
+        {
+            TcpProtocol protocol = null;
+            var done = false;
+            var protocolLength = 0;
+            var protocolId = 0;
+            var connectionId = 0;
+            byte[] protocolData = null;
+            int protocolDataOffset = 0;
+            while (!done)
+            {
+                if (frames.IsEmpty)
+                {
+                    throw new Exception(
+                        "exception on protocol decode internal, no enough frame to decode to protocol. ");
+                }
+
+                var first = true;
+                if (frames.TryDequeue(out var frame))
+                {
+                    if (first)
+                    {
+                        first = false;
+                        using (var ms = new MemoryStream(frame.data))
+                        {
+                            using (var reader = new BinaryReader(ms))
+                            {
+                                protocolLength = IPAddress.NetworkToHostOrder(reader.ReadInt32());
+                                protocolId = IPAddress.NetworkToHostOrder(reader.ReadInt32());
+                                connectionId = IPAddress.NetworkToHostOrder(reader.ReadInt32());
+                                protocolData = new byte[protocolLength];
+                                Buffer.BlockCopy(frame.data, 12, protocolData, 0, frame.length - 12);
+                                protocolDataOffset += frame.length - 12;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Buffer.BlockCopy(frame.data, 0, protocolData, protocolDataOffset, frame.length);
+                        protocolDataOffset += frame.length;
+                    }
+
+                    if (protocolDataOffset < protocolLength)
+                    {
+                        continue;
+                    }
+
+                    if (protocolDataOffset > protocolLength)
+                    {
+                        throw new Exception(
+                            "exception on protocol decode internal, why protocolDataOffset bigger than protocolLength? ");
+                    }
+
+                    // equals
+                    protocol = DecodeFromBytes(protocolId, connectionId, protocolData);
+                    break;
+                }
+            }
+
+            return protocol;
+        }
+
+        private TcpProtocol DecodeFromBytes(int protocolId, int connectionId, byte[] bytes)
+        {
+            if (protocolTypes.TryGetValue(protocolId, out var type))
+            {
+                var jsonStr = Encoding.UTF8.GetString(bytes);
+                return JsonConvert.DeserializeObject(jsonStr, type) as TcpProtocol;
+            }
+
+            return null;
         }
     }
 }

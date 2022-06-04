@@ -40,6 +40,7 @@ namespace MyFramework.Services.Network.Tcp
 
         public bool Connected => tcpClient != null && tcpClient.Connected;
         public bool Connecting => connecting;
+        public TcpProtocolDispatcher Dispatcher => configuration.ProtocolDispatcher;
         public TcpSocketHandler(TcpConfiguration configuration)
         {
             Cleanup();
@@ -155,7 +156,10 @@ namespace MyFramework.Services.Network.Tcp
                     if (readCount > 0)
                     {
                         readOffset += readCount;
-                        TryDecodeFrame();
+                        if (TryDecodeFrame())
+                        {
+                            TryDecodeProtocol();
+                        }
                     }
                 }
             }
@@ -168,30 +172,34 @@ namespace MyFramework.Services.Network.Tcp
         private async Task HandleReadLoopException(Exception exception)
         {
             Debug.LogError("exception on read loop. " + exception.ToString());
-            Debug.LogError("try to close and re-reconnect ... ");
+            Debug.LogError("exception on read loop. try to close and re-reconnect ... ");
             await CloseAsync();
             await ConnectAsync();
         }
 
-        private void TryDecodeFrame()
+        private bool TryDecodeFrame()
         {
             var codec = configuration.FrameCodec;
-            var dispatcher = configuration.FrameDispatcher;
             var consumeCount = codec.DecodeToQueue(readBuffer, 0, readBuffer.Length, readQueue);
             if (consumeCount > 0)
             {
                 // shift the buffer
                 Buffer.BlockCopy(readBuffer, consumeCount, readBuffer, 0, readOffset - consumeCount);
                 readOffset -= consumeCount;
+                return true;
             }
 
+            return false;
+        }
 
-            while (!readQueue.IsEmpty)
+        private void TryDecodeProtocol()
+        {
+            while (true)
             {
-                if (readQueue.TryDequeue(out var tcpLengthBasedFrame))
-                {
-                    dispatcher.Dispatch(tcpLengthBasedFrame);
-                }
+                var tcpProtocol = configuration.ProtocolCodec.Decode(readQueue);
+                if (tcpProtocol == null)
+                    break;
+                configuration.ProtocolDispatcher.Dispatch(tcpProtocol);
             }
         }
     }

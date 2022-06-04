@@ -15,7 +15,7 @@ namespace MyFramework.Services.Network.Tcp
         public int FrameMaxSize { get; protected set; }
         public TcpLengthBasedFrameCodec FrameCodec { get; protected set; }
         public TcpProtocolCodec ProtocolCodec { get; protected set; }
-        public TcpFrameDispatcher FrameDispatcher { get; protected set; }
+        public TcpProtocolDispatcher ProtocolDispatcher { get; protected set; }
 
         public TcpConfiguration(string host, int port)
         {
@@ -28,7 +28,9 @@ namespace MyFramework.Services.Network.Tcp
             FrameMaxSize = 1024;
             FrameCodec = new TcpLengthBasedFrameCodec(FrameMaxSize);
             ProtocolCodec = new TcpProtocolCodec();
-            FrameDispatcher = new TcpFrameDispatcher();
+            ProtocolDispatcher = new TcpProtocolDispatcher();
+
+            new TcpProtocolRegisterHelper().Register(ProtocolCodec);
         }
     }
 }
