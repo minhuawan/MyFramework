@@ -18,7 +18,7 @@ namespace MyFramework.Services.UI
         {
             foreach (var uiPresenter in stack)
             {
-                uiPresenter.OnDestroy();
+                uiPresenter.Dispose();
             }
 
             stack.Clear();
@@ -30,9 +30,7 @@ namespace MyFramework.Services.UI
             var resourceService = Application.GetService<ResourceService>();
             var schemaPath = UIPresenter.GetPrefabSchemaPath<T>();
             var resourceObject = resourceService.GetResourceObject(schemaPath);
-            var uiView = resourceObject.CreateObject<UIView>();
-            presenter.OnCreated(uiView);
-            presenter.OnOpened();
+            var uiView = resourceObject.CreateObject<View>();
             stack.Push(presenter);
             return presenter;
         }
@@ -41,9 +39,7 @@ namespace MyFramework.Services.UI
         {
             if (stack.Count > 0)
             {
-                var top = stack.Pop();
-                top.OnClose();
-                top.OnDestroy();
+                stack.Peek()?.OnBack();
             }
         }
     }

@@ -1,28 +1,42 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using MyFramework.Services.StateMachine;
 
 namespace MyFramework.Services.UI
 {
-    public abstract class UIPresenter
+    public abstract class UIPresenter : IDisposable
     {
-        public abstract void OnCreated(UIView view);
-        public abstract void OnDestroy();
-        public abstract void OnOpened();
-        public abstract void OnClose();
+        private bool _disposed;
+        public bool Disposed => _disposed;
+        protected List<IDisposable> _disposables = new List<IDisposable>();
 
         public static string GetPrefabSchemaPath<T>() where T : UIPresenter
         {
-            var attributes = typeof(T).GetCustomAttributes(typeof(ViewPath), false);
-            if (attributes == null || attributes.Length == 0)
-                return null;
-            foreach (var attribute in attributes)
+            var type = typeof(T);
+            return GetPrefabSchemaPathWithType(type);
+        }
+
+        public static string GetPrefabSchemaPathWithType(Type presenterType)
+        {
+            var attribute = presenterType.GetCustomAttribute<ViewPath>(false);
+            return attribute?.GetPath();
+        }
+
+        public virtual void OnBack()
+        {
+            
+        }
+        public virtual void Dispose()
+        {
+            _disposed = true;
+            foreach (var disposable in _disposables)
             {
-                if (attribute is ViewPath viewPath)
-                {
-                    return viewPath.GetPath();
-                }
+                disposable.Dispose();
             }
 
-            return null;
+            _disposables.Clear();
         }
     }
 }

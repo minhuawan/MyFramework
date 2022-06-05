@@ -4,11 +4,13 @@
 - Delete
 - Load
 - Unload
+- Dependence
 - ...
 
 ### Network
 - HTTP/HTTPS 0531 (HTTP已完成， 加密接口（codec）已经弄完) 暂时就不继续做这个了
 - TCP (干了2，3天，算半成品吧，有一些问题，写在模块的注释里面了，先搁置下，做其他模块)
+- Websocket ，建议用这个，比 Tcp 要方便一些 = =
 	
 ### VirtualFileSystem
 - CreateTempFile

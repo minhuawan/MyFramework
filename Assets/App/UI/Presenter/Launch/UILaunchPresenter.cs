@@ -20,17 +20,17 @@ namespace App.UI.Presenter.Launch
         IHttpResponseHandler<TestPostResponse>,
         ITcpProtocolHandler<TestTcpResponse>
     {
-        private UILaunchView launchView;
+        private LaunchView launchView;
         public ObservableEvent<UILaunchPresenter> OnLaunchFinished = new ObservableEvent<UILaunchPresenter>();
 
-        public override void OnCreated(UIView view)
+        public void OnCreated(MyFramework.Services.UI.View view)
         {
             var networkService = Application.GetService<NetworkService>();
             networkService.Http.RegisterHttpResponseHandler<TestGetResponse>(this);
             networkService.Http.RegisterHttpResponseHandler<TestPostResponse>(this);
             networkService.Tcp.Dispatcher.RegisterTcpProtocolHandler<TestTcpResponse>(this);
 
-            launchView = view as UILaunchView;
+            launchView = view as LaunchView;
             launchView.Initialize();
             int sec = 0;
             Application.GetService<TimerService>().EverySecond.Subscribe(ts =>
@@ -92,19 +92,6 @@ namespace App.UI.Presenter.Launch
                 webSocket.SendAsync("message from my framework. 中文测试! 😄");
             });
         }
-
-        public override void OnDestroy()
-        {
-        }
-
-        public override void OnOpened()
-        {
-        }
-
-        public override void OnClose()
-        {
-        }
-
         public void OnHttpResponse(TestGetResponse response)
         {
             Debug.Log("message from OnHttpResponse, get respond: " + response.GetMessage);

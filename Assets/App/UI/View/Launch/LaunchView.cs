@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace App.UI.View.Launch
 {
-    public class UILaunchView : UIView
+    public class LaunchView : MyFramework.Services.UI.View
     {
         [SerializeField] private Text text;
         [SerializeField] private Button buttonAsyncGet;
@@ -14,10 +14,10 @@ namespace App.UI.View.Launch
         [SerializeField] private Button buttonAsyncPost;
         [SerializeField] private Button buttonAsyncGetBaidu;
 
-        public ObservableEvent<UILaunchView> AsyncGet = new ObservableEvent<UILaunchView>();
-        public ObservableEvent<UILaunchView> SyncGet = new ObservableEvent<UILaunchView>();
-        public ObservableEvent<UILaunchView> AsyncPost = new ObservableEvent<UILaunchView>();
-        public ObservableEvent<UILaunchView> AsyncGetBaidu = new ObservableEvent<UILaunchView>();
+        public ObservableEvent<LaunchView> AsyncGet = new ObservableEvent<LaunchView>();
+        public ObservableEvent<LaunchView> SyncGet = new ObservableEvent<LaunchView>();
+        public ObservableEvent<LaunchView> AsyncPost = new ObservableEvent<LaunchView>();
+        public ObservableEvent<LaunchView> AsyncGetBaidu = new ObservableEvent<LaunchView>();
 
         public void Initialize()
         {
