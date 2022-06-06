@@ -5,21 +5,21 @@ using UnityEngine;
 
 namespace MyFramework.Services.UI
 {
-    public class PresenterLocatorParameters
+    public class UIPresenterLocatorParameters
     {
         public Dictionary<string, object> parameters;
 
-        public PresenterLocatorParameters()
+        public UIPresenterLocatorParameters()
         {
             parameters = new Dictionary<string, object>();
         }
 
-        public PresenterLocatorParameters(Dictionary<string, object> parameters)
+        public UIPresenterLocatorParameters(Dictionary<string, object> parameters)
         {
             this.parameters = parameters ?? new Dictionary<string, object>();
         }
 
-        public PresenterLocatorParameters Put(string key, object value)
+        public UIPresenterLocatorParameters Put(string key, object value)
         {
             parameters[key] = value;
             return this;
@@ -43,37 +43,37 @@ namespace MyFramework.Services.UI
         }
     }
 
-    public class PresenterLocator
+    public class UIPresenterLocator
     {
         public string TargetName { get; protected set; }
-        public PresenterLocatorParameters Parameters { get; protected set; }
+        public UIPresenterLocatorParameters Parameters { get; protected set; }
 
-        public List<PresenterLocator> SubLocators { get; protected set; }
+        public List<UIPresenterLocator> SubLocators { get; protected set; }
 
-        public static PresenterLocator Create(string targetName, PresenterLocatorParameters parameters = null)
+        public static UIPresenterLocator Create(string targetName, UIPresenterLocatorParameters parameters = null)
         {
-            var locator = new PresenterLocator();
+            var locator = new UIPresenterLocator();
             locator.TargetName = targetName;
-            locator.Parameters = parameters ?? new PresenterLocatorParameters();
+            locator.Parameters = parameters ?? new UIPresenterLocatorParameters();
             locator.SubLocators = null;
             return locator;
         }
 
-        public static PresenterLocator Create(string targetName, Dictionary<string, object> parameters = null)
+        public static UIPresenterLocator Create(string targetName, Dictionary<string, object> parameters = null)
         {
-            var locator = new PresenterLocator();
+            var locator = new UIPresenterLocator();
             locator.TargetName = targetName;
-            locator.Parameters = new PresenterLocatorParameters(parameters);
+            locator.Parameters = new UIPresenterLocatorParameters(parameters);
             locator.SubLocators = null;
             return locator;
         }
 
-        public static PresenterLocator CreateWithSubLocators(
+        public static UIPresenterLocator CreateWithSubLocators(
             string targetName,
-            PresenterLocatorParameters parameters,
-            List<PresenterLocator> subLocators)
+            UIPresenterLocatorParameters parameters,
+            List<UIPresenterLocator> subLocators)
         {
-            var locator = new PresenterLocator();
+            var locator = new UIPresenterLocator();
             locator.Parameters = parameters;
             locator.SubLocators = subLocators;
             return locator;

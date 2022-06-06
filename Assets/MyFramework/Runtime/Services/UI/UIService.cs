@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using App.UI.View.Launch;
 using MyFramework.Services.Resource;
 using UnityEngine;
@@ -7,11 +9,11 @@ namespace MyFramework.Services.UI
 {
     public class UIService : AbstractService
     {
-        private Stack<UIPresenter> stack;
+        private Stack<Presenter> stack;
 
         public override void OnCreated()
         {
-            stack = new Stack<UIPresenter>();
+            stack = new Stack<Presenter>();
         }
 
         public override void OnDestroy()
@@ -24,22 +26,17 @@ namespace MyFramework.Services.UI
             stack.Clear();
         }
 
-        public T Open<T>() where T : UIPresenter, new()
+        public async Task SwitchPresenterAsync()
         {
-            var presenter = new T();
-            var resourceService = Application.GetService<ResourceService>();
-            var schemaPath = UIPresenter.GetPrefabSchemaPath<T>();
-            var resourceObject = resourceService.GetResourceObject(schemaPath);
-            var uiView = resourceObject.CreateObject<View>();
-            stack.Push(presenter);
-            return presenter;
+            
         }
 
         public void Back()
         {
             if (stack.Count > 0)
             {
-                stack.Peek()?.OnBack();
+                var presenter = stack.Peek();
+                presenter.OnBackKey();
             }
         }
     }

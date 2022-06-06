@@ -15,13 +15,13 @@ using Application = MyFramework.Application;
 namespace App.UI.Presenter.Launch
 {
     [ViewPath("Assets/AppData/Prefab/UI/View/UILaunchView")]
-    public class UILaunchPresenter : UIPresenter, 
+    public class LaunchPresenter : MyFramework.Services.UI.Presenter, 
         IHttpResponseHandler<TestGetResponse>,
         IHttpResponseHandler<TestPostResponse>,
         ITcpProtocolHandler<TestTcpResponse>
     {
         private LaunchView launchView;
-        public ObservableEvent<UILaunchPresenter> OnLaunchFinished = new ObservableEvent<UILaunchPresenter>();
+        public ObservableEvent<LaunchPresenter> OnLaunchFinished = new ObservableEvent<LaunchPresenter>();
 
         public void OnCreated(MyFramework.Services.UI.View view)
         {

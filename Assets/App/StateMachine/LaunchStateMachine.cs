@@ -10,7 +10,7 @@ namespace App.StateMachine
     {
         public override void OnEnter(StateMachineContext context)
         {
-            var presenter = Application.GetService<UIService>().Open<UILaunchPresenter>();
+            var presenter = Application.GetService<UIService>().Open<LaunchPresenter>();
         }
 
         public override void OnExit(StateMachineContext context)

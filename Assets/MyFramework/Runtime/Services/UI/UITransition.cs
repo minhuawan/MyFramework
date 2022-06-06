@@ -7,37 +7,37 @@ using UnityEngine;
 
 namespace MyFramework.Services.UI
 {
-    public enum UITransitionResult
+    public struct UITransitionResult
     {
-        None,
-        Ok,
-        Exception,
-    }
-
-    public class UITransition : IDisposable
-    {
-        private UIPresenter previous;
-        private UIPresenter next;
-
-        private ResourceService resourceService => Application.GetService<ResourceService>();
-
-        public UITransition(UIPresenter previous, UIPresenter next)
+        public enum ResultType
         {
-            this.previous = previous;
-            this.next = next;
+            Successful = 1,
+            Failed = 2,
+            Canceled = 3,
         }
 
-        public async Task<UITransitionResult> Run()
-        {
-            var result = UITransitionResult.None;
-            var type = next.GetType();
-            return result;
-        }
+        public ResultType Result;
+        public string Message;
 
-        public void Dispose()
-        {
-        }
+        public static UITransitionResult Failed(string msg) =>
+            new UITransitionResult()
+            {
+                Result = ResultType.Failed,
+                Message = msg,
+            };
 
-        // private
+        public static UITransitionResult Cancel(string msg) =>
+            new UITransitionResult()
+            {
+                Result = ResultType.Canceled,
+                Message = msg,
+            };
+
+        public static UITransitionResult Ok =>
+            new UITransitionResult()
+            {
+                Result = ResultType.Successful,
+                Message = null,
+            };
     }
 }

@@ -2,32 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using MyFramework.Services.StateMachine;
 
 namespace MyFramework.Services.UI
 {
-    public abstract class UIPresenter : IDisposable
+    public abstract class Presenter : IDisposable
     {
         private bool _disposed;
         public bool Disposed => _disposed;
         protected List<IDisposable> _disposables = new List<IDisposable>();
 
-        public static string GetPrefabSchemaPath<T>() where T : UIPresenter
+        public abstract Task<UITransitionResult> LoadAsync(View view);
+
+        public virtual void OnBackKey()
         {
-            var type = typeof(T);
-            return GetPrefabSchemaPathWithType(type);
         }
 
-        public static string GetPrefabSchemaPathWithType(Type presenterType)
+        public virtual void OnDidAppear()
         {
-            var attribute = presenterType.GetCustomAttribute<ViewPath>(false);
-            return attribute?.GetPath();
         }
 
-        public virtual void OnBack()
-        {
-            
-        }
         public virtual void Dispose()
         {
             _disposed = true;
