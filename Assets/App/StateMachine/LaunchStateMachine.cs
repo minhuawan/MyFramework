@@ -1,4 +1,7 @@
-﻿using App.UI.Presenter.Launch;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using App.UI.Presenters.Launch;
 using MyFramework.Services.StateMachine;
 using MyFramework.Services.UI;
 using UnityEngine;
@@ -8,13 +11,35 @@ namespace App.StateMachine
 {
     public class LaunchStateMachine : AStateMachine
     {
-        public override void OnEnter(StateMachineContext context)
+        public override async void OnEnter(StateMachineContext context)
         {
-            var presenter = Application.GetService<UIService>().Open<LaunchPresenter>();
+            var task = start();
+            var awaiter = task.GetAwaiter();
+            awaiter.OnCompleted(() =>
+            {
+                Debug.LogError("start completed");
+                if (task.Exception != null)
+                {
+                    Debug.LogError("exception" + task.Exception);
+                }
+            });
+            awaiter.UnsafeOnCompleted(() =>
+            {
+                Debug.LogError("start completed");
+                if (task.Exception != null)
+                {
+                    Debug.LogError("exception" + task.Exception);
+                }
+            });
         }
 
         public override void OnExit(StateMachineContext context)
         {
+        }
+
+        private async Task start()
+        {
+            await Application.GetService<UIService>().SwitchPresenterAsync<LaunchPresenter>();
         }
     }
 }

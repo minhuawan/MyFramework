@@ -9,11 +9,12 @@ namespace MyFramework.Services.UI
 {
     public abstract class Presenter : IDisposable
     {
+        protected abstract View View { get; }
         private bool _disposed;
         public bool Disposed => _disposed;
         protected List<IDisposable> _disposables = new List<IDisposable>();
 
-        public abstract Task<UITransitionResult> LoadAsync(View view);
+        public abstract Task<TransitionResult> LoadAsync();
 
         public virtual void OnBackKey()
         {
@@ -25,13 +26,18 @@ namespace MyFramework.Services.UI
 
         public virtual void Dispose()
         {
-            _disposed = true;
             foreach (var disposable in _disposables)
             {
                 disposable.Dispose();
             }
 
             _disposables.Clear();
+            if (View != null)
+            {
+                View.Dispose();
+            }
+
+            _disposed = true;
         }
     }
 }

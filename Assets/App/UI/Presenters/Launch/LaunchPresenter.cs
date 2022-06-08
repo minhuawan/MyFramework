@@ -1,44 +1,53 @@
 ﻿using System;
+using System.Threading.Tasks;
 using App.Network.Http;
 using App.Network.Tcp;
-using App.UI.View.Launch;
-using MyFramework.Services.Event;
+using App.UI.Views.Launch;
 using MyFramework.Services.Network;
 using MyFramework.Services.Network.HTTP;
 using MyFramework.Services.Network.Tcp;
-using MyFramework.Services.Resource;
 using MyFramework.Services.Timer;
 using MyFramework.Services.UI;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using Application = MyFramework.Application;
 
-namespace App.UI.Presenter.Launch
+namespace App.UI.Presenters.Launch
 {
-    [ViewPath("Assets/AppData/Prefab/UI/View/UILaunchView")]
-    public class LaunchPresenter : MyFramework.Services.UI.Presenter, 
+    public class LaunchPresenter : Presenter,
         IHttpResponseHandler<TestGetResponse>,
         IHttpResponseHandler<TestPostResponse>,
         ITcpProtocolHandler<TestTcpResponse>
     {
-        private LaunchView launchView;
-        public ObservableEvent<LaunchPresenter> OnLaunchFinished = new ObservableEvent<LaunchPresenter>();
 
-        public void OnCreated(MyFramework.Services.UI.View view)
+        private LaunchView _view;
+        protected override View View => _view;
+
+        public override async Task<TransitionResult> LoadAsync()
         {
             var networkService = Application.GetService<NetworkService>();
             networkService.Http.RegisterHttpResponseHandler<TestGetResponse>(this);
             networkService.Http.RegisterHttpResponseHandler<TestPostResponse>(this);
             networkService.Tcp.Dispatcher.RegisterTcpProtocolHandler<TestTcpResponse>(this);
 
-            launchView = view as LaunchView;
-            launchView.Initialize();
+            // try
+            {
+                _view = await LaunchView.LoadAsync();
+            }
+            // catch (Exception e)
+            // {
+            //     // 这里也能正常捕获到异常
+            //     Debug.LogError(e);
+            //     throw;
+            // }
+            _view.Initialize();
             int sec = 0;
             Application.GetService<TimerService>().EverySecond.Subscribe(ts =>
             {
                 sec++;
-                launchView.SetMessage(sec++.ToString());
+                _view.SetMessage(sec++.ToString());
             });
-            launchView.AsyncGet.Subscribe(async view =>
+            _view.AsyncGet.Subscribe(async view =>
             {
                 Debug.Log("AsyncGet clicked");
                 var request = new TestGetRequest();
@@ -53,14 +62,14 @@ namespace App.UI.Presenter.Launch
                 }
             });
 
-            launchView.SyncGet.Subscribe(view =>
+            _view.SyncGet.Subscribe(view =>
             {
                 Debug.Log("SyncGet clicked");
                 _ = networkService.Http.SendAsync(new TestGetRequest());
                 Debug.Log("SyncClick clicked next");
             });
 
-            launchView.AsyncPost.Subscribe(async view =>
+            _view.AsyncPost.Subscribe(async view =>
             {
                 Debug.Log("AsyncPost clicked");
                 var response = await networkService.Http.SendAsync(new TestPostRequest());
@@ -75,7 +84,7 @@ namespace App.UI.Presenter.Launch
             });
 
             var b = false;
-            launchView.AsyncGetBaidu.Subscribe(async view =>
+            _view.AsyncGetBaidu.Subscribe(async view =>
             {
                 // await Application.GetService<NetworkService>().Tcp.ConnectAsync();
                 // await Application.GetService<NetworkService>().Tcp.SendAsync(new TestTcpRequest());
@@ -85,13 +94,15 @@ namespace App.UI.Presenter.Launch
                 {
                     await webSocket.ConnectAsync(new Uri(
                         "wss://demo.piesocket.com/v3/channel_1?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self"));
-                        // "ws://127.0.0.1:1111"));
+                    // "ws://127.0.0.1:1111"));
                     // b = true;
                 }
-                
-                webSocket.SendAsync("message from my framework. 中文测试! 😄");
+
+                _ = webSocket.SendAsync("message from my framework. 中文测试! 😄");
             });
+            return TransitionResult.Ok;
         }
+
         public void OnHttpResponse(TestGetResponse response)
         {
             Debug.Log("message from OnHttpResponse, get respond: " + response.GetMessage);
@@ -104,7 +115,8 @@ namespace App.UI.Presenter.Launch
 
         public void OnTcpProtocol(TestTcpResponse protocol)
         {
-            throw new System.NotImplementedException();
+            
         }
+        
     }
 }

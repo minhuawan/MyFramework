@@ -5,8 +5,6 @@ namespace MyFramework.Services.StateMachine
 {
     public sealed class StateMachineService : AbstractService
     {
-        public override byte CreatePriority => 0;
-
         private StateMachineContext context;
 
         public override void OnCreated()

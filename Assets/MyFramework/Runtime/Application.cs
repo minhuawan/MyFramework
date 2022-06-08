@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using App.StateMachine;
 using MyFramework.Services;
 using MyFramework.Services.Resource;
@@ -14,14 +15,35 @@ namespace MyFramework
 {
     public static class Application
     {
+        private static Dictionary<Type, AbstractService> services;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void startup()
         {
+            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            if (scene == null || !scene.name.Equals("main"))
+                return;
             Initialize();
             UnityEngine.Application.quitting += OnUnityAppQuit;
+            System.Threading.Tasks.TaskScheduler.UnobservedTaskException += UnobservedTaskExceptionHandler;
         }
 
-        private static Dictionary<Type, AbstractService> services;
+        private static void OnUnityAppQuit()
+        {
+            foreach (var service in services.Values)
+            {
+                service.OnDestroy();
+            }
+
+            services.Clear();
+            System.Threading.Tasks.TaskScheduler.UnobservedTaskException -= UnobservedTaskExceptionHandler;
+        }
+
+        private static void UnobservedTaskExceptionHandler(object sender, UnobservedTaskExceptionEventArgs args)
+        {
+            Debug.LogError("UnobservedTaskException " + args.Exception);
+        }
+
 
         private static void Initialize()
         {
@@ -46,15 +68,6 @@ namespace MyFramework
             {
                 serviceManager.OnCreated();
             }
-        }
-
-        private static void OnUnityAppQuit()
-        {
-            foreach (var service in services.Values)
-            {
-                service.OnDestroy();
-            }
-            services.Clear();
         }
 
         public static T GetService<T>() where T : AbstractService

@@ -1,25 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 namespace MyFramework.Services.UI
 {
-    public class UIPresenterLocatorParameters
+    public class PresenterLocatorParameters
     {
         public Dictionary<string, object> parameters;
 
-        public UIPresenterLocatorParameters()
+        public PresenterLocatorParameters()
         {
             parameters = new Dictionary<string, object>();
         }
 
-        public UIPresenterLocatorParameters(Dictionary<string, object> parameters)
+        public PresenterLocatorParameters(Dictionary<string, object> parameters)
         {
             this.parameters = parameters ?? new Dictionary<string, object>();
         }
 
-        public UIPresenterLocatorParameters Put(string key, object value)
+        public PresenterLocatorParameters Put(string key, object value)
         {
             parameters[key] = value;
             return this;
@@ -43,37 +40,37 @@ namespace MyFramework.Services.UI
         }
     }
 
-    public class UIPresenterLocator
+    public class PresenterLocator
     {
         public string TargetName { get; protected set; }
-        public UIPresenterLocatorParameters Parameters { get; protected set; }
+        public PresenterLocatorParameters Parameters { get; protected set; }
 
-        public List<UIPresenterLocator> SubLocators { get; protected set; }
+        public List<PresenterLocator> SubLocators { get; protected set; }
 
-        public static UIPresenterLocator Create(string targetName, UIPresenterLocatorParameters parameters = null)
+        public static PresenterLocator Create(string targetName, PresenterLocatorParameters parameters = null)
         {
-            var locator = new UIPresenterLocator();
+            var locator = new PresenterLocator();
             locator.TargetName = targetName;
-            locator.Parameters = parameters ?? new UIPresenterLocatorParameters();
+            locator.Parameters = parameters ?? new PresenterLocatorParameters();
             locator.SubLocators = null;
             return locator;
         }
 
-        public static UIPresenterLocator Create(string targetName, Dictionary<string, object> parameters = null)
+        public static PresenterLocator Create(string targetName, Dictionary<string, object> parameters = null)
         {
-            var locator = new UIPresenterLocator();
+            var locator = new PresenterLocator();
             locator.TargetName = targetName;
-            locator.Parameters = new UIPresenterLocatorParameters(parameters);
+            locator.Parameters = new PresenterLocatorParameters(parameters);
             locator.SubLocators = null;
             return locator;
         }
 
-        public static UIPresenterLocator CreateWithSubLocators(
+        public static PresenterLocator CreateWithSubLocators(
             string targetName,
-            UIPresenterLocatorParameters parameters,
-            List<UIPresenterLocator> subLocators)
+            PresenterLocatorParameters parameters,
+            List<PresenterLocator> subLocators)
         {
-            var locator = new UIPresenterLocator();
+            var locator = new PresenterLocator();
             locator.Parameters = parameters;
             locator.SubLocators = subLocators;
             return locator;
