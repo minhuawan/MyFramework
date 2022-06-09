@@ -13,33 +13,11 @@ namespace App.StateMachine
     {
         public override async void OnEnter(StateMachineContext context)
         {
-            var task = start();
-            var awaiter = task.GetAwaiter();
-            awaiter.OnCompleted(() =>
-            {
-                Debug.LogError("start completed");
-                if (task.Exception != null)
-                {
-                    Debug.LogError("exception" + task.Exception);
-                }
-            });
-            awaiter.UnsafeOnCompleted(() =>
-            {
-                Debug.LogError("start completed");
-                if (task.Exception != null)
-                {
-                    Debug.LogError("exception" + task.Exception);
-                }
-            });
+            await Application.GetService<UIService>().SwitchPresenterAsync<LaunchPresenter>();
         }
 
         public override void OnExit(StateMachineContext context)
         {
-        }
-
-        private async Task start()
-        {
-            await Application.GetService<UIService>().SwitchPresenterAsync<LaunchPresenter>();
         }
     }
 }

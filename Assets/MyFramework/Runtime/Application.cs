@@ -21,7 +21,7 @@ namespace MyFramework
         private static void startup()
         {
             var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-            if (scene == null || !scene.name.Equals("main"))
+            if (scene == null || !scene.name.ToLower().Equals("main"))
                 return;
             Initialize();
             UnityEngine.Application.quitting += OnUnityAppQuit;

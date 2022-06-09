@@ -19,7 +19,6 @@ namespace App.UI.Presenters.Launch
         IHttpResponseHandler<TestPostResponse>,
         ITcpProtocolHandler<TestTcpResponse>
     {
-
         private LaunchView _view;
         protected override View View => _view;
 
@@ -30,16 +29,7 @@ namespace App.UI.Presenters.Launch
             networkService.Http.RegisterHttpResponseHandler<TestPostResponse>(this);
             networkService.Tcp.Dispatcher.RegisterTcpProtocolHandler<TestTcpResponse>(this);
 
-            // try
-            {
-                _view = await LaunchView.LoadAsync();
-            }
-            // catch (Exception e)
-            // {
-            //     // 这里也能正常捕获到异常
-            //     Debug.LogError(e);
-            //     throw;
-            // }
+            _view = await LaunchView.LoadAsync();
             _view.Initialize();
             int sec = 0;
             Application.GetService<TimerService>().EverySecond.Subscribe(ts =>
@@ -115,8 +105,6 @@ namespace App.UI.Presenters.Launch
 
         public void OnTcpProtocol(TestTcpResponse protocol)
         {
-            
         }
-        
     }
 }

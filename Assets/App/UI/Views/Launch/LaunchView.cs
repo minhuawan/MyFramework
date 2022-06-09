@@ -24,30 +24,7 @@ namespace App.UI.Views.Launch
 
         public static async Task<LaunchView> LoadAsync()
         {
-            // try
-            {
-                Debug.LogError("start ThreadId" + System.Threading.Thread.CurrentThread.ManagedThreadId);
-                var result = await Application.GetService<UIService>().InstantiateViewAsync<LaunchView>();
-                // var task = Application.GetService<UIService>().InstantiateViewAsync<LaunchView>();
-                // LaunchView result = null;
-                // if (task.Exception == null)
-                // {
-                //     result = await task;
-                // }
-                // else
-                // {
-                //     Debug.LogError(task.Exception);
-                // }
-
-                Debug.LogError("end   ThreadId" + System.Threading.Thread.CurrentThread.ManagedThreadId);
-                return result;
-            }
-            // catch (Exception e)
-            // {
-            //     // 这里会捕获到
-            //     Debug.LogError(e);
-            //     return null;
-            // }
+            return await Application.GetService<UIService>().InstantiateViewAsync<LaunchView>();
         }
 
         public void Initialize()

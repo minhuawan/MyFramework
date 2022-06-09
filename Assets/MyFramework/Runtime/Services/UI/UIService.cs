@@ -40,6 +40,7 @@ namespace MyFramework.Services.UI
             catch (Exception e)
             {
                 presenter?.Dispose();
+                Debug.LogError(e);
                 return TransitionResult.Exception(e);
             }
         }
@@ -66,14 +67,13 @@ namespace MyFramework.Services.UI
 
         public async Task<T> InstantiateViewAsync<T>() where T : View
         {
-            Debug.LogError("ThreadId" + Thread.CurrentThread.ManagedThreadId);
-            throw new Exception("abc");
             var viewPath = typeof(T).GetCustomAttribute<ViewPath>();
             var path = viewPath.GetPath();
             if (viewPath == null || string.IsNullOrEmpty(path))
             {
                 throw new Exception($"instantiate view async failed, view path not found typeof {typeof(T)}");
             }
+
             // Application.GetService<ResourceService>()
             // todo 这里直接 load 了
             var asset = AssetDatabase.LoadAssetAtPath<T>(path);

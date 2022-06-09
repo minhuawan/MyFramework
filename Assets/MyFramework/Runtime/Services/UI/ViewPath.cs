@@ -14,17 +14,19 @@ namespace MyFramework.Services.UI
 
         public string GetPath()
         {
-            var isEditor = UnityEngine.Application.isEditor;
-            var schema = isEditor ? 
-                    ResourcePath.RESOURCE_SCHEMA :
-                    ResourcePath.ASSET_BUNDLE_SCHEMA;
-            string schemaPath = schema + path;
-            if (isEditor && !schemaPath.EndsWith(".prefab"))
-            {
-                schemaPath += ".prefab";
-            }
+            // var isEditor = UnityEngine.Application.isEditor;
+            // var schema = isEditor ? 
+            //         ResourcePath.RESOURCE_SCHEMA :
+            //         ResourcePath.ASSET_BUNDLE_SCHEMA;
+            // string schemaPath = schema + path;
+            // if (isEditor && !schemaPath.EndsWith(".prefab"))
+            // {
+            //     schemaPath += ".prefab";
+            // }
+            //
+            // return schemaPath;
 
-            return schemaPath;
+            return this.path + ".prefab";
         }
     }
 }
