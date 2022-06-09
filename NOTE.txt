@@ -40,3 +40,4 @@ UI 框架引入了 task 后引发了 exception 被吞的问题
 2022年6月9日
 昨天的 task 其实是没问题的 = = 被 try/catch 捕获了
 今晚 ui service 弄出了一个大概，明天继续吧
+不知道为什么， game 每秒累增的 text 会有遗留效果。。。
