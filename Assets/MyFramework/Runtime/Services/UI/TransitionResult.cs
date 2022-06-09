@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using MyFramework.Services.Resource;
 using UnityEditor;
@@ -21,6 +22,19 @@ namespace MyFramework.Services.UI
         public ResultType Type;
         public string Message;
         public Exception ExceptionInfo;
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append($"Result type is {Type}, message is {Message}");
+            if (ExceptionInfo != null)
+            {
+                sb.AppendLine();
+                sb.Append("exception info: " + ExceptionInfo.ToString());
+            }
+
+            return sb.ToString();
+        }
 
         public static TransitionResult Failed(string msg = null) =>
             new TransitionResult()

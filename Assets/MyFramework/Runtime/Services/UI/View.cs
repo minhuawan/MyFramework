@@ -8,6 +8,7 @@ namespace MyFramework.Services.UI
 {
     public abstract class View : MonoBehaviour, IDisposable
     {
+        [SerializeField] private Camera windowCamera;
         public virtual void Dispose()
         {
             // todo destroy this view
