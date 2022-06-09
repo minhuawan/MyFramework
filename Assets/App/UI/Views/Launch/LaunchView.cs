@@ -8,7 +8,7 @@ using Application = MyFramework.Application;
 
 namespace App.UI.Views.Launch
 {
-    [ViewPath("Assets/AppData/Prefab/UI/View/UILaunchView")]
+    [ViewPath("Assets/AppData/Prefab/UI/View/LaunchView")]
     public class LaunchView : View
     {
         [SerializeField] private Text text;

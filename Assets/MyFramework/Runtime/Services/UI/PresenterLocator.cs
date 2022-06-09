@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using App.UI.Presenters.Launch;
+using Unity.Profiling.LowLevel.Unsafe;
 
 namespace MyFramework.Services.UI
 {
@@ -38,28 +41,46 @@ namespace MyFramework.Services.UI
             value = (T) objectValue;
             return true;
         }
+
+        public T Get<T>(string key, T d = default(T))
+        {
+            if (TryGet<T>(key, out var value))
+            {
+                return value;
+            }
+
+            return d;
+        }
     }
 
     public class PresenterLocator
     {
-        public string TargetName { get; protected set; }
+        public static PresenterLocator Launch => Create<LaunchPresenter>();
+
+
+        public string ClassName { get; protected set; }
         public PresenterLocatorParameters Parameters { get; protected set; }
 
         public List<PresenterLocator> SubLocators { get; protected set; }
 
-        public static PresenterLocator Create(string targetName, PresenterLocatorParameters parameters = null)
+        public static PresenterLocator Create<T>(PresenterLocatorParameters parameters = null)
+        {
+            return Create(typeof(T).FullName, parameters);
+        }
+
+        public static PresenterLocator Create(string className, PresenterLocatorParameters parameters = null)
         {
             var locator = new PresenterLocator();
-            locator.TargetName = targetName;
+            locator.ClassName = className;
             locator.Parameters = parameters ?? new PresenterLocatorParameters();
             locator.SubLocators = null;
             return locator;
         }
 
-        public static PresenterLocator Create(string targetName, Dictionary<string, object> parameters = null)
+        public static PresenterLocator Create(string className, Dictionary<string, object> parameters = null)
         {
             var locator = new PresenterLocator();
-            locator.TargetName = targetName;
+            locator.ClassName = className;
             locator.Parameters = new PresenterLocatorParameters(parameters);
             locator.SubLocators = null;
             return locator;

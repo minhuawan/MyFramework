@@ -13,7 +13,7 @@ namespace App.StateMachine
     {
         public override async void OnEnter(StateMachineContext context)
         {
-            await Application.GetService<UIService>().SwitchPresenterAsync<LaunchPresenter>();
+            await Application.GetService<UIService>().SwitchPresenterAsync(PresenterLocator.Launch);
         }
 
         public override void OnExit(StateMachineContext context)

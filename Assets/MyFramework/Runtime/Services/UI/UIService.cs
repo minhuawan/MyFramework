@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using App.UI.Presenters;
 using App.UI.Views.Launch;
 using MyFramework.Services.Resource;
 using UnityEditor;
@@ -12,45 +13,59 @@ namespace MyFramework.Services.UI
 {
     public class UIService : AbstractService
     {
-        private Stack<Presenter> stack;
+        private Presenter current;
 
         public override void OnCreated()
         {
-            stack = new Stack<Presenter>();
         }
 
         public override void OnDestroy()
         {
-            foreach (var uiPresenter in stack)
-            {
-                uiPresenter.Dispose();
-            }
-
-            stack.Clear();
         }
 
-        public async Task<TransitionResult> SwitchPresenterAsync<T>() where T : Presenter
+        public async Task<TransitionResult> SwitchPresenterAsync(PresenterLocator locator)
         {
-            T presenter = null;
+            TransitionPresenter transition = null;
+            Presenter presenter = null;
             try
             {
-                presenter = InstantiatePresenter<T>();
-                return await presenter.LoadAsync();
+                transition = new TransitionPresenter();
+                await transition.LoadAsync(null);
+                await transition.View.AppearAsync();
+                await Task.Delay(3000);
+                presenter = InstantiatePresenter(locator);
+                var result = await presenter.LoadAsync(locator.Parameters);
+                if (result.Type == TransitionResult.ResultType.Successful)
+                {
+                    await Task.WhenAll(
+                        current == null ? Task.CompletedTask : current.View.DisappearAsync(),
+                        presenter.View.AppearAsync(),
+                        transition.View.DisappearAsync()
+                    );
+                    current?.Dispose();
+                    current = presenter;
+                }
+
+                transition.Dispose();
+
+                return result;
             }
             catch (Exception e)
             {
+                transition?.Dispose();
                 presenter?.Dispose();
                 Debug.LogError(e);
                 return TransitionResult.Exception(e);
             }
         }
 
-        private T InstantiatePresenter<T>() where T : Presenter
+        private Presenter InstantiatePresenter(PresenterLocator locator)
         {
-            var instance = Activator.CreateInstance<T>();
+            var type = Type.GetType(locator.ClassName);
+            var instance = Activator.CreateInstance(type) as Presenter;
             if (instance == null)
             {
-                throw new Exception($"instantiate presenter failed, typeof {typeof(T)}");
+                throw new Exception($"instantiate presenter failed, typeof {type}");
             }
 
             return instance;
@@ -58,11 +73,6 @@ namespace MyFramework.Services.UI
 
         public void Back()
         {
-            if (stack.Count > 0)
-            {
-                var presenter = stack.Peek();
-                presenter.OnBackKey();
-            }
         }
 
         public async Task<T> InstantiateViewAsync<T>() where T : View
@@ -78,6 +88,7 @@ namespace MyFramework.Services.UI
             // todo 这里直接 load 了
             var asset = AssetDatabase.LoadAssetAtPath<T>(path);
             var view = UnityEngine.GameObject.Instantiate(asset);
+            view.gameObject.SetActive(false); // hide before all load process finish
             return view;
         }
     }

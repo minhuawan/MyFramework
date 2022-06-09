@@ -20,9 +20,9 @@ namespace App.UI.Presenters.Launch
         ITcpProtocolHandler<TestTcpResponse>
     {
         private LaunchView _view;
-        protected override View View => _view;
+        public override View View => _view;
 
-        public override async Task<TransitionResult> LoadAsync()
+        public override async Task<TransitionResult> LoadAsync(PresenterLocatorParameters parameters)
         {
             var networkService = Application.GetService<NetworkService>();
             networkService.Http.RegisterHttpResponseHandler<TestGetResponse>(this);
@@ -39,17 +39,21 @@ namespace App.UI.Presenters.Launch
             });
             _view.AsyncGet.Subscribe(async view =>
             {
-                Debug.Log("AsyncGet clicked");
-                var request = new TestGetRequest();
-                var response = await networkService.Http.SendAsync(request);
-                if (response.IsSuccessful)
-                {
-                    Debug.Log("AsyncGet clicked fetch ok, from await/async responded: " + response.GetMessage);
-                }
-                else
-                {
-                    Debug.Log("AsyncGet clicked fetch failed, message: " + response.Message);
-                }
+                // Debug.Log("AsyncGet clicked");
+                // var request = new TestGetRequest();
+                // var response = await networkService.Http.SendAsync(request);
+                // if (response.IsSuccessful)
+                // {
+                //     Debug.Log("AsyncGet clicked fetch ok, from await/async responded: " + response.GetMessage);
+                // }
+                // else
+                // {
+                //     Debug.Log("AsyncGet clicked fetch failed, message: " + response.Message);
+                // }
+                var locator = PresenterLocator.Create<TestPresenter>();
+                locator.Parameters.Put("title", "1");
+                var result = await Application.GetService<UIService>().SwitchPresenterAsync(locator);
+                Debug.LogError("switch test presenter result " + result);
             });
 
             _view.SyncGet.Subscribe(view =>

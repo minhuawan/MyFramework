@@ -9,12 +9,12 @@ namespace MyFramework.Services.UI
 {
     public abstract class Presenter : IDisposable
     {
-        protected abstract View View { get; }
+        public abstract View View { get; }
         private bool _disposed;
         public bool Disposed => _disposed;
         protected List<IDisposable> _disposables = new List<IDisposable>();
 
-        public abstract Task<TransitionResult> LoadAsync();
+        public abstract Task<TransitionResult> LoadAsync(PresenterLocatorParameters parameters);
 
         public virtual void OnBackKey()
         {
