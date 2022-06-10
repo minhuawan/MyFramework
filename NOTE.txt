@@ -43,3 +43,10 @@ UI 框架引入了 task 后引发了 exception 被吞的问题
 不知道为什么， game 每秒累增的 text 会有遗留效果。。。
 查到原因了，是因为摄像机的 clear flag 导致的= =，添加一个默认颜色背景就行了
 也同步下摄像机的设置，如果是 2d UI，相机应该就设置为 2d 的，不过屏幕适配还没看下
+
+2022年6月10日
+UI 加上了 Dialog，有了动画
+添加了一个 ButtonView
+presenter 加上了 freeze 逻辑，不过按钮的动画还是有 = =
+明天处理下 depth 问题
+dialog 再加载完毕后还是会有点击穿透，这个应该是和 prefab 的制作有关系 （搞定） layer 问题

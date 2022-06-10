@@ -14,6 +14,8 @@ namespace MyFramework.Services.UI
     public class UIService : AbstractService
     {
         private Presenter current;
+        private Queue<DialogPresenter> dialogPresenters = new Queue<DialogPresenter>();
+        private Dictionary<WindowLayer, int> currentWindowLayerDepths = new Dictionary<WindowLayer, int>();
 
         public override void OnCreated()
         {
@@ -25,10 +27,32 @@ namespace MyFramework.Services.UI
 
         public async Task<TransitionResult> SwitchPresenterAsync(PresenterLocator locator)
         {
-            TransitionPresenter transition = null;
-            Presenter presenter = null;
             try
             {
+                var presenter = InstantiatePresenter(locator);
+                if (presenter is DialogPresenter dialogPresenter)
+                {
+                    return await SwitchDialogPresenterAsyncInternal(dialogPresenter, locator);
+                }
+                else
+                {
+                    return await SwitchPresenterAsyncInternal(presenter, locator);
+                }
+            }
+            catch (Exception e)
+            {
+                return TransitionResult.Exception(e);
+            }
+        }
+
+        private async Task<TransitionResult> SwitchPresenterAsyncInternal(
+            Presenter presenter,
+            PresenterLocator locator)
+        {
+            TransitionPresenter transition = null;
+            try
+            {
+                presenter.Freeze();
                 current?.Freeze();
                 transition = new TransitionPresenter();
                 transition.Freeze();
@@ -36,8 +60,6 @@ namespace MyFramework.Services.UI
                 await transition.View.AppearAsync();
                 await Task.Delay(3000);
                 transition.Unfreeze();
-                presenter = InstantiatePresenter(locator);
-                presenter.Freeze();
                 var result = await presenter.LoadAsync(locator.Parameters);
                 if (result.Type == TransitionResult.ResultType.Successful)
                 {
@@ -52,7 +74,7 @@ namespace MyFramework.Services.UI
 
                 transition.Dispose();
                 presenter.Unfreeze();
-
+                
                 return result;
             }
             catch (Exception e)
@@ -60,6 +82,57 @@ namespace MyFramework.Services.UI
                 current?.Unfreeze();
                 transition?.Dispose();
                 presenter?.Dispose();
+                Debug.LogError(e);
+                return TransitionResult.Exception(e);
+            }
+        }
+
+        private async Task<TransitionResult> SwitchDialogPresenterAsyncInternal(
+            DialogPresenter dialogPresenter,
+            PresenterLocator locator)
+        {
+            TransitionPresenter transition = null;
+            try
+            {
+                current?.Freeze();
+                dialogPresenter.Freeze();
+                transition = new TransitionPresenter();
+                transition.Freeze();
+                await transition.LoadAsync(null);
+                await transition.View.AppearAsync();
+                await Task.Delay(3000);
+                transition.Unfreeze();
+                var result = await dialogPresenter.LoadAsync(locator.Parameters);
+                if (result.Type == TransitionResult.ResultType.Successful)
+                {
+                    await Task.WhenAll(
+                        dialogPresenter.View.AppearAsync(),
+                        transition.View.DisappearAsync()
+                    );
+                }
+
+                transition.Dispose();
+                dialogPresenter.Unfreeze();
+                current?.Unfreeze();
+
+                dialogPresenters.Enqueue(dialogPresenter);
+                
+                // how to unset the dictionary ?
+                var camera = dialogPresenter.View.windowCamera;
+                if (currentWindowLayerDepths.ContainsKey(camera.Layer))
+                {
+                    var newDepth = currentWindowLayerDepths[camera.Layer] + 1;
+                    camera.Depth = newDepth;
+                    currentWindowLayerDepths[camera.Layer] = camera.Depth;
+                }
+                
+                return result;
+            }
+            catch (Exception e)
+            {
+                current?.Unfreeze();
+                transition?.Dispose();
+                dialogPresenter?.Dispose();
                 Debug.LogError(e);
                 return TransitionResult.Exception(e);
             }

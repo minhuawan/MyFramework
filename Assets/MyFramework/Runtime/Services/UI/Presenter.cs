@@ -53,12 +53,17 @@ namespace MyFramework.Services.UI
             }
             else
             {
-                ExecuteTask(task);
+                _ = ExecuteTask(task);
             }
         }
 
         protected async Task ExecuteTask(Func<Task> task, Action<Exception> handler = null)
         {
+#if UNITY_EDITOR
+            if (!UnityEngine.Application.isPlaying)
+                return;
+#endif
+
             if (IsFrozen)
             {
                 Debug.LogWarning("presenter frozen !");
@@ -90,7 +95,7 @@ namespace MyFramework.Services.UI
 
         protected void ExecuteTask(Action task)
         {
-            ExecuteTask(() =>
+            _ = ExecuteTask(() =>
             {
                 task();
                 return Task.CompletedTask;

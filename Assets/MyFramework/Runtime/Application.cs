@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using App.StateMachine;
 using MyFramework.Services;
@@ -30,13 +31,19 @@ namespace MyFramework
 
         private static void OnUnityAppQuit()
         {
+#if UNITY_EDITOR
+            var constructor = SynchronizationContext.Current.GetType()
+                .GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] {typeof(int)}, null);
+            var newContext = constructor.Invoke(new object[] {Thread.CurrentThread.ManagedThreadId});
+            SynchronizationContext.SetSynchronizationContext(newContext as SynchronizationContext);
+#endif
+
             foreach (var service in services.Values)
             {
                 service.OnDestroy();
             }
 
             services.Clear();
-            System.Threading.Tasks.TaskScheduler.UnobservedTaskException -= UnobservedTaskExceptionHandler;
         }
 
         private static void UnobservedTaskExceptionHandler(object sender, UnobservedTaskExceptionEventArgs args)

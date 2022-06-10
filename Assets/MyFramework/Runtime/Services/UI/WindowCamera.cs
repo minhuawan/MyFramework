@@ -7,7 +7,8 @@ namespace MyFramework.Services.UI
     {
         MostBottom = 1,
         Normal = 1000,
-        Dialog = 2000,
+        Middle = 2000,
+        Dialog = 3000,
         MostTop = 9000,
     }
 
@@ -19,7 +20,13 @@ namespace MyFramework.Services.UI
 
         private void Awake()
         {
-            depth = (int) windowCamera.depth;
+            var rawDepth = (int) windowCamera.depth;
+            if (rawDepth >= 1000)
+            {
+                Debug.LogError("window camera depth raw value should less than 1000!");
+                rawDepth = rawDepth % 1000;
+            }
+            Depth = (int) layer + (int) rawDepth;
         }
 
         public Camera Camera => windowCamera;
