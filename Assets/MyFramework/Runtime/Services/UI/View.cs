@@ -8,18 +8,18 @@ namespace MyFramework.Services.UI
 {
     public abstract class View : MonoBehaviour, IDisposable
     {
-        [SerializeField] private Camera windowCamera;
+        [SerializeField] protected WindowCamera windowCamera;
         public virtual void Dispose()
         {
             // todo destroy this view
             GameObject.DestroyImmediate(gameObject); // 先临时这么写吧
         }
 
-        public virtual Task AppearAsync()
+        public virtual async Task AppearAsync()
         {
             if (!gameObject.activeSelf)
                 gameObject.SetActive(true);
-            return Task.CompletedTask;
+            await Task.CompletedTask;
         }
 
         public virtual Task DisappearAsync()

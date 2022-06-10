@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using App.UI.Views;
 using MyFramework.Services.Timer;
 using MyFramework.Services.UI;
+using UniRx;
 using UnityEngine;
 using Application = MyFramework.Application;
 
@@ -27,11 +28,11 @@ namespace App.UI.Presenters
         {
             view = await TransitionView.LoadAsync();
 
-            Application.GetService<TimerService>().EveryFrame.Subscribe(OnEveryFrame);
+            Application.GetService<TimerService>().EveryFrame.Subscribe(OnEveryFrame).AddTo(_disposables);
             return TransitionResult.Ok;
         }
 
-        private void OnEveryFrame(TimerService ts)
+        private void OnEveryFrame(Unit _)
         {
             time += Time.deltaTime;
             if (time < 0.3f)
@@ -50,12 +51,6 @@ namespace App.UI.Presenters
             }
 
             view.SetLoadingText(texts[index]);
-        }
-
-        public override void Dispose()
-        {
-            Application.GetService<TimerService>().EveryFrame.Unsubscribe(OnEveryFrame);
-            base.Dispose();
         }
     }
 }

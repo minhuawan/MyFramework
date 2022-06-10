@@ -1,15 +1,17 @@
 ﻿using System;
-using MyFramework.Services.Event;
+using UniRx;
 using UnityEngine;
 
 namespace MyFramework.Services.Timer
 {
     public class TimeKeeper : MonoBehaviour
     {
-        public ObservableEvent<float> OnUpdateEvent = new ObservableEvent<float>(); 
+        private Subject<float> subject = new Subject<float>();
+        public IObservable<float> OnUpdateEvent => subject;
+
         private void Update()
         {
-            OnUpdateEvent.OnNext(Time.deltaTime);
+            subject.OnNext(Time.deltaTime);
         }
     }
 }

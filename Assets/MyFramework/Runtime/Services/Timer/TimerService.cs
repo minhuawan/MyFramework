@@ -1,4 +1,5 @@
-﻿using MyFramework.Services.Event;
+﻿using System;
+using UniRx;
 using UnityEngine;
 
 namespace MyFramework.Services.Timer
@@ -7,10 +8,15 @@ namespace MyFramework.Services.Timer
     {
         private double time = 0d;
         private uint seconds = 1;
-        public ObservableEvent<TimerService> EverySecond = new ObservableEvent<TimerService>();
-        public ObservableEvent<TimerService> EveryFrame = new ObservableEvent<TimerService>();
+
+        private Subject<Unit> secondSubject = new Subject<Unit>();
+        private Subject<Unit> frameSubject = new Subject<Unit>();
+
+        public IObservable<Unit> EverySecond => secondSubject;
+        public IObservable<Unit> EveryFrame => frameSubject;
 
         private TimeKeeper keeper;
+
         public override void OnCreated()
         {
             var go = new GameObject($"{this.GetType().FullName}");
@@ -21,27 +27,28 @@ namespace MyFramework.Services.Timer
 
         public override void OnDestroy()
         {
+            secondSubject.Dispose();
+            frameSubject.Dispose();
+
             GameObject.Destroy(keeper.gameObject);
             keeper = null;
             time = 0d;
             seconds = 1;
-            EverySecond.Clear();
-            EveryFrame.Clear();
         }
 
         private void OnUpdateTick(float deltaTime)
         {
-            EveryFrame.OnNext(this);
+            frameSubject.OnNext(Unit.Default);
             time += deltaTime;
             if (time > seconds)
             {
                 seconds++;
-                EverySecond.OnNext(this);
+                secondSubject.OnNext(Unit.Default);
             }
 
             if (seconds > short.MaxValue)
             {
-                seconds -= (uint)short.MaxValue;
+                seconds -= (uint) short.MaxValue;
                 time -= short.MaxValue;
             }
         }

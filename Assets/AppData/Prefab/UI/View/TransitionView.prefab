@@ -199,7 +199,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 806bc43582de4c96bdb2b9d7397e2283, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  windowCamera: {fileID: 7837168356278697715}
+  windowCamera: {fileID: 512212403335718887}
   loadingText: {fileID: 1431327682771561648}
 --- !u!1 &7837168356204447118
 GameObject:
@@ -312,6 +312,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7837168356278697716}
   - component: {fileID: 7837168356278697715}
+  - component: {fileID: 512212403335718887}
   m_Layer: 0
   m_Name: WindowCamera
   m_TagString: Untagged
@@ -376,3 +377,17 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &512212403335718887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7837168356278697714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ee0b79762244992a3ac2ebf7192b25d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  windowCamera: {fileID: 7837168356278697715}
+  layer: 9000

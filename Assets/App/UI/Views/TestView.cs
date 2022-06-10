@@ -10,7 +10,7 @@ namespace App.UI.Views
     {
         [SerializeField] private Text title;
 
-        public static async Task<TestView> LoadAsync() => await View.InstantiatePrefabAsync<TestView>();
+        public static async Task<TestView> LoadAsync() => await InstantiatePrefabAsync<TestView>();
 
         public void Initialize(string message)
         {
