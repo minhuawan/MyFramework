@@ -36,11 +36,11 @@ namespace App.UI.Presenters.Launch
 
             var dict = new Dictionary<string, Action>()
             {
-                [nameof(Presenter)] = Presenter,
-                [nameof(Dialog)] = Dialog,
-                [nameof(HttpGet)] = HttpGet,
-                [nameof(Tcp)] = Tcp,
-                [nameof(Websocket)] = Websocket,
+                [nameof(Presenter)] = () => ExecuteTask(Presenter),
+                [nameof(Dialog)] = () => ExecuteTask(Dialog),
+                [nameof(HttpGet)] = () => ExecuteTask(HttpGet),
+                [nameof(Tcp)] = () => ExecuteTask(Tcp),
+                [nameof(Websocket)] = () => ExecuteTask(Websocket),
             };
 
             _view.Initialize(dict);

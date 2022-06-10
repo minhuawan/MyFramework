@@ -29,11 +29,15 @@ namespace MyFramework.Services.UI
             Presenter presenter = null;
             try
             {
+                current?.Freeze();
                 transition = new TransitionPresenter();
+                transition.Freeze();
                 await transition.LoadAsync(null);
                 await transition.View.AppearAsync();
                 await Task.Delay(3000);
+                transition.Unfreeze();
                 presenter = InstantiatePresenter(locator);
+                presenter.Freeze();
                 var result = await presenter.LoadAsync(locator.Parameters);
                 if (result.Type == TransitionResult.ResultType.Successful)
                 {
@@ -47,11 +51,13 @@ namespace MyFramework.Services.UI
                 }
 
                 transition.Dispose();
+                presenter.Unfreeze();
 
                 return result;
             }
             catch (Exception e)
             {
+                current?.Unfreeze();
                 transition?.Dispose();
                 presenter?.Dispose();
                 Debug.LogError(e);
