@@ -22,7 +22,7 @@ namespace MyFramework.Services.Timer
             var go = new GameObject($"{this.GetType().FullName}");
             GameObject.DontDestroyOnLoad(go);
             keeper = go.AddComponent<TimeKeeper>();
-            keeper.OnUpdateEvent.Subscribe(OnUpdateTick);
+            keeper.UpdateAction += OnUpdateTick;
         }
 
         public override void OnDestroy()
@@ -36,10 +36,10 @@ namespace MyFramework.Services.Timer
             seconds = 1;
         }
 
-        private void OnUpdateTick(float deltaTime)
+        private void OnUpdateTick()
         {
             frameSubject.OnNext(Unit.Default);
-            time += deltaTime;
+            time = Time.realtimeSinceStartupAsDouble;
             if (time > seconds)
             {
                 seconds++;

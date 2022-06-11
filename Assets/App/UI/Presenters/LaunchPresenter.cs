@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using App.Network.Http;
 using App.Network.Tcp;
 using App.UI.Views.Launch;
+using MyFramework.Services.Asset;
 using MyFramework.Services.Network;
 using MyFramework.Services.Network.HTTP;
 using MyFramework.Services.Network.Tcp;
@@ -36,6 +37,7 @@ namespace App.UI.Presenters.Launch
 
             var dict = new Dictionary<string, Action>()
             {
+                [nameof(TestDownload)] = () => ExecuteTask(TestDownload),
                 [nameof(Presenter)] = () => ExecuteTask(Presenter),
                 [nameof(Dialog)] = () => ExecuteTask(Dialog),
                 [nameof(HttpGet)] = () => ExecuteTask(HttpGet),
@@ -47,7 +49,6 @@ namespace App.UI.Presenters.Launch
             int sec = 0;
             Application.GetService<TimerService>().EverySecond.Subscribe(_ =>
             {
-                sec++;
                 _view.SetMessage(sec++.ToString());
             }).AddTo(_disposables);
 
@@ -61,6 +62,21 @@ namespace App.UI.Presenters.Launch
             locator.Parameters.Put("title", "1");
             var result = await Application.GetService<UIService>().SwitchPresenterAsync(locator);
             Debug.Log("switch test presenter result " + result);
+        }
+
+        public void TestDownload()
+        {
+            for (var i = 0; i < 100; i++)
+            {
+                var downloader = Application.GetService<AssetService>().downloader;
+                var uri = new Uri($"https://www.google.com/search?q={i}");
+                var path = $@"E:\repo\unity\saki_formal_2020\Assets\StreamingAssets\{i}.html";
+                downloader.OnDownloadEvent.Where(e => e.uri == uri).Subscribe(e =>
+                {
+                    Debug.LogError("finished on @" + e.uri);
+                }).AddTo(_disposables);
+                downloader.CreateDownload(uri, path);
+            }
         }
 
         public async void Dialog()

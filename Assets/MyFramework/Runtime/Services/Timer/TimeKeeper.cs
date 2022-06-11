@@ -6,12 +6,17 @@ namespace MyFramework.Services.Timer
 {
     public class TimeKeeper : MonoBehaviour
     {
-        private Subject<float> subject = new Subject<float>();
-        public IObservable<float> OnUpdateEvent => subject;
+        public Action UpdateAction;
+        public Action FixedUpdateAction;
 
         private void Update()
         {
-            subject.OnNext(Time.deltaTime);
+            UpdateAction?.Invoke();
+        }
+
+        private void FixedUpdate()
+        {
+            FixedUpdateAction?.Invoke();
         }
     }
 }
