@@ -56,6 +56,11 @@ dialog 再加载完毕后还是会有点击穿透，这个应该是和 prefab �
 今天做了点资源管理部分
 先进度是先订一下资源的版本文件和打包怎么做
 
+2022年6月13日
+干，今天弄了屏幕适配， safeArea 太狗屎了，运行时和editor状态下的 screen width/height 总是对不上，太他妈难受了
+明天简而言之弄下吧，全部以运行时为准了，他妈的
+另外资源也了解下 addressable asset 吧，先不自己写资源了
 
 todo:
 2022.6.10 locator 返回
+2022.6.11 资源管理用 addressable
