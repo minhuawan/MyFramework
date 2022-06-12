@@ -60,6 +60,8 @@ dialog 再加载完毕后还是会有点击穿透，这个应该是和 prefab �
 干，今天弄了屏幕适配， safeArea 太狗屎了，运行时和editor状态下的 screen width/height 总是对不上，太他妈难受了
 明天简而言之弄下吧，全部以运行时为准了，他妈的
 另外资源也了解下 addressable asset 吧，先不自己写资源了
+更新下：
+这个屏幕适配在竖屏下还是有问题，我醉啦，还是以后打包看吧
 
 todo:
 2022.6.10 locator 返回
