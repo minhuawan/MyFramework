@@ -63,6 +63,10 @@ dialog 再加载完毕后还是会有点击穿透，这个应该是和 prefab �
 更新下：
 这个屏幕适配在竖屏下还是有问题，我醉啦，还是以后打包看吧
 
+2022年6月13日
+对于本身是异步回调的方法，可以实现 GetResult GetAwaiter IsCompleted OnCompleted 方法
+然后可以直接通过 await 关键字去等待
+
 todo:
 2022.6.10 locator 返回
 2022.6.11 资源管理用 addressable
