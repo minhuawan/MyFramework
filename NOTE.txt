@@ -66,6 +66,12 @@ dialog 再加载完毕后还是会有点击穿透，这个应该是和 prefab �
 2022年6月13日
 对于本身是异步回调的方法，可以实现 GetResult GetAwaiter IsCompleted OnCompleted 方法
 然后可以直接通过 await 关键字去等待
+复杂用法可以参考 YieldAwaitable
+今天是 在 Unity 使用 Task 的相关都捋了一遍
+值得查看的资源有：
+https://www.youtube.com/watch?v=7eKi6NKri6I Unite 2019
+https://devblogs.microsoft.com/pfxteam/tasks-and-unhandled-exceptions/
+https://zhuanlan.zhihu.com/p/310646064
 
 todo:
 2022.6.10 locator 返回
