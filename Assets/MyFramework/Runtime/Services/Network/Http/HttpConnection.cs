@@ -12,7 +12,7 @@ namespace MyFramework.Services.Network.HTTP
         private Action continuation;
         private HttpResponse httpResponse;
 
-        private HttpConnection(UnityWebRequest request)
+        public HttpConnection(UnityWebRequest request)
         {
             unityWebRequest = request;
             unityWebRequest.timeout = 30; // seconds
