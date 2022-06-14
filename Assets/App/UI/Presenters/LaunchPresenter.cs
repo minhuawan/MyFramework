@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using App.Network.Http;
 using App.Network.Tcp;
 using App.UI.Views.Launch;
+using MyFramework;
 using MyFramework.Services.Asset;
 using MyFramework.Services.Network;
 using MyFramework.Services.Network.HTTP;
@@ -40,6 +42,7 @@ namespace App.UI.Presenters.Launch
                 [nameof(TestDownload)] = () => ExecuteTask(TestDownload),
                 [nameof(Presenter)] = () => ExecuteTask(Presenter),
                 [nameof(Dialog)] = () => ExecuteTask(Dialog),
+                [nameof(DialogWithError)] = () => ExecuteTask(DialogWithError),
                 [nameof(HttpGet)] = () => ExecuteTask(HttpGet),
                 [nameof(Tcp)] = () => ExecuteTask(Tcp),
                 [nameof(Websocket)] = () => ExecuteTask(Websocket),
@@ -47,13 +50,21 @@ namespace App.UI.Presenters.Launch
 
             _view.Initialize(dict);
             int sec = 0;
-            Application.GetService<TimerService>().EverySecond.Subscribe(_ =>
-            {
-                _view.SetMessage(sec++.ToString());
-            }).AddTo(_disposables);
+            Application.GetService<TimerService>().EverySecond.Subscribe(_ => { _view.SetMessage(sec++.ToString()); })
+                .AddTo(_disposables);
 
 
             return TransitionResult.Ok;
+        }
+
+        private async Task DialogWithError()
+        {
+            var locator = PresenterLocator.Create<TestDialogPresenter>();
+            var result = await Application.GetService<UIService>().SwitchPresenterAsync(locator);
+            if (result.Type == TransitionResult.ResultType.Successful)
+            {
+                await MyTaskExtension.Execute(TestDownload);
+            }
         }
 
         public async void Presenter()
@@ -64,8 +75,9 @@ namespace App.UI.Presenters.Launch
             Debug.Log("switch test presenter result " + result);
         }
 
-        public void TestDownload()
+        public async Task TestDownload()
         {
+            var j = 0;
             for (var i = 0; i < 100; i++)
             {
                 var downloader = Application.GetService<AssetService>().downloader;
@@ -73,9 +85,15 @@ namespace App.UI.Presenters.Launch
                 var path = $@"E:\repo\unity\saki_formal_2020\Assets\StreamingAssets\{i}.html";
                 downloader.OnDownloadEvent.Where(e => e.uri == uri).Subscribe(e =>
                 {
+                    j++;
                     Debug.LogError("finished on @" + e.uri);
                 }).AddTo(_disposables);
                 downloader.CreateDownload(uri, path);
+            }
+
+            while (j < 100)
+            {
+                await Task.Yield();
             }
         }
 

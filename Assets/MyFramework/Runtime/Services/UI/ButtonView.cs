@@ -67,6 +67,8 @@ namespace MyFramework.Services.UI
 
         private void PlayTween(bool enter)
         {
+            if (transform == null)
+                return;
             if (enter)
             {
                 transform.DOScale(0.94f, 0.07f);
@@ -75,6 +77,11 @@ namespace MyFramework.Services.UI
             {
                 transform.DOScale(1f, 0.25f);
             }
+        }
+
+        private void OnDestroy()
+        {
+            DOTween.Kill(transform);
         }
     }
 }

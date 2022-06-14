@@ -151,8 +151,8 @@ MonoBehaviour:
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 0
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_HorizontalOverflow: 1
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: L O A D I N G
 --- !u!114 &4323844228075384987
@@ -212,9 +212,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7837168354982301334}
-  - component: {fileID: 1504602355560261806}
+  - component: {fileID: 807684955505692476}
   m_Layer: 0
-  m_Name: TestDialogView
+  m_Name: ErrorDialogView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -236,7 +236,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1504602355560261806
+--- !u!114 &807684955505692476
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -245,13 +245,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 7837168354982301332}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb3177be6ec544969c654321f246e145, type: 3}
+  m_Script: {fileID: 11500000, guid: 04dedca3ad7f43088bcaacdfd333e4d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   windowCamera: {fileID: 6927202843210646817}
   window: {fileID: 3191233529631112712}
   background: {fileID: 6901613923950461849}
-  title: {fileID: 1431327682771561648}
+  message: {fileID: 1431327682771561648}
   button: {fileID: 4323844228075384987}
 --- !u!1 &7837168356204447118
 GameObject:

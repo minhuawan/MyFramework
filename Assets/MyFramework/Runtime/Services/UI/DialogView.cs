@@ -24,11 +24,9 @@ namespace MyFramework.Services.UI
             var color = graphic.color;
             var fromColor = new Color(color.r, color.g, color.b, from);
             var toColor = new Color(color.r, color.g, color.b, to);
-            graphic.DOColor(toColor, duration)
+            await graphic.DOColor(toColor, duration)
                 .From(fromColor)
-                .SetEase(Ease.OutQuad);
-
-            await Task.CompletedTask;
+                .SetEase(Ease.OutQuad).AsyncWaitForCompletion();
         }
     }
 }

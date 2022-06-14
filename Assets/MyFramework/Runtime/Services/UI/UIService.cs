@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using App.UI.Presenters;
 using App.UI.Views.Launch;
 using MyFramework.Services.Resource;
+using UniRx;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ namespace MyFramework.Services.UI
     public class UIService : AbstractService
     {
         private Presenter current;
-        private Queue<DialogPresenter> dialogPresenters = new Queue<DialogPresenter>();
+        // private Queue<DialogPresenter> dialogPresenters = new Queue<DialogPresenter>();
         private Dictionary<WindowLayer, int> currentWindowLayerDepths = new Dictionary<WindowLayer, int>();
 
         public override void OnCreated()
@@ -27,22 +28,29 @@ namespace MyFramework.Services.UI
 
         public async Task<TransitionResult> SwitchPresenterAsync(PresenterLocator locator)
         {
+            TransitionResult result;
             try
             {
                 var presenter = InstantiatePresenter(locator);
                 if (presenter is DialogPresenter dialogPresenter)
                 {
-                    return await SwitchDialogPresenterAsyncInternal(dialogPresenter, locator);
+                    result = await SwitchDialogPresenterAsyncInternal(dialogPresenter, locator);
                 }
                 else
                 {
-                    return await SwitchPresenterAsyncInternal(presenter, locator);
+                    result = await SwitchPresenterAsyncInternal(presenter, locator);
                 }
             }
             catch (Exception e)
             {
-                return TransitionResult.Exception(e);
+                result = TransitionResult.Exception(e);
             }
+
+            if (result.ExceptionInfo != null)
+            {
+            }
+
+            return result;
         }
 
         private async Task<TransitionResult> SwitchPresenterAsyncInternal(
@@ -58,7 +66,7 @@ namespace MyFramework.Services.UI
                 transition.Freeze();
                 await transition.LoadAsync(null);
                 await transition.View.AppearAsync();
-                await Task.Delay(3000);
+                // await Task.Delay(3000);
                 transition.Unfreeze();
                 var result = await presenter.LoadAsync(locator.Parameters);
                 if (result.Type == TransitionResult.ResultType.Successful)
@@ -74,7 +82,7 @@ namespace MyFramework.Services.UI
 
                 transition.Dispose();
                 presenter.Unfreeze();
-                
+
                 return result;
             }
             catch (Exception e)
@@ -100,7 +108,7 @@ namespace MyFramework.Services.UI
                 transition.Freeze();
                 await transition.LoadAsync(null);
                 await transition.View.AppearAsync();
-                await Task.Delay(3000);
+                // await Task.Delay(3000);
                 transition.Unfreeze();
                 var result = await dialogPresenter.LoadAsync(locator.Parameters);
                 if (result.Type == TransitionResult.ResultType.Successful)
@@ -115,8 +123,8 @@ namespace MyFramework.Services.UI
                 dialogPresenter.Unfreeze();
                 current?.Unfreeze();
 
-                dialogPresenters.Enqueue(dialogPresenter);
-                
+                // dialogPresenters.Enqueue(dialogPresenter);
+
                 // how to unset the dictionary ?
                 var camera = dialogPresenter.View.windowCamera;
                 if (currentWindowLayerDepths.ContainsKey(camera.Layer))
@@ -126,6 +134,9 @@ namespace MyFramework.Services.UI
                     currentWindowLayerDepths[camera.Layer] = camera.Depth;
                 }
                 
+                await dialogPresenter.CloseEvent.First();
+                dialogPresenter.Dispose();
+
                 return result;
             }
             catch (Exception e)
@@ -133,7 +144,37 @@ namespace MyFramework.Services.UI
                 current?.Unfreeze();
                 transition?.Dispose();
                 dialogPresenter?.Dispose();
-                Debug.LogError(e);
+                return TransitionResult.Exception(e);
+            }
+        }
+
+        public async Task<bool> ExecuteTaskWithErrorDialog(Func<Task<TransitionResult>> task)
+        {
+            var transitionResult = await task();
+            if (transitionResult.Type == TransitionResult.ResultType.Successful)
+                return true;
+            return false;
+        }
+
+        public async Task ExecuteTaskWithLoading(Func<Task> task)
+        {
+            var transition = new TransitionPresenter();
+            transition.Freeze();
+            await transition.LoadAsync(null);
+            await transition.View.AppearAsync();
+            transition.Unfreeze();
+            await task();
+            transition.Dispose();
+        }
+
+        public async Task<TransitionResult> HandleTaskException<T>(Func<Task<TransitionResult>> task)
+        {
+            try
+            {
+                return await task();
+            }
+            catch (Exception e)
+            {
                 return TransitionResult.Exception(e);
             }
         }
