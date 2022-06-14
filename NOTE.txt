@@ -73,6 +73,9 @@ https://www.youtube.com/watch?v=7eKi6NKri6I Unite 2019
 https://devblogs.microsoft.com/pfxteam/tasks-and-unhandled-exceptions/
 https://zhuanlan.zhihu.com/p/310646064
 
+2022年6月15日
+今天继续弄了下 UIService， 更加结合了 Task 吧
+
 todo:
 2022.6.10 locator 返回
 2022.6.11 资源管理用 addressable
