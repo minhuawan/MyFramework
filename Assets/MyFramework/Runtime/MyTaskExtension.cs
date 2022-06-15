@@ -58,26 +58,16 @@ namespace MyFramework
 
         public static async Task Execute(Func<Task> task)
         {
-            var target = Task.Run(async () =>
-            {
-                await task();
-                return new TaskExecuteResult<string>()
-                {
-                    result = "nothing",
-                    Successful = true
-                };
-            });
             await Execute(async () =>
             {
                 await task();
                 return Unit.Default;
-            }, CancellationToken.None, null, true);
+            }, null, true);
         }
 
 
         public static async Task<TaskExecuteResult<T>> Execute<T>(
             Func<Task<T>> task,
-            CancellationToken cancellationToken,
             ITaskExceptionAnalyzer analyzer,
             bool withLoading)
         {
@@ -96,12 +86,18 @@ namespace MyFramework
                         result.Successful = true;
                     }
                 }
+                else
+                {
+                    result.result = await task();
+                    result.Successful = true;
+                }
             }
             catch (Exception e)
             {
                 using (var errorDialog = new ErrorDialogPresenter())
                 {
                     result.Successful = false;
+                    Debug.LogException(e);
                     var msg = analyzer == null ? e.ToString() : analyzer.Analysis(e);
                     errorDialog.Freeze();
                     await errorDialog

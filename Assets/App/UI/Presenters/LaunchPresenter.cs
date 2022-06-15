@@ -77,24 +77,28 @@ namespace App.UI.Presenters.Launch
 
         public async Task TestDownload()
         {
-            var j = 0;
-            for (var i = 0; i < 100; i++)
+            Debug.Log("TestDownload start");
+            await MyTaskExtension.Execute(async () =>
             {
-                var downloader = Application.GetService<AssetService>().downloader;
-                var uri = new Uri($"https://www.google.com/search?q={i}");
-                var path = $@"E:\repo\unity\saki_formal_2020\Assets\StreamingAssets\{i}.html";
-                downloader.OnDownloadEvent.Where(e => e.uri == uri).Subscribe(e =>
+                var j = 0;
+                for (var i = 0; i < 10; i++)
                 {
-                    j++;
-                    Debug.LogError("finished on @" + e.uri);
-                }).AddTo(_disposables);
-                downloader.CreateDownload(uri, path);
-            }
+                    var downloader = Application.GetService<AssetService>().downloader;
+                    var uri = new Uri($"https://www.google.com/search?q={i}");
+                    var path = $@"E:\repo\unity\saki_formal_2020\Assets\StreamingAssets\{i}.html";
+                    downloader.CreateDownload(uri, path);
+                    downloader.OnDownloadEvent.Subscribe(evt =>
+                    {
+                        j++;
+                    }).AddTo(_disposables);
+                }
 
-            while (j < 100)
-            {
-                await Task.Yield();
-            }
+                while (j < 10)
+                {
+                    await Task.Yield();
+                }
+            });
+            Debug.Log("TestDownload finished");
         }
 
         public async void Dialog()
