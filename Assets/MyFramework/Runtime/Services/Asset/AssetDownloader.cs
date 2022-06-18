@@ -63,10 +63,14 @@ namespace MyFramework.Runtime.Services.Asset
             pendingTasks.Enqueue(task);
         }
 
-        public void CreateDownload(Uri uri, string savePath,
+        public void CreateDownload(Uri uri, string savePath = null,
             CancellationToken token = default(CancellationToken))
         {
-            var request = new UnityWebRequest(uri, "GET", new DownloadHandlerFile(savePath), null);
+            var request = new UnityWebRequest(
+                uri,
+                "GET",
+                savePath == null ? (DownloadHandler) new DownloadHandlerBuffer() : new DownloadHandlerFile(savePath),
+                null);
             Func<IEnumerator> task = () => CreateRequestInternal(request, token);
             pendingTasks.Enqueue(task);
         }
@@ -100,7 +104,7 @@ namespace MyFramework.Runtime.Services.Asset
                 resultType = AssetDownloadResult.AssetDownloadResultType.Successful,
                 unityWebRequest = request,
             });
-            Debug.Log($"task canceled runningTakes {runningTasks}, uri {request.uri}");
+            Debug.Log($"task finished runningTakes {runningTasks}, uri {request.uri}");
         }
     }
 }
