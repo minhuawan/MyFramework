@@ -204,7 +204,15 @@ namespace MyFramework.Runtime.Services.UI
                                $"{runningTarget.View.GetType().FullName}");
             }
 
-            runningTarget.Dispose();
+            try
+            {
+                runningTarget.Dispose();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
             runningTarget = null;
             disAppearFinish = true;
         }
@@ -241,7 +249,15 @@ namespace MyFramework.Runtime.Services.UI
 
             var view = appearCompletedEvent.View;
             locators.Enqueue(processingLocator);
-            processingTarget.OnDidAppear();
+            try
+            {
+                processingTarget.OnDidAppear();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+            }
+
             runningTarget = processingTarget;
             processingLocator = null;
             processingTarget = null;
