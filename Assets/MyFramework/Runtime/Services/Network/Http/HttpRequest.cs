@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
 
-namespace MyFramework.Services.Network.HTTP
+namespace MyFramework.Runtime.Services.Network.HTTP
 {
     public enum HttpMethod
     {

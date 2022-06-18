@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace MyFramework.Services
+namespace MyFramework.Runtime.Services
 {
     public class MainThreadService : AbstractService
     {

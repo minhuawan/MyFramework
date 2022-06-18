@@ -1,4 +1,4 @@
-﻿namespace MyFramework.Services.VirtualFileSystem
+﻿namespace MyFramework.Runtime.Services.VirtualFileSystem
 {
     public class VirtualFileSystemService : AbstractService
     {

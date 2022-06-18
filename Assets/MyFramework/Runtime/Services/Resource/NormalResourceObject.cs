@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace MyFramework.Services.Resource
+namespace MyFramework.Runtime.Services.Resource
 {
     public class NormalResourceObject : IResourceObject
     {

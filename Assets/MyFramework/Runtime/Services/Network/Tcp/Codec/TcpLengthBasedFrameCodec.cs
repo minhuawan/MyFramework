@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 
-namespace MyFramework.Services.Network.Tcp
+namespace MyFramework.Runtime.Services.Network.Tcp
 {
     /*                   1                   2                   3   (32bit) 
      *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1

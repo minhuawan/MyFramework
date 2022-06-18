@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace MyFramework.Services.Network.WebSocket
+namespace MyFramework.Runtime.Services.Network.WebSocket
 {
     /*
      * You can test on: https://www.piesocket.com/websocket-tester

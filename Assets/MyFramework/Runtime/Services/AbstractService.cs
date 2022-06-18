@@ -1,13 +1,23 @@
 ﻿using System;
 
-namespace MyFramework.Services
+namespace MyFramework.Runtime.Services
 {
     public abstract class AbstractService
     {
         public virtual byte CreatePriority => 255;
 
         public Type ServiceType => this.GetType();
-        public abstract void OnCreated();
-        public abstract void OnDestroy();
+
+        public virtual void OnCreated()
+        {
+        }
+
+        public virtual void OnDestroy()
+        {
+        }
+
+        public virtual void Initialize()
+        {
+        }
     }
 }

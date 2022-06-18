@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine.Networking;
 
-namespace MyFramework.Services.Network.HTTP
+namespace MyFramework.Runtime.Services.Network.HTTP
 {
     public class HttpConnection : INotifyCompletion
     {

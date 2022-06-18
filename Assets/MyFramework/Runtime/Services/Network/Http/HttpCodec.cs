@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace MyFramework.Services.Network.HTTP
+namespace MyFramework.Runtime.Services.Network.HTTP
 {
     public class HttpCodec
     {

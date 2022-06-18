@@ -1,15 +1,14 @@
-﻿using System.Threading.Tasks;
-using MyFramework.Services.Network.HTTP;
-using MyFramework.Services.Network.Tcp;
-using MyFramework.Services.Network.WebSocket;
+﻿using MyFramework.Runtime.Services.Network.HTTP;
+using MyFramework.Runtime.Services.Network.Tcp;
+using MyFramework.Runtime.Services.Network.WebSocket;
 
-namespace MyFramework.Services.Network
+namespace MyFramework.Runtime.Services.Network
 {
     public class NetworkService : AbstractService
     {
         public HttpNetworkHandler Http { get; private set; }
-        public TcpSocketHandler Tcp { get; private set;  }
-        
+        public TcpSocketHandler Tcp { get; private set; }
+
         public WebSocketHandler WebSocket { get; private set; }
 
         public override void OnCreated()

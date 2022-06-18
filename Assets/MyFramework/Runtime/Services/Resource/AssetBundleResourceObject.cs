@@ -1,10 +1,7 @@
-﻿using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
-using MyFramework.Services.UI;
+﻿using System.Linq;
 using UnityEngine;
 
-namespace MyFramework.Services.Resource
+namespace MyFramework.Runtime.Services.Resource
 {
     public class AssetBundleResourceObject : IResourceObject
     {

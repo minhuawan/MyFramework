@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace MyFramework.Services
+namespace MyFramework.Runtime.Services
 {
     public class MicroCoroutine
     {

@@ -1,4 +1,4 @@
-﻿using MyFramework.Services.Network.HTTP;
+﻿using MyFramework.Runtime.Services.Network.HTTP;
 using Newtonsoft.Json;
 
 namespace App.Network.Http

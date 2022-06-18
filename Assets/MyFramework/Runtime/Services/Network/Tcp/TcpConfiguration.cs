@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using System.Net;
 
-namespace MyFramework.Services.Network.Tcp
+namespace MyFramework.Runtime.Services.Network.Tcp
 {
     public class TcpConfiguration
     {

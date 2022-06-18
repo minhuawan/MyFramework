@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace MyFramework.Services.Network.Tcp
+namespace MyFramework.Runtime.Services.Network.Tcp
 {
     public class TcpProtocol
     {

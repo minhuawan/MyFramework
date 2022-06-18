@@ -1,4 +1,4 @@
-﻿namespace MyFramework.Services.Network.HTTP
+﻿namespace MyFramework.Runtime.Services.Network.HTTP
 {
     public interface IHttpRequestParam
     {

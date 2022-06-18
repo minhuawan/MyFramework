@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEngine;
-
-namespace MyFramework.Services.StateMachine
+﻿namespace MyFramework.Runtime.Services.StateMachine
 {
     public sealed class StateMachineService : AbstractService
     {

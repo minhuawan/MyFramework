@@ -1,4 +1,4 @@
-﻿namespace MyFramework.Services.Resource
+﻿namespace MyFramework.Runtime.Services.Resource
 {
     public interface IResourceObject
     {

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using UnityEditorInternal;
 
-namespace MyFramework.Services.Network.HTTP
+namespace MyFramework.Runtime.Services.Network.HTTP
 {
     public class HttpResponse
     {
