@@ -227,7 +227,7 @@ namespace MyFramework.Runtime.Services.UI
             if (appearCompletedEvent.View == null)
             {
                 Debug.LogError($"UIService received an appear event, view is null view, " +
-                               $"runningTarget is {runningTarget.GetType().FullName}");
+                               $"processingTarget is {processingTarget.GetType().FullName}");
                 return;
             }
 
