@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace MyFramework.Services.Network.Tcp
+namespace MyFramework.Runtime.Services.Network.Tcp
 {
     public enum TcpConnectionResult
     {

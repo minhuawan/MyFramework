@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MyFramework.Services.Resource;
+using MyFramework.AssetBundleBuilder;
+using MyFramework.Runtime.Services.Resource;
 using UnityEditor;
 using UnityEngine;
 
-namespace MyFramework.AssetBundleBuilder
+namespace MyFramework.Editor.AssetBundleBuilder
 {
     public class AssetBundleBuilder
     {

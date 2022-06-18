@@ -1,4 +1,4 @@
-﻿namespace MyFramework.Services.Network.Tcp
+﻿namespace MyFramework.Runtime.Services.Network.Tcp
 {
     public interface ITcpProtocolHandler<T> where T : TcpProtocol
     {

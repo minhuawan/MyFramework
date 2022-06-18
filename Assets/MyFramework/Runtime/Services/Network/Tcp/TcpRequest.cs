@@ -1,4 +1,4 @@
-﻿namespace MyFramework.Services.Network.Tcp
+﻿namespace MyFramework.Runtime.Services.Network.Tcp
 {
     public class TcpRequest<T> : TcpProtocol where T : TcpResponse
     {

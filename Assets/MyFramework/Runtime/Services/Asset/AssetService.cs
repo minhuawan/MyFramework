@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace MyFramework.Services.Asset
+namespace MyFramework.Runtime.Services.Asset
 {
     public class AssetService : AbstractService
     {

@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using App.UI.Presenters.Launch;
 using Unity.Profiling.LowLevel.Unsafe;
 
-namespace MyFramework.Services.UI
+namespace MyFramework.Runtime.Services.UI
 {
     public class PresenterLocatorParameters
     {
@@ -55,18 +54,10 @@ namespace MyFramework.Services.UI
 
     public class PresenterLocator
     {
-        public static PresenterLocator Launch => Create<LaunchPresenter>();
-
-
+        public bool InUsing { get; set; }
         public string ClassName { get; protected set; }
         public PresenterLocatorParameters Parameters { get; protected set; }
-
         public List<PresenterLocator> SubLocators { get; protected set; }
-
-        public static PresenterLocator Create<T>(PresenterLocatorParameters parameters = null)
-        {
-            return Create(typeof(T).FullName, parameters);
-        }
 
         public static PresenterLocator Create(string className, PresenterLocatorParameters parameters = null)
         {
@@ -77,22 +68,22 @@ namespace MyFramework.Services.UI
             return locator;
         }
 
+        public static PresenterLocator Create<T>(PresenterLocatorParameters parameters = null)
+        {
+            return Create(typeof(T).FullName, parameters);
+        }
+
         public static PresenterLocator Create(string className, Dictionary<string, object> parameters = null)
         {
-            var locator = new PresenterLocator();
-            locator.ClassName = className;
-            locator.Parameters = new PresenterLocatorParameters(parameters);
-            locator.SubLocators = null;
-            return locator;
+            return Create(className, new PresenterLocatorParameters(parameters));
         }
 
         public static PresenterLocator CreateWithSubLocators(
-            string targetName,
+            string className,
             PresenterLocatorParameters parameters,
             List<PresenterLocator> subLocators)
         {
-            var locator = new PresenterLocator();
-            locator.Parameters = parameters;
+            var locator = Create(className, parameters);
             locator.SubLocators = subLocators;
             return locator;
         }

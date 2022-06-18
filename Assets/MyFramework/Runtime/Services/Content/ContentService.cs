@@ -1,4 +1,4 @@
-﻿namespace MyFramework.Services.Content
+﻿namespace MyFramework.Runtime.Services.Content
 {
     public class ContentService : AbstractService
     {

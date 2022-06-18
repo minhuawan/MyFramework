@@ -1,7 +1,6 @@
 ﻿using System;
-using MyFramework.Services.Resource;
 
-namespace MyFramework.Services.UI
+namespace MyFramework.Runtime.Services.UI
 {
     public class ViewPath : Attribute
     {

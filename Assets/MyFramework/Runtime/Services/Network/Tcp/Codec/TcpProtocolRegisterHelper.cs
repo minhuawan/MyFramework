@@ -1,6 +1,6 @@
 ﻿using App.Network.Tcp;
 
-namespace MyFramework.Services.Network.Tcp
+namespace MyFramework.Runtime.Services.Network.Tcp
 {
     public class TcpProtocolRegisterHelper
     {

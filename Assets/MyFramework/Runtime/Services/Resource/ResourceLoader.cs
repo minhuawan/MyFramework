@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace MyFramework.Services.Resource
+namespace MyFramework.Runtime.Services.Resource
 {
     public static class ResourceLoader
     {

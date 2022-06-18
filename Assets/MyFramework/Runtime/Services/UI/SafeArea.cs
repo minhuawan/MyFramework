@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace MyFramework.Services.UI
+namespace MyFramework.Runtime.Services.UI
 {
     [RequireComponent(typeof(RectTransform))]
     public class SafeArea : MonoBehaviour

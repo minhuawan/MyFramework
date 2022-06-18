@@ -1,16 +1,14 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using App.StateMachine;
-using MyFramework.Services;
-using MyFramework.Services.Resource;
-using MyFramework.Services.StateMachine;
+using MyFramework.Runtime.Services;
+using MyFramework.Runtime.Services.StateMachine;
 using UnityEngine;
-using UnityEngine.LowLevel;
+using UnityEngine.SceneManagement;
 
 namespace MyFramework
 {
@@ -21,12 +19,12 @@ namespace MyFramework
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void startup()
         {
-            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            var scene = SceneManager.GetActiveScene();
             if (scene == null || !scene.name.ToLower().Equals("main"))
                 return;
             Initialize();
             UnityEngine.Application.quitting += OnUnityAppQuit;
-            System.Threading.Tasks.TaskScheduler.UnobservedTaskException += UnobservedTaskExceptionHandler;
+            TaskScheduler.UnobservedTaskException += UnobservedTaskExceptionHandler;
         }
 
         private static void OnUnityAppQuit()
@@ -55,7 +53,7 @@ namespace MyFramework
         private static void Initialize()
         {
             RegisterServices();
-            GetService<StateMachineService>().ChangeState<LaunchStateMachine>();
+            GetService<StateMachineService>().ChangeState<SplashStateMachine>();
         }
 
         private static void RegisterServices()
@@ -63,7 +61,7 @@ namespace MyFramework
             services = new Dictionary<Type, AbstractService>();
             var baseType = typeof(AbstractService);
             var serviceTypes = Assembly.GetExecutingAssembly().GetTypes()
-                .Where(type => type.BaseType == baseType && type.Namespace.StartsWith("MyFramework.Services."));
+                .Where(type => type.BaseType == baseType && type.Namespace.StartsWith("MyFramework.Runtime.Services."));
             foreach (var serviceType in serviceTypes)
             {
                 var service = Activator.CreateInstance(serviceType) as AbstractService;
@@ -74,6 +72,11 @@ namespace MyFramework
             foreach (var serviceManager in ordered)
             {
                 serviceManager.OnCreated();
+            }
+
+            foreach (var service in ordered)
+            {
+                service.Initialize();
             }
         }
 

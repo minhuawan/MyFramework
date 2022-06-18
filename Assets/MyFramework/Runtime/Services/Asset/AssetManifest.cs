@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEditor.PackageManager;
 using UnityEngine;
 
-namespace MyFramework.Services.Asset
+namespace MyFramework.Runtime.Services.Asset
 {
     public class Version
     {

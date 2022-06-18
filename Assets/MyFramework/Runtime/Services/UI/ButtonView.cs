@@ -1,10 +1,11 @@
 ﻿using System;
 using DG.Tweening;
-using UniRx;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-namespace MyFramework.Services.UI
+namespace MyFramework.Runtime.Services.UI
 {
     public class ButtonView : MonoBehaviour,
         IPointerDownHandler,
@@ -12,25 +13,24 @@ namespace MyFramework.Services.UI
         IPointerClickHandler,
         IPointerExitHandler
     {
+        public class ButtonEvent : UnityEvent
+        {
+        }
+
         public static readonly float LongClickTimeSecond = 0.3f;
         protected bool hasPlayExitTween;
         protected double pointerDownTime;
 
-        protected Subject<Unit> pointerClickSubject = new Subject<Unit>();
-        protected Subject<Unit> pointerDownSubject = new Subject<Unit>();
-        protected Subject<Unit> pointerUpSubject = new Subject<Unit>();
-        protected Subject<Unit> pointerLongClickSubject = new Subject<Unit>();
 
-        public IObservable<Unit> OnClickObservable => pointerClickSubject;
-        public IObservable<Unit> OnPointerUpObservable => pointerUpSubject;
-        public IObservable<Unit> OnPointerDownObservable => pointerDownSubject;
-        public IObservable<Unit> OnLongClickObservable => pointerLongClickSubject;
-
+        public ButtonEvent onClick = new ButtonEvent();
+        public ButtonEvent onPointerUp = new ButtonEvent();
+        public ButtonEvent onPointerDown = new ButtonEvent();
+        public ButtonEvent onLongClick = new ButtonEvent();
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
-            pointerDownSubject.OnNext(Unit.Default);
-            pointerDownTime = UnityEngine.Time.timeSinceLevelLoad;
+            onPointerDown.Invoke();
+            pointerDownTime = UnityEngine.Time.realtimeSinceStartup;
             hasPlayExitTween = false;
             PlayTween(true);
         }
@@ -38,10 +38,10 @@ namespace MyFramework.Services.UI
 
         void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
         {
-            pointerUpSubject.OnNext(Unit.Default);
-            if (UnityEngine.Time.timeSinceLevelLoad - pointerDownTime >= LongClickTimeSecond)
+            onPointerUp.Invoke();
+            if (UnityEngine.Time.realtimeSinceStartup - pointerDownTime >= LongClickTimeSecond)
             {
-                pointerLongClickSubject.OnNext(Unit.Default);
+                onLongClick.Invoke();
             }
 
             if (!hasPlayExitTween)
@@ -53,7 +53,7 @@ namespace MyFramework.Services.UI
 
         void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
         {
-            pointerClickSubject.OnNext(Unit.Default);
+            onClick.Invoke();
         }
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.LowLevel;
 
-namespace MyFramework.Services.Resource
+namespace MyFramework.Runtime.Services.Resource
 {
     public class ResourceReference
     {

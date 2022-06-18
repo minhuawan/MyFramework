@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MyFramework.Services.Network.HTTP;
+using MyFramework.Runtime.Services.Network.HTTP;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -28,7 +28,7 @@ public class Test : MonoBehaviour
         var parent = button.transform.parent;
         foreach (var keyValuePair in dict)
         {
-            var clone = GameObject.Instantiate(button, parent);
+            var clone = Instantiate(button, parent);
             clone.transform.localScale = Vector3.one;
             clone.GetComponentInChildren<Text>().text = keyValuePair.Key;
             clone.onClick.AddListener(() => { keyValuePair.Value.Invoke(); });

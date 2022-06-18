@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MyFramework.Services.StateMachine
+namespace MyFramework.Runtime.Services.StateMachine
 {
     public class StateMachineContext
     {

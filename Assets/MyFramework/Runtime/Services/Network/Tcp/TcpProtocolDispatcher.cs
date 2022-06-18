@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace MyFramework.Services.Network.Tcp
+namespace MyFramework.Runtime.Services.Network.Tcp
 {
     public class TcpProtocolDispatcher
     {

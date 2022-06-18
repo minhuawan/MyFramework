@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace MyFramework.Services
+namespace MyFramework.Runtime.Services
 {
     public class MainThreadUpdate : MonoBehaviour
     {

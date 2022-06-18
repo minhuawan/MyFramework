@@ -1,14 +1,14 @@
 ﻿using System;
 using UnityEngine;
 
-namespace MyFramework.Services.UI
+namespace MyFramework.Runtime.Services.UI
 {
     public enum WindowLayer
     {
         MostBottom = 1,
         Normal = 1000,
         Middle = 2000,
-        Dialog = 3000,
+        Modal = 3000,
         MostTop = 9000,
     }
 

@@ -1,20 +1,15 @@
-﻿using System;
-using UniRx;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Events;
 
-namespace MyFramework.Services.Timer
+namespace MyFramework.Runtime.Services.Timer
 {
     public class TimerService : AbstractService
     {
         private double time = 0d;
         private uint seconds = 1;
 
-        private Subject<Unit> secondSubject = new Subject<Unit>();
-        private Subject<Unit> frameSubject = new Subject<Unit>();
-
-        public IObservable<Unit> EverySecond => secondSubject;
-        public IObservable<Unit> EveryFrame => frameSubject;
-
+        public UnityEvent everySecond = new UnityEvent();
+        public UnityEvent everyFrame = new UnityEvent();
         private TimeKeeper keeper;
 
         public override void OnCreated()
@@ -27,8 +22,8 @@ namespace MyFramework.Services.Timer
 
         public override void OnDestroy()
         {
-            secondSubject.Dispose();
-            frameSubject.Dispose();
+            everySecond.RemoveAllListeners();
+            everyFrame.RemoveAllListeners();
 
             GameObject.Destroy(keeper.gameObject);
             keeper = null;
@@ -38,12 +33,12 @@ namespace MyFramework.Services.Timer
 
         private void OnUpdateTick()
         {
-            frameSubject.OnNext(Unit.Default);
+            everyFrame.Invoke();
             time = Time.realtimeSinceStartupAsDouble;
             if (time > seconds)
             {
                 seconds++;
-                secondSubject.OnNext(Unit.Default);
+                everySecond.Invoke();
             }
 
             if (seconds > short.MaxValue)

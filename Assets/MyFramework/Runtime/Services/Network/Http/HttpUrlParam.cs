@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MyFramework.Services.Network.HTTP
+namespace MyFramework.Runtime.Services.Network.HTTP
 {
     public class HttpUrlParam : IHttpRequestParam
     {

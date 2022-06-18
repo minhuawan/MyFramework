@@ -1,245 +1,264 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using App.UI.Presenters;
-using App.UI.Views.Launch;
-using MyFramework.Services.Resource;
-using UniRx;
-using UnityEditor;
+using App.Event.Navigation;
+using MyFramework.Runtime.Services.Event;
 using UnityEngine;
 
-namespace MyFramework.Services.UI
+namespace MyFramework.Runtime.Services.UI
 {
     public class UIService : AbstractService
     {
-        private Presenter current;
-
-        // private Queue<DialogPresenter> dialogPresenters = new Queue<DialogPresenter>();
-        private Dictionary<WindowLayer, int> currentWindowLayerDepths = new Dictionary<WindowLayer, int>();
+        private List<IDisposable> _disposed;
+        private Queue<PresenterLocator> locators;
+        private NavigatedPresenter runningTarget;
+        private NavigatedPresenter processingTarget;
+        private PresenterLocator processingLocator;
+        private bool appearFinish = true;
+        private bool disAppearFinish = true;
 
         public override void OnCreated()
         {
+            locators = new Queue<PresenterLocator>();
+            _disposed = new List<IDisposable>();
+        }
+
+        public override void Initialize()
+        {
+            var eventService = Application.GetService<EventService>();
+            eventService.Subscribe<NavigateResultEvent>(OnNavigateResult).AddTo(_disposed);
+            eventService.Subscribe<NavigatedViewDisappearCompletedEvent>(OnDisappearCompletedEvent).AddTo(_disposed);
+            eventService.Subscribe<NavigatedViewAppearCompletedEvent>(OnAppearCompletedEvent).AddTo(_disposed);
         }
 
         public override void OnDestroy()
         {
+            locators.Clear();
+            foreach (var disposable in _disposed)
+            {
+                disposable.Dispose();
+            }
+
+            _disposed.Clear();
         }
 
-        public async Task<TransitionResult> SwitchPresenterAsync(PresenterLocator locator)
+        public void NavigateTo(PresenterLocator locator)
         {
-            TransitionResult result;
+            if (locator.InUsing)
+            {
+                Debug.LogError($"locator already in using!");
+                return;
+            }
+
+            if (processingTarget != null)
+            {
+                Debug.LogError($"have a target in processing, name is {processingTarget.GetType().FullName}");
+                return;
+            }
+
+            if (!appearFinish || !disAppearFinish)
+            {
+                Debug.LogError("waiting in presenter appear/disappear lift-cycle");
+                return;
+            }
+
             try
             {
-                var presenter = InstantiatePresenter(locator);
-                if (presenter is DialogPresenter dialogPresenter)
-                {
-                    result = await SwitchDialogPresenterAsyncInternal(dialogPresenter, locator);
-                }
-                else
-                {
-                    result = await SwitchPresenterAsyncInternal(presenter, locator);
-                }
+                locator.InUsing = true;
+                processingLocator = locator;
+                var presenter = CreatePresenter(locator);
+                processingTarget = presenter;
+                presenter.OnNavigate(locator);
             }
             catch (Exception e)
             {
-                result = TransitionResult.Exception(e);
+                Debug.LogError($"exception on navigate to {processingTarget.GetType().FullName}, message: {e}");
+                locator.InUsing = false;
+                processingTarget = null;
             }
+        }
 
-            if (result.ExceptionInfo != null)
+        private void OnNavigateResult(NavigateResultEvent navigateResultEvent)
+        {
+            if (navigateResultEvent.Presenter != processingTarget)
             {
+                var name1 = navigateResultEvent.Presenter.GetType().FullName;
+                var name2 = processingTarget.GetType().FullName;
+                Debug.LogWarning($"current navigate result presenter are not processing target ? {name1}:{name2}");
+                return;
             }
 
-            return result;
-        }
-
-        private async Task<TransitionResult> SwitchPresenterAsyncInternal(
-            Presenter presenter,
-            PresenterLocator locator)
-        {
-            var r = await MyTaskExtension.Execute<TransitionResult>(
-                analyzer: null,
-                withLoading: true,
-                task: new Func<Task<TransitionResult>>(async () =>
-                    {
-                        presenter.Freeze();
-                        current?.Freeze();
-                        var result = await presenter.LoadAsync(locator.Parameters);
-                        if (result.Type == TransitionResult.ResultType.Successful)
-                        {
-                            await Task.WhenAll(
-                                current == null ? Task.CompletedTask : current.View.DisappearAsync(),
-                                presenter.View.AppearAsync()
-                            );
-                            current?.Dispose();
-                            current = presenter;
-                        }
-                        presenter.Unfreeze();
-
-                        return result;
-                    }
-                )
-            );
-            return r.result;
-
-
-            // TransitionPresenter transition = null;
-            // try
-            // {
-            //     presenter.Freeze();
-            //     current?.Freeze();
-            //     transition = new TransitionPresenter();
-            //     transition.Freeze();
-            //     await transition.LoadAsync(null);
-            //     await transition.View.AppearAsync();
-            //     // await Task.Delay(3000);
-            //     transition.Unfreeze();
-            //     var result = await presenter.LoadAsync(locator.Parameters);
-            //     if (result.Type == TransitionResult.ResultType.Successful)
-            //     {
-            //         await Task.WhenAll(
-            //             current == null ? Task.CompletedTask : current.View.DisappearAsync(),
-            //             presenter.View.AppearAsync(),
-            //             transition.View.DisappearAsync()
-            //         );
-            //         current?.Dispose();
-            //         current = presenter;
-            //     }
-            //
-            //     transition.Dispose();
-            //     presenter.Unfreeze();
-            //
-            //     return result;
-            // }
-            // catch (Exception e)
-            // {
-            //     current?.Unfreeze();
-            //     transition?.Dispose();
-            //     presenter?.Dispose();
-            //     Debug.LogError(e);
-            //     return TransitionResult.Exception(e);
-            // }
-        }
-
-        private async Task<TransitionResult> SwitchDialogPresenterAsyncInternal(
-            DialogPresenter dialogPresenter,
-            PresenterLocator locator)
-        {
-            TransitionPresenter transition = null;
             try
-
             {
-                current?.Freeze();
-                dialogPresenter.Freeze();
-                transition = new TransitionPresenter();
-                transition.Freeze();
-                await transition.LoadAsync(null);
-                await transition.View.AppearAsync();
-                // await Task.Delay(3000);
-                transition.Unfreeze();
-                var result = await dialogPresenter.LoadAsync(locator.Parameters);
-                if (result.Type == TransitionResult.ResultType.Successful)
+                navigateResultEvent.Locator.InUsing = false;
+                var result = navigateResultEvent.Result;
+                switch (result.Type)
                 {
-                    await Task.WhenAll(
-                        dialogPresenter.View.AppearAsync(),
-                        transition.View.DisappearAsync()
-                    );
+                    case NavigateResult.ResultType.Ok:
+                        AfterNavigationOk(navigateResultEvent);
+                        break;
+                    case NavigateResult.ResultType.Canceled:
+                        AfterNavigationCanceled(navigateResultEvent);
+                        break;
+                    case NavigateResult.ResultType.Exception:
+                        AfterNavigationException(navigateResultEvent);
+                        break;
+                    case NavigateResult.ResultType.None:
+                    case NavigateResult.ResultType.Failed:
+                    default:
+                        AfterNavigationFailed(navigateResultEvent);
+                        break;
                 }
-
-                transition.Dispose();
-                dialogPresenter.Unfreeze();
-                current?.Unfreeze();
-
-                // dialogPresenters.Enqueue(dialogPresenter);
-
-                // how to unset the dictionary ?
-                var camera = dialogPresenter.View.windowCamera;
-                if (currentWindowLayerDepths.ContainsKey(camera.Layer))
-                {
-                    var newDepth = currentWindowLayerDepths[camera.Layer] + 1;
-                    camera.Depth = newDepth;
-                    currentWindowLayerDepths[camera.Layer] = camera.Depth;
-                }
-
-                await dialogPresenter.CloseEvent.First();
-                dialogPresenter.Dispose();
-
-                return result;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                current?.Unfreeze();
-                transition?.Dispose();
-                dialogPresenter?.Dispose();
-                return TransitionResult.Exception(e);
+                var presenter = navigateResultEvent.Presenter;
+                var msg =
+                    $"exception on OnNavigateResult processing type is " +
+                    $"{navigateResultEvent.Locator.ClassName} message:\n {ex}";
+                Debug.LogError(msg);
+                presenter.Dispose();
+                navigateResultEvent.Locator.InUsing = false;
+                processingTarget = null;
             }
         }
 
-        // public async Task<bool> ExecuteTaskWithErrorDialog(Func<Task<TransitionResult>> task)
-        // {
-        //     var transitionResult = await task();
-        //     if (transitionResult.Type == TransitionResult.ResultType.Successful)
-        //         return true;
-        //     return false;
-        // }
+        private void AfterNavigationCanceled(NavigateResultEvent navigateResultEvent)
+        {
+            Debug.LogError($"after navigation with canceled, message {navigateResultEvent.Result.Message}");
+            var navigatedPresenter = navigateResultEvent.Presenter;
+            navigatedPresenter.Dispose();
+            // popup message ?
+        }
 
-        // public async Task ExecuteTaskWithLoading(Func<Task> task)
-        // {
-        //     var transition = new TransitionPresenter();
-        //     transition.Freeze();
-        //     await transition.LoadAsync(null);
-        //     await transition.View.AppearAsync();
-        //     transition.Unfreeze();
-        //     await task();
-        //     transition.Dispose();
-        // }
+        private void AfterNavigationException(NavigateResultEvent navigateResultEvent)
+        {
+            Debug.LogError($"after navigation with exception, message {navigateResultEvent.Result.Message}");
+            var navigatedPresenter = navigateResultEvent.Presenter;
+            navigatedPresenter.Dispose();
+            navigateResultEvent.Locator.InUsing = false;
+            // popup message ?
+            processingTarget = null;
+            disAppearFinish = true;
+            appearFinish = true;
+        }
 
-        // public async Task<TransitionResult> HandleTaskException<T>(Func<Task<TransitionResult>> task)
-        // {
-        //     try
-        //     {
-        //         return await task();
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         return TransitionResult.Exception(e);
-        //     }
-        // }
+        private void AfterNavigationFailed(NavigateResultEvent navigateResultEvent)
+        {
+            Debug.LogError($"after navigation with failed, message {navigateResultEvent.Result.Message}");
+            var navigatedPresenter = navigateResultEvent.Presenter;
+            navigatedPresenter.Dispose();
+            // popup message ?
+            processingTarget = null;
+            disAppearFinish = true;
+            appearFinish = true;
+        }
 
-        private Presenter InstantiatePresenter(PresenterLocator locator)
+        private void AfterNavigationOk(NavigateResultEvent navigateResultEvent)
+        {
+            Debug.Log($"after navigation with ok, class name {navigateResultEvent.Locator.ClassName}");
+            var presenterLocator = navigateResultEvent.Locator;
+            var presenter = navigateResultEvent.Presenter;
+            var result = navigateResultEvent.Result;
+
+            appearFinish = false;
+            if (!presenter.View.gameObject.activeSelf)
+            {
+                presenter.View.gameObject.SetActive(true);
+            }
+
+            presenter.OnWillAppear();
+            if (runningTarget != null)
+            {
+                disAppearFinish = false;
+                runningTarget.OnWillDisappear();
+            }
+        }
+
+
+        private void OnDisappearCompletedEvent(NavigatedViewDisappearCompletedEvent disappearCompletedEvent)
+        {
+            if (disappearCompletedEvent == null)
+            {
+                Debug.LogError("UIService received an disappear null event");
+                return;
+            }
+
+            if (runningTarget == null || runningTarget.View == null)
+            {
+                Debug.LogError("UIService received an disappear event, runningTarget is null");
+                return;
+            }
+
+            if (disappearCompletedEvent.View == null)
+            {
+                Debug.LogError($"UIService received an disappear event, view is null view, " +
+                               $"runningTarget is {runningTarget.GetType().FullName}");
+                return;
+            }
+
+            if (disappearCompletedEvent.View != runningTarget.View)
+            {
+                Debug.LogError("UIService received an disappear event, view not equals " +
+                               $"{disappearCompletedEvent.View.GetType().FullName}" +
+                               $" <--> " +
+                               $"{runningTarget.View.GetType().FullName}");
+            }
+
+            runningTarget.Dispose();
+            runningTarget = null;
+            disAppearFinish = true;
+        }
+
+
+        private void OnAppearCompletedEvent(NavigatedViewAppearCompletedEvent appearCompletedEvent)
+        {
+            if (appearCompletedEvent == null)
+            {
+                Debug.LogError("UIService received an appear null event");
+                return;
+            }
+
+            if (processingTarget == null)
+            {
+                Debug.LogError("UIService received an appear event, current processing target is null");
+                return;
+            }
+
+            if (appearCompletedEvent.View == null)
+            {
+                Debug.LogError($"UIService received an appear event, view is null view, " +
+                               $"runningTarget is {runningTarget.GetType().FullName}");
+                return;
+            }
+
+            if (appearCompletedEvent.View != processingTarget.View)
+            {
+                Debug.LogError("UIService received an appear event, view not equals " +
+                               $"{appearCompletedEvent.View.GetType().FullName}" +
+                               $" <--> " +
+                               $"{runningTarget.View.GetType().FullName}");
+            }
+
+            var view = appearCompletedEvent.View;
+            locators.Enqueue(processingLocator);
+            processingTarget.OnDidAppear();
+            runningTarget = processingTarget;
+            processingLocator = null;
+            processingTarget = null;
+            appearFinish = true;
+        }
+
+
+        private NavigatedPresenter CreatePresenter(PresenterLocator locator)
         {
             var type = Type.GetType(locator.ClassName);
-
-            var instance = Activator.CreateInstance(type) as Presenter;
+            var instance = Activator.CreateInstance(type) as NavigatedPresenter;
             if (instance == null)
             {
                 throw new Exception($"instantiate presenter failed, typeof {type}");
             }
 
             return instance;
-        }
-
-        public void Back()
-        {
-        }
-
-        public async Task<T> InstantiateViewAsync<T>() where T : View
-        {
-            var viewPath = typeof(T).GetCustomAttribute<ViewPath>();
-
-            var path = viewPath.GetPath();
-            if (viewPath == null || string.IsNullOrEmpty(path))
-            {
-                throw new Exception($"instantiate view async failed, view path not found typeof {typeof(T)}");
-            }
-
-            // Application.GetService<ResourceService>()
-            // todo 这里直接 load 了
-            var asset = AssetDatabase.LoadAssetAtPath<T>(path);
-            var view = UnityEngine.GameObject.Instantiate(asset);
-            view.gameObject.SetActive(false); // hide before all load process finish
-            return view;
         }
     }
 }

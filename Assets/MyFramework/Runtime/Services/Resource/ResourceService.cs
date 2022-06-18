@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace MyFramework.Services.Resource
+namespace MyFramework.Runtime.Services.Resource
 {
     public sealed class ResourceService : AbstractService
     {

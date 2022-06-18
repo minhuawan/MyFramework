@@ -6,12 +6,12 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using UniRx;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Networking;
 
-namespace MyFramework.Services.Asset
+namespace MyFramework.Runtime.Services.Asset
 {
     public class AssetDownloadResult
     {
@@ -31,15 +31,17 @@ namespace MyFramework.Services.Asset
 
     public class AssetDownloader : MonoBehaviour
     {
-        private Subject<AssetDownloadResult> downloadSubject;
-        public IObservable<AssetDownloadResult> OnDownloadEvent => downloadSubject;
+        public class DownloadEvent : UnityEvent<AssetDownloadResult>
+        {
+        }
+
+        private DownloadEvent onDownloadFinish = new DownloadEvent();
         private int runningTasks = 0;
         private int maxParallelTask = 10;
         private Queue<Func<IEnumerator>> pendingTasks;
 
         void Awake()
         {
-            downloadSubject = new Subject<AssetDownloadResult>();
             pendingTasks = new Queue<Func<IEnumerator>>();
         }
 
@@ -83,7 +85,7 @@ namespace MyFramework.Services.Asset
                 if (cancellationToken.IsCancellationRequested)
                 {
                     Debug.Log($"task canceled runningTakes {runningTasks}, uri {request.uri}");
-                    downloadSubject.OnNext(new AssetDownloadResult()
+                    onDownloadFinish.Invoke(new AssetDownloadResult()
                     {
                         exception = null,
                         resultType = AssetDownloadResult.AssetDownloadResultType.Canceled,
@@ -96,7 +98,7 @@ namespace MyFramework.Services.Asset
             }
 
             runningTasks--;
-            downloadSubject.OnNext(new AssetDownloadResult()
+            onDownloadFinish.Invoke(new AssetDownloadResult()
             {
                 exception = null,
                 resultType = AssetDownloadResult.AssetDownloadResultType.Successful,
