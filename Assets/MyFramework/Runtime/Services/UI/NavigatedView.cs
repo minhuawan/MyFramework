@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using App.Event.Navigation;
+using MyFramework.Runtime.Services.Event.UI;
 using UnityEditor;
 using UnityEngine;
 using Random = System.Random;
@@ -33,12 +33,12 @@ namespace MyFramework.Runtime.Services.UI
             DispatchDisappearCompletedEvent();
         }
 
-        protected void DispatchAppearCompletedEvent()
+        private void DispatchAppearCompletedEvent()
         {
             new NavigatedViewAppearCompletedEvent(this).Dispatch();
         }
 
-        protected void DispatchDisappearCompletedEvent()
+        private void DispatchDisappearCompletedEvent()
         {
             new NavigatedViewDisappearCompletedEvent(this).Dispatch();
         }
@@ -51,13 +51,18 @@ namespace MyFramework.Runtime.Services.UI
             }
 
             _disposables.Clear();
-            
+
             Destroy(this.gameObject);
         }
 
         public static T InstantiateView<T>() where T : NavigatedView
         {
             var viewPath = typeof(T).GetCustomAttribute<ViewPath>();
+            if (viewPath == null)
+            {
+                throw new Exception($"typeof {typeof(T).FullName} get view path null");
+            }
+
             var path = viewPath.GetPath();
             if (viewPath == null || string.IsNullOrEmpty(path))
             {

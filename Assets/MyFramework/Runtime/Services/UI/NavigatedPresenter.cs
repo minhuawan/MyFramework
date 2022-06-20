@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using App.Event.Navigation;
+using MyFramework.Runtime.Services.Event.UI;
 
 namespace MyFramework.Runtime.Services.UI
 {

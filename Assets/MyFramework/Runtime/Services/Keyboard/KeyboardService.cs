@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using MyFramework.Runtime.Services.Event;
 using MyFramework.Runtime.Services.Timer;
+using UnityEditor.MPE;
 using UnityEngine;
 
-namespace MyFramework.Runtime.Services
+namespace MyFramework.Runtime.Services.Keyboard
 {
     public class KeyboardService : AbstractService
     {
@@ -35,6 +37,11 @@ namespace MyFramework.Runtime.Services
                 {
                     Debug.LogException(e);
                 }
+            }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                new BackKeyEvent().Dispatch();
             }
         }
 

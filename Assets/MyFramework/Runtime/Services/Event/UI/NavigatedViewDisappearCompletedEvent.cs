@@ -1,6 +1,6 @@
 ﻿using MyFramework.Runtime.Services.UI;
 
-namespace App.Event.Navigation
+namespace MyFramework.Runtime.Services.Event.UI
 {
     public class NavigatedViewDisappearCompletedEvent : MyFramework.Runtime.Services.Event.Event
     {

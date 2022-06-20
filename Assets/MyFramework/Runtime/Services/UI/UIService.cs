@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using App.Event.Navigation;
 using MyFramework.Runtime.Services.Event;
+using MyFramework.Runtime.Services.Event.UI;
 using UnityEngine;
 
 namespace MyFramework.Runtime.Services.UI
@@ -10,9 +10,13 @@ namespace MyFramework.Runtime.Services.UI
     {
         private List<IDisposable> _disposed;
         private Queue<PresenterLocator> locators;
+
+        // todo 这里存在一个问题，如果是 dialog， waitingResultDialogPresenter 会与这个值相等
+        // todo 并且关闭 dialog 后 waitingResultDialogPresenter 变为了 null ，但是这个值不会变
         private NavigatedPresenter runningTarget;
         private NavigatedPresenter processingTarget;
         private PresenterLocator processingLocator;
+        private DialogPresenter waitingResultDialogPresenter;
         private bool appearFinish = true;
         private bool disAppearFinish = true;
 
@@ -28,6 +32,9 @@ namespace MyFramework.Runtime.Services.UI
             eventService.Subscribe<NavigateResultEvent>(OnNavigateResult).AddTo(_disposed);
             eventService.Subscribe<NavigatedViewDisappearCompletedEvent>(OnDisappearCompletedEvent).AddTo(_disposed);
             eventService.Subscribe<NavigatedViewAppearCompletedEvent>(OnAppearCompletedEvent).AddTo(_disposed);
+            eventService.Subscribe<DialogPresenterCompletedEvent>(OnDialogPresenterCompletedEvent)
+                .AddTo(_disposed);
+            eventService.Subscribe<BackKeyEvent>(OnBackKey).AddTo(_disposed);
         }
 
         public override void OnDestroy()
@@ -45,19 +52,34 @@ namespace MyFramework.Runtime.Services.UI
         {
             if (locator.InUsing)
             {
+#if UNITY_EDITOR
                 Debug.LogError($"locator already in using!");
+#endif
                 return;
             }
 
             if (processingTarget != null)
             {
+#if UNITY_EDITOR
                 Debug.LogError($"have a target in processing, name is {processingTarget.GetType().FullName}");
+#endif
                 return;
             }
 
             if (!appearFinish || !disAppearFinish)
             {
+#if UNITY_EDITOR
                 Debug.LogError("waiting in presenter appear/disappear lift-cycle");
+#endif
+                return;
+            }
+
+            if (waitingResultDialogPresenter != null)
+            {
+#if UNITY_EDITOR
+                Debug.LogError($"there has a working dialog presenter for waiting result," +
+                               $" name is {waitingResultDialogPresenter.GetType().FullName}");
+#endif
                 return;
             }
 
@@ -74,6 +96,7 @@ namespace MyFramework.Runtime.Services.UI
                 Debug.LogError($"exception on navigate to {processingTarget.GetType().FullName}, message: {e}");
                 locator.InUsing = false;
                 processingTarget = null;
+                waitingResultDialogPresenter = null;
             }
         }
 
@@ -167,7 +190,12 @@ namespace MyFramework.Runtime.Services.UI
             }
 
             presenter.OnWillAppear();
-            if (runningTarget != null)
+            if (presenter is DialogPresenter dialogPresenter)
+            {
+                waitingResultDialogPresenter = dialogPresenter;
+                disAppearFinish = true; // no need to disappear last navigated presenter
+            }
+            else if (runningTarget != null)
             {
                 disAppearFinish = false;
                 runningTarget.OnWillDisappear();
@@ -183,16 +211,31 @@ namespace MyFramework.Runtime.Services.UI
                 return;
             }
 
-            if (runningTarget == null || runningTarget.View == null)
+            if (disappearCompletedEvent.View == null)
             {
-                Debug.LogError("UIService received an disappear event, runningTarget is null");
+                Debug.LogError($"UIService received an disappear event, view is null, " +
+                               $"runningTarget is {runningTarget.GetType().FullName}");
                 return;
             }
 
-            if (disappearCompletedEvent.View == null)
+            if (waitingResultDialogPresenter?.View == disappearCompletedEvent.View)
             {
-                Debug.LogError($"UIService received an disappear event, view is null view, " +
-                               $"runningTarget is {runningTarget.GetType().FullName}");
+                try
+                {
+                    waitingResultDialogPresenter.Dispose();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
+
+                waitingResultDialogPresenter = null;
+                return;
+            }
+
+            if (runningTarget == null || runningTarget.View == null)
+            {
+                Debug.LogError("UIService received an disappear event, runningTarget is null");
                 return;
             }
 
@@ -234,7 +277,7 @@ namespace MyFramework.Runtime.Services.UI
 
             if (appearCompletedEvent.View == null)
             {
-                Debug.LogError($"UIService received an appear event, view is null view, " +
+                Debug.LogError($"UIService received an appear event, view is null, " +
                                $"processingTarget is {processingTarget.GetType().FullName}");
                 return;
             }
@@ -264,6 +307,35 @@ namespace MyFramework.Runtime.Services.UI
             appearFinish = true;
         }
 
+        private void OnDialogPresenterCompletedEvent(DialogPresenterCompletedEvent completedEvent)
+        {
+            if (waitingResultDialogPresenter == null)
+            {
+                Debug.LogError("UIService received a dialog completed event," +
+                               " but waitingResultDialogPresenter is null");
+                return;
+            }
+
+            if (completedEvent == null || completedEvent.DialogPresenter == null)
+            {
+                Debug.LogError("UIService received a dialog completed event," +
+                               " but completedEvent or completedEvent.DialogPresenter is null");
+                return;
+            }
+
+            if (completedEvent.DialogPresenter != waitingResultDialogPresenter)
+            {
+                Debug.LogError("UIService received a dialog completed event," +
+                               " but disappearEvent.DialogPresenter != waitingResultDialogPresenter" +
+                               $"{completedEvent.DialogPresenter.GetType().FullName}" +
+                               $" <--> " +
+                               $"{waitingResultDialogPresenter.GetType().FullName}");
+                return;
+            }
+
+            waitingResultDialogPresenter.OnWillDisappear();
+        }
+
 
         private NavigatedPresenter CreatePresenter(PresenterLocator locator)
         {
@@ -275,6 +347,27 @@ namespace MyFramework.Runtime.Services.UI
             }
 
             return instance;
+        }
+
+        private void OnBackKey(BackKeyEvent backKeyEvent)
+        {
+            if (processingTarget != null)
+            {
+                // in loading or other waiting task
+                return;
+            }
+
+            if (waitingResultDialogPresenter != null)
+            {
+                waitingResultDialogPresenter.OnBack();
+                return;
+            }
+
+            if (runningTarget != null)
+            {
+                runningTarget.OnBack();
+                return;
+            }
         }
     }
 }
