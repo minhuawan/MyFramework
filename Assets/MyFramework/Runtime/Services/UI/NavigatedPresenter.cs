@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MyFramework.Runtime.Services.Event.UI;
+using UnityEngine;
 
 namespace MyFramework.Runtime.Services.UI
 {
@@ -11,9 +12,11 @@ namespace MyFramework.Runtime.Services.UI
 
         protected PresenterLocator locator;
 
+        public virtual bool IsDialog => false;
+
         protected void DispatchNavigateResult(NavigateResult result)
         {
-            new NavigateResultEvent(result, this, locator).Dispatch();
+            new NavigateResultEvent(result, this, locator, IsDialog).Dispatch();
         }
 
         protected void NavigateOk()
@@ -63,6 +66,7 @@ namespace MyFramework.Runtime.Services.UI
 
         public virtual void OnBack()
         {
+            Application.GetService<UIService>().NavigatedBack();
         }
 
         public void Dispose()

@@ -6,9 +6,12 @@ namespace MyFramework.Runtime.Services.Event.UI
     {
         public NavigatedView View { get; private set; }
 
-        public NavigatedViewDisappearCompletedEvent(NavigatedView view)
+        public bool IsDialogEvent { get; }
+
+        public NavigatedViewDisappearCompletedEvent(NavigatedView view, bool isDialogEvent)
         {
             View = view;
+            IsDialogEvent = isDialogEvent;
         }
     }
 }

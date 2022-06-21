@@ -1,11 +1,9 @@
-﻿namespace MyFramework.Runtime.Services.UI
+﻿using UnityEngine.UIElements;
+
+namespace MyFramework.Runtime.Services.UI
 {
     public abstract class DialogView : NavigatedView
     {
-        public override void OnWillDisappear()
-        {
-            base.OnWillDisappear();
-            // new DialogViewDisappearCompletedEvent(this).Dispatch();
-        }
+        public override bool IsDialog => true;
     }
 }

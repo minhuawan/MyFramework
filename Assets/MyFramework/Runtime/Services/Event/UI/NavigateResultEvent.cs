@@ -6,14 +6,16 @@ namespace MyFramework.Runtime.Services.Event.UI
     {
         public NavigateResult Result { get; private set; }
         public NavigatedPresenter Presenter { get; private set; }
-        public PresenterLocator Locator { get; private set; }
+
+        public bool IsDialogEvent { get; }
 
 
-        public NavigateResultEvent(NavigateResult result, NavigatedPresenter presenter, PresenterLocator locator)
+        public NavigateResultEvent(NavigateResult result, NavigatedPresenter presenter, PresenterLocator locator,
+            bool isDialogEvent)
         {
-            Locator = locator;
             Result = result;
             Presenter = presenter;
+            IsDialogEvent = isDialogEvent;
         }
     }
 }

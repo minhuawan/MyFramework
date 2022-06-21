@@ -17,6 +17,7 @@ namespace App.UI.Presenters
         public override void OnWillAppear()
         {
             view = View.As<TestDialogView2>();
+            view.SetText(this.locator.Parameters.Get<string>("title"));
             view.ButtonClickedEvent.AddListener(OnBackClick);
             base.OnWillAppear();
         }

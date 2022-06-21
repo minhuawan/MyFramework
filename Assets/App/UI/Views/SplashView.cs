@@ -12,12 +12,12 @@ namespace App.UI.Views
         [SerializeField] private Animator animator;
         [SerializeField] private Text text;
         [SerializeField] private Image background;
-        [SerializeField] private ButtonView buttonDialog;
+        [SerializeField] private ButtonView buttonMain;
 
         private string welcome;
         private string afterWelcome;
 
-        public ButtonView.ButtonEvent ButtonClickEvent => buttonDialog.onClick;
+        public ButtonView.ButtonEvent ButtonClickEvent => buttonMain.onClick;
 
         public void Initialize(string welcome, string afterWelcome)
         {
@@ -54,7 +54,7 @@ namespace App.UI.Views
             //     .OnComplete(check);
 
 
-            buttonDialog.gameObject.SetActive(false);
+            buttonMain.gameObject.SetActive(false);
             AnimationEventAttach.Play(animator, "SplashViewOpen", base.OnWillAppear);
         }
 
@@ -62,7 +62,7 @@ namespace App.UI.Views
         {
             base.OnDidAppear();
             text.text = afterWelcome;
-            buttonDialog.gameObject.SetActive(true);
+            buttonMain.gameObject.SetActive(true);
         }
     }
 }

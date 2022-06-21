@@ -12,6 +12,8 @@ namespace MyFramework.Runtime.Services.UI
     {
         protected List<IDisposable> _disposables = new List<IDisposable>();
 
+        public virtual bool IsDialog => false;
+
         public T As<T>() where T : NavigatedView
         {
             return this as T;
@@ -35,12 +37,12 @@ namespace MyFramework.Runtime.Services.UI
 
         private void DispatchAppearCompletedEvent()
         {
-            new NavigatedViewAppearCompletedEvent(this).Dispatch();
+            new NavigatedViewAppearCompletedEvent(this, IsDialog).Dispatch();
         }
 
         private void DispatchDisappearCompletedEvent()
         {
-            new NavigatedViewDisappearCompletedEvent(this).Dispatch();
+            new NavigatedViewDisappearCompletedEvent(this, IsDialog).Dispatch();
         }
 
         public void Dispose()

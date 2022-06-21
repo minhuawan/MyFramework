@@ -32,7 +32,10 @@ namespace App.UI.Presenters
 
         private void OnButtonClick()
         {
-            var locator = PresenterLocator.Create<TestDialogPresenter2>();
+            // var locator = PresenterLocator.Create<TestDialogPresenter2>();
+            // Application.GetService<UIService>().NavigateTo(locator);
+            
+            var locator = PresenterLocator.Create<MainPagePresenter>();
             Application.GetService<UIService>().NavigateTo(locator);
         }
     }
