@@ -6,7 +6,7 @@ namespace MyFramework.Runtime.Services.UI
 {
     public class NavigateLocatorProcessor : BaseLocatorProcessor
     {
-        public NavigateLocatorProcessor(Action<PresenterLocator, NavigateResult> handler) : base(handler)
+        public NavigateLocatorProcessor(Action<PresenterLocator, NavigateResult> resultListener) : base(resultListener)
         {
         }
 

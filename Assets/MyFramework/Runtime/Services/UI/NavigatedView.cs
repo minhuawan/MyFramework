@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using App.UI.Views;
 using MyFramework.Runtime.Services.Event.UI;
 using UnityEditor;
@@ -79,26 +80,30 @@ namespace MyFramework.Runtime.Services.UI
             return view;
         }
 
-        public static void InstantiateViewAsync<T>(Action<T> action, Action<Exception> errorHandler)
+        public static async void InstantiateViewAsync<T>(Action<T> action, Action<Exception> errorHandler)
             where T : NavigatedView
         {
-            var type = typeof(T);
-            var dialogType = typeof(DialogView);
-            if (type.IsSubclassOf(dialogType) && type != typeof(ErrorNoticeDialogView))
-            {
-                errorHandler.Invoke(new Exception("100% test exception"));
-                return;
-            }
+            // var type = typeof(T);
+            // var dialogType = typeof(DialogView);
+            // if (type.IsSubclassOf(dialogType) && type != typeof(ErrorNoticeDialogView))
+            // {
+            //     errorHandler.Invoke(new Exception("100% test exception"));
+            //     return;
+            // }
 
             // if (new Random().Next(1, 100) < 20) // for test
             // {
             //     errorHandler.Invoke(new Exception("InstantiateViewAsync test random exception"));
             // }
             // else
-            {
-                var view = InstantiateView<T>();
-                action(view);
-            }
+            // {
+            //     var view = InstantiateView<T>();
+            //     action(view);
+            // }
+
+            await Task.Delay(3000);
+            var view = InstantiateView<T>();
+            action(view);
         }
     }
 }

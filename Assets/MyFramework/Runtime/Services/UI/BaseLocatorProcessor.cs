@@ -18,13 +18,13 @@ namespace MyFramework.Runtime.Services.UI
         protected bool disAppearFinish = true;
         protected bool isBackOperation = false;
         protected List<PresenterLocator> history;
-        private Action<PresenterLocator, NavigateResult> unsuccessfulNavigationHandler;
+        private Action<PresenterLocator, NavigateResult> navigationResultListener;
 
         public NavigatedPresenter DisplayedPresenter => runningTarget;
 
-        public BaseLocatorProcessor(Action<PresenterLocator, NavigateResult> handler)
+        public BaseLocatorProcessor(Action<PresenterLocator, NavigateResult> resultListener)
         {
-            unsuccessfulNavigationHandler = handler;
+            navigationResultListener = resultListener;
             history = new List<PresenterLocator>();
             _disposed = new List<IDisposable>();
 
@@ -73,7 +73,7 @@ namespace MyFramework.Runtime.Services.UI
             {
                 Debug.LogError($"exception on navigate to {processingTarget.GetType().FullName}, message: {e}");
                 ResetStates();
-                unsuccessfulNavigationHandler?.Invoke(locator, NavigateResult.Exception(e));
+                navigationResultListener?.Invoke(locator, NavigateResult.Exception(e));
             }
         }
 
@@ -133,7 +133,7 @@ namespace MyFramework.Runtime.Services.UI
             navigatedPresenter.Dispose();
             var previous = processingLocator;
             ResetStates();
-            unsuccessfulNavigationHandler?.Invoke(previous, navigateResultEvent.Result);
+            navigationResultListener?.Invoke(previous, navigateResultEvent.Result);
             // popup message ?
         }
 
@@ -144,7 +144,7 @@ namespace MyFramework.Runtime.Services.UI
             navigatedPresenter.Dispose();
             var previous = processingLocator;
             ResetStates();
-            unsuccessfulNavigationHandler?.Invoke(previous, navigateResultEvent.Result);
+            navigationResultListener?.Invoke(previous, navigateResultEvent.Result);
             // popup message ?
         }
 
@@ -155,7 +155,7 @@ namespace MyFramework.Runtime.Services.UI
             navigatedPresenter.Dispose();
             var previous = processingLocator;
             ResetStates();
-            unsuccessfulNavigationHandler?.Invoke(previous, navigateResultEvent.Result);
+            navigationResultListener?.Invoke(previous, navigateResultEvent.Result);
             // popup message ?
         }
 
@@ -315,6 +315,7 @@ namespace MyFramework.Runtime.Services.UI
                 runningLocator = processingLocator;
                 ResetStates();
                 // runningTarget and processingLocator both could be an null value
+                navigationResultListener?.Invoke(runningLocator, NavigateResult.Ok);
             }
         }
 
@@ -394,7 +395,8 @@ namespace MyFramework.Runtime.Services.UI
             var backTarget = history[history.Count - 1];
             backTarget.InUsing = false;
             isBackOperation = true;
-            Process(backTarget);
+            // Process(backTarget);
+            Application.GetService<UIService>().NavigateTo(backTarget);
         }
     }
 }

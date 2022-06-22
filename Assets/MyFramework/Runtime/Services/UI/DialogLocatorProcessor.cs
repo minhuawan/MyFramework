@@ -9,7 +9,7 @@ namespace MyFramework.Runtime.Services.UI
     {
         protected override bool IsDialogProcessor => true;
 
-        public DialogLocatorProcessor(Action<PresenterLocator, NavigateResult> handler) : base(handler)
+        public DialogLocatorProcessor(Action<PresenterLocator, NavigateResult> resultListener) : base(resultListener)
         {
             var eventService = Application.GetService<EventService>();
             eventService.Subscribe<DialogPresenterCompletedEvent>(OnDialogPresenterCompletedEvent).AddTo(_disposed);

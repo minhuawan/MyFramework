@@ -12,6 +12,7 @@ namespace MyFramework.Runtime.Services.UI
         private BaseLocatorProcessor navigatedProcessor;
         private BaseLocatorProcessor dialogProcessor;
         private PresenterLocator errorNoticeLocator;
+        private UITransition transition;
 
         public override void OnCreated()
         {
@@ -21,13 +22,18 @@ namespace MyFramework.Runtime.Services.UI
 
         public override void Initialize()
         {
-            navigatedProcessor = new NavigateLocatorProcessor(UnsuccessfulNavigationHandler);
-            dialogProcessor = new DialogLocatorProcessor(UnsuccessfulNavigationHandler);
+            navigatedProcessor = new NavigateLocatorProcessor(NavigationResultListener);
+            dialogProcessor = new DialogLocatorProcessor(NavigationResultListener);
             Application.GetService<EventService>().Subscribe<BackKeyEvent>(OnBackKey).AddTo(disposables);
+
+            var prefab = Resources.Load<UITransition>("UITransition");
+            transition = GameObject.Instantiate(prefab);
+            transition.gameObject.SetActive(false);
         }
 
-        private void UnsuccessfulNavigationHandler(PresenterLocator locator, NavigateResult result)
+        private void NavigationResultListener(PresenterLocator locator, NavigateResult result)
         {
+            transition.gameObject.SetActive(false);
             if (locator == null || locator == errorNoticeLocator)
                 return;
             var message = string.Empty;
@@ -108,10 +114,12 @@ namespace MyFramework.Runtime.Services.UI
 
             if (type.IsSubclassOf(typeof(DialogPresenter)))
             {
+                transition.gameObject.SetActive(true);
                 dialogProcessor.Process(locator);
             }
             else if (type.IsSubclassOf(typeof(NavigatedPresenter)))
             {
+                transition.gameObject.SetActive(true);
                 navigatedProcessor.Process(locator);
             }
             else
