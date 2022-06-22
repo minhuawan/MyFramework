@@ -10,19 +10,20 @@ namespace MyFramework.Runtime.Services.UI
     {
         protected abstract bool IsDialogProcessor { get; }
         protected List<IDisposable> _disposed;
-        protected Stack<PresenterLocator> locators;
         protected NavigatedPresenter runningTarget;
         protected NavigatedPresenter processingTarget;
         protected PresenterLocator processingLocator;
+        protected PresenterLocator runningLocator;
         protected bool appearFinish = true;
         protected bool disAppearFinish = true;
         protected bool isBackOperation = false;
+        protected List<PresenterLocator> history;
 
         public NavigatedPresenter DisplayedPresenter => runningTarget;
 
         public BaseLocatorProcessor()
         {
-            locators = new Stack<PresenterLocator>();
+            history = new List<PresenterLocator>();
             _disposed = new List<IDisposable>();
 
             var eventService = Application.GetService<EventService>();
@@ -79,6 +80,7 @@ namespace MyFramework.Runtime.Services.UI
                 Debug.LogError($"exception on navigate to {processingTarget.GetType().FullName}, message: {e}");
                 locator.InUsing = false;
                 processingTarget = null;
+                isBackOperation = false;
                 // waitingResultDialogPresenter = null;
             }
         }
@@ -132,6 +134,7 @@ namespace MyFramework.Runtime.Services.UI
                 processingLocator.InUsing = false;
                 processingTarget = null;
                 processingLocator = null;
+                isBackOperation = false;
             }
         }
 
@@ -144,6 +147,7 @@ namespace MyFramework.Runtime.Services.UI
             processingLocator = null;
             disAppearFinish = true;
             appearFinish = true;
+            isBackOperation = false;
             // popup message ?
         }
 
@@ -157,6 +161,7 @@ namespace MyFramework.Runtime.Services.UI
             processingTarget = null;
             disAppearFinish = true;
             appearFinish = true;
+            isBackOperation = false;
             // popup message ?
         }
 
@@ -169,6 +174,7 @@ namespace MyFramework.Runtime.Services.UI
             processingTarget = null;
             disAppearFinish = true;
             appearFinish = true;
+            isBackOperation = false;
         }
 
         private void AfterNavigationOk(NavigateResultEvent navigateResultEvent)
@@ -297,12 +303,25 @@ namespace MyFramework.Runtime.Services.UI
         {
             if (disAppearFinish && appearFinish)
             {
-                locators.Push(processingLocator);
+                if (isBackOperation)
+                {
+                    history.RemoveAt(history.Count - 1);
+                }
+                else
+                {
+                    if (runningLocator != null)
+                    {
+                        history.Add(runningLocator);
+                    }
+                }
+
                 // last running target should disposed in disappear callback
                 runningTarget = processingTarget;
+                runningLocator = processingLocator;
                 processingLocator = null;
                 processingTarget = null;
-                // runningTarget and processingLocator both cloud be an null value
+                isBackOperation = false;
+                // runningTarget and processingLocator both could be an null value
             }
         }
 
@@ -354,7 +373,7 @@ namespace MyFramework.Runtime.Services.UI
                 processingTarget = null;
             }
 
-            locators.Clear();
+            history.Clear();
             foreach (var disposable in _disposed)
             {
                 disposable.Dispose();
@@ -371,31 +390,18 @@ namespace MyFramework.Runtime.Services.UI
                 return;
             if (!appearFinish || !disAppearFinish)
                 return;
-            if (locators.Count == 0)
+            if (history.Count == 0)
+            {
+                // todo go to first page?
                 return;
+            }
 
             // todo 这里返回怎么处理，如果返回过程中出错，可当前的栈已经被修改了
             // 难受
-            PresenterLocator backTarget = null;
-            Debug.Log("before back count " + locators.Count);
-            var current = locators.Peek();
-            while (locators.GetEnumerator().MoveNext())
-            {
-                var locator = locators.Pop();
-                if (!locator.ClassName.Equals(current.ClassName))
-                {
-                    backTarget = locator;
-                    break;
-                }
-            }
-            Debug.Log("after back count " + locators.Count);
-
-            if (backTarget != null)
-            {
-                isBackOperation = true;
-                backTarget.InUsing = false;
-                Process(backTarget);
-            }
+            var backTarget = history[history.Count - 1];
+            backTarget.InUsing = false;
+            isBackOperation = true;
+            Process(backTarget);
         }
     }
 }
