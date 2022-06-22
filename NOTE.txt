@@ -90,6 +90,11 @@ Task 有点hold不住，本来是为了提高代码的可读性，但是各种�
 完成了 ui back key 的逻辑，不过 dialog 和 navigated 貌似有重合问题，需要改一下
 用两个不同的实例分别管理?
 
+2022年6月23日
+完成了 UI 返回的逻辑（back键）
+现在 Dialog 与 navigated 有两个 processor 处理
+完成了 UI 流程的异常处理问题，现在打开 UI 流程不正常会有错误提示
+
 todo:
-2022.6.10 locator 返回
-2022.6.11 资源管理用 addressable
+2022.6.10 locator 返回 ，2022年6月23日 完成
+2022.6.11 资源管理用 addressable ？？ 这个貌似不太好用？ 还没看 unite 视频
