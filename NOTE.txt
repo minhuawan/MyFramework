@@ -94,6 +94,7 @@ Task 有点hold不住，本来是为了提高代码的可读性，但是各种�
 完成了 UI 返回的逻辑（back键）
 现在 Dialog 与 navigated 有两个 processor 处理
 完成了 UI 流程的异常处理问题，现在打开 UI 流程不正常会有错误提示
+完成了 UI 加载过程中的 loading 提示，不过现在貌似要等动画结束之后，loading才会关闭 = =
 
 todo:
 2022.6.10 locator 返回 ，2022年6月23日 完成
