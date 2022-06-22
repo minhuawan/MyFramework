@@ -1,4 +1,5 @@
-﻿using MyFramework.Runtime.Services.Event;
+﻿using System;
+using MyFramework.Runtime.Services.Event;
 using MyFramework.Runtime.Services.Event.UI;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace MyFramework.Runtime.Services.UI
     {
         protected override bool IsDialogProcessor => true;
 
-        public DialogLocatorProcessor() : base()
+        public DialogLocatorProcessor(Action<PresenterLocator, NavigateResult> handler) : base(handler)
         {
             var eventService = Application.GetService<EventService>();
             eventService.Subscribe<DialogPresenterCompletedEvent>(OnDialogPresenterCompletedEvent).AddTo(_disposed);
