@@ -101,7 +101,7 @@ namespace MyFramework.Runtime.Services.UI
             //     action(view);
             // }
 
-            await Task.Delay(3000);
+            // await Task.Delay(3000);
             var view = InstantiateView<T>();
             action(view);
         }

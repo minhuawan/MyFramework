@@ -185,7 +185,7 @@ namespace MyFramework.Runtime.Services.UI
 
         private void ResetStates()
         {
-            Debug.Log("ResetStates");
+            // Debug.Log("ResetStates");
             if (processingLocator != null)
                 processingLocator.InUsing = false;
             processingLocator = null;
