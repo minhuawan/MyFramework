@@ -1,5 +1,6 @@
 ﻿using App.UI.Presenters;
 using MyFramework;
+using MyFramework.Runtime.Services.Localization;
 using MyFramework.Runtime.Services.StateMachine;
 using MyFramework.Runtime.Services.Timer;
 using MyFramework.Runtime.Services.UI;
@@ -29,13 +30,16 @@ namespace App.StateMachine
 
         private void OpenSplash()
         {
+            var localizationService = Application.GetService<LocalizationService>();
+            var gameName = localizationService.Translate("const.game-name");
+            var welcome = localizationService.Translate("ui.base.welcome");
             Application.GetService<TimerService>().everyFrame.RemoveListener(OnUpdate);
             Application.GetService<UIService>()
                 .NavigateTo(
                     PresenterLocator.Create<SplashPresenter>(
                         new PresenterLocatorParameters()
-                            .Put("welcome", "splash view")
-                            .Put("afterWelcome", "YOU ARE WINNER!")
+                            .Put("welcome", gameName)
+                            .Put("afterWelcome", welcome)
                     ));
         }
     }

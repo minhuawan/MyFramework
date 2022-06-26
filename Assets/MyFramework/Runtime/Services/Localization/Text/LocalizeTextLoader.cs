@@ -24,7 +24,12 @@ namespace MyFramework.Runtime.Services.Localization
                 {
                     key = "ui.base.button-ok",
                     text = language == "en-us" ? "OK" : "好的",
-                }
+                },
+                new LocalizeTextManager.LocalizeTextEntity()
+                {
+                    key = "ui.base.welcome",
+                    text = language == "en-us" ? "welcome" : "欢迎",
+                },                
             };
         }
 

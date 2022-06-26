@@ -12,6 +12,8 @@ namespace MyFramework.Runtime.Services.Localization
         {
             // read
             textManager = new LocalizeTextManager("zh-cn"); // todo read language from system or setting
+            MountTextSpace("const");
+            MountTextSpace("ui.base");
         }
 
         public void MountTextSpace(string space) => textManager.MountSpace(space);

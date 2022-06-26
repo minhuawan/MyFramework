@@ -83,7 +83,7 @@ namespace MyFramework.Runtime.Services.Localization
             {
                 if (textSpace.entities.TryGetValue(key, out var entity))
                 {
-                    return entity.key;
+                    return entity.text;
                 }
             }
 
