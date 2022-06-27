@@ -1,0 +1,7 @@
+﻿{
+  "space": "ui.mainpageview",
+  "language": "zh-cn",
+  "entities": {
+    "welcome": "欢迎, 你是第 {0} 次来到这里。"
+  }
+}

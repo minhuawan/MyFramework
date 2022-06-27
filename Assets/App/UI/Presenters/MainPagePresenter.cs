@@ -1,5 +1,7 @@
 ﻿using App.UI.Views;
 using MyFramework;
+using MyFramework.Runtime.Services.Localization;
+using MyFramework.Runtime.Services.LocalStorage;
 using MyFramework.Runtime.Services.UI;
 
 namespace App.UI.Presenters
@@ -18,6 +20,13 @@ namespace App.UI.Presenters
             view = View.As<MainPageView>();
             view.DialogEvent.AddListener(OnDialog);
             view.TestPageEvent.AddListener(TestPage);
+
+            var storage = Application.GetService<LocalStorageService>().User;
+            storage.Get("playCount", out int count);
+            storage.Set("playCount", ++count).Flush();
+            var content = LocalizeText("welcome");
+            var title = string.Format(content, count);
+            view.SetTitle(title);
             base.OnWillAppear();
         }
 

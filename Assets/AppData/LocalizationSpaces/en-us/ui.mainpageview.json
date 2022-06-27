@@ -1,0 +1,7 @@
+﻿{
+  "space": "ui.mainpageview",
+  "language": "es-us",
+  "entities": {
+    "welcome": "Welcome, you are {0} times to here."
+  }
+}

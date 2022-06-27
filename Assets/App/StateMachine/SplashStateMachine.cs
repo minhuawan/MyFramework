@@ -7,12 +7,13 @@ using MyFramework.Runtime.Services.UI;
 
 namespace App.StateMachine
 {
-    public class SplashStateMachine : AStateMachine
+    public class SplashStateMachine : AbstructStateMachine
     {
         public override void OnEnter(StateMachineContext context)
         {
             Application.GetService<TimerService>().everyFrame.AddListener(OnUpdate);
-            // await Application.GetService<UIService>().NavigateLocator(PresenterLocator.Launch);
+
+            Application.GetService<UIService>().ClearHistory();
             OpenSplash();
         }
 
@@ -31,9 +32,8 @@ namespace App.StateMachine
         private void OpenSplash()
         {
             var localizationService = Application.GetService<LocalizationService>();
-            var gameName = localizationService.Translate("const.game-name");
-            var welcome = localizationService.Translate("ui.base.welcome");
-            Application.GetService<TimerService>().everyFrame.RemoveListener(OnUpdate);
+            var gameName = localizationService.Translate("const", "game-name");
+            var welcome = localizationService.Translate("ui.base", "welcome");
             Application.GetService<UIService>()
                 .NavigateTo(
                     PresenterLocator.Create<SplashPresenter>(

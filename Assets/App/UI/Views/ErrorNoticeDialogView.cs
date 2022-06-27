@@ -9,9 +9,11 @@ namespace App.UI.Views
     {
         [SerializeField] private Text notice;
         [SerializeField] private ButtonView closeButton;
+        [SerializeField] private ButtonView copyButton;
 
 
         public ButtonView.ButtonEvent CloseClickEvent => closeButton.onClick;
+        public ButtonView.ButtonEvent CopyClickEvent => copyButton.onClick;
 
         public void SetNotice(string notice)
         {

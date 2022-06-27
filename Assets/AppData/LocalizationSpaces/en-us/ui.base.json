@@ -1,0 +1,9 @@
+﻿{
+  "space": "const",
+  "language": "es-us",
+  "entities": {
+    "welcome": "welcome",
+    "button-ok": "OK",
+    "button-copy": "COPY"
+  }
+}

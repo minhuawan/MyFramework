@@ -138,5 +138,11 @@ namespace MyFramework.Runtime.Services.UI
 
             navigatedProcessor.NavigatedBack();
         }
+
+        public void ClearHistory()
+        {
+            navigatedProcessor.ClearHistory();
+            dialogProcessor.ClearHistory();
+        }
     }
 }

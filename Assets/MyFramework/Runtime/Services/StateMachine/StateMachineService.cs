@@ -13,7 +13,7 @@
         {
         }
 
-        public void ChangeState<T>(StateMachineParam param = null) where T : AStateMachine, new()
+        public void ChangeState<T>(StateMachineParam param = null) where T : AbstructStateMachine, new()
         {
             var newStateMachine = new T();
             context.Param = param;

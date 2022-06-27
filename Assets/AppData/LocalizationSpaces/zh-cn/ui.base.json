@@ -1,0 +1,9 @@
+﻿{
+  "space": "ui.base",
+  "language": "zh-cn",
+  "entities": {
+    "welcome": "欢迎",
+    "button-ok": "好的",
+    "button-copy": "复制"
+  }
+}

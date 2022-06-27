@@ -5,17 +5,12 @@ namespace MyFramework.Runtime.Services.Localization
 {
     public class LocalizeTextManager
     {
-        public class LocalizeTextEntity
-        {
-            public string key;
-            public string text;
-        }
-
+        [Newtonsoft.Json.JsonObject]
         public class LocalizeTextSpace
         {
             public string space;
             public string language;
-            public Dictionary<string, LocalizeTextEntity> entities;
+            public Dictionary<string, string> entities;
         }
 
         private Dictionary<string, LocalizeTextSpace> spaces;
@@ -37,17 +32,12 @@ namespace MyFramework.Runtime.Services.Localization
                 return;
             }
 
-            var list = loader.Load(language, space);
-            var textSpace = new LocalizeTextSpace()
+            var textSpace = loader.Load(language, space);
+            if (textSpace == null)
             {
-                language = this.language,
-                space = space,
-                entities = new Dictionary<string, LocalizeTextEntity>(list.Count)
-            };
-            foreach (var entity in list)
-            {
-                textSpace.entities[entity.key] = entity;
+                return;
             }
+
             if (!space.Equals(textSpace.space))
             {
                 Debug.LogError($"Localize text space {space} load failed, space name not equals");
@@ -81,9 +71,9 @@ namespace MyFramework.Runtime.Services.Localization
         {
             if (spaces.TryGetValue(space, out var textSpace))
             {
-                if (textSpace.entities.TryGetValue(key, out var entity))
+                if (textSpace.entities.TryGetValue(key, out var text))
                 {
-                    return entity.text;
+                    return text;
                 }
             }
 

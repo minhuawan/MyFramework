@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MyFramework.Runtime.Services.Event.UI;
+using MyFramework.Runtime.Services.Localization;
 using UnityEngine;
 
 namespace MyFramework.Runtime.Services.UI
@@ -12,6 +13,8 @@ namespace MyFramework.Runtime.Services.UI
 
         protected PresenterLocator locator;
 
+        protected string requiredLocalizeSpace;
+
         public virtual bool IsDialog => false;
 
         protected void DispatchNavigateResult(NavigateResult result)
@@ -21,6 +24,12 @@ namespace MyFramework.Runtime.Services.UI
 
         protected void NavigateOk()
         {
+            if (!string.IsNullOrEmpty(requiredLocalizeSpace))
+            {
+                var localizationService = Application.GetService<LocalizationService>();
+                localizationService.MountTextSpace(requiredLocalizeSpace);
+            }
+
             DispatchNavigateResult(NavigateResult.Ok);
         }
 
@@ -46,6 +55,15 @@ namespace MyFramework.Runtime.Services.UI
         protected virtual void OnInstantiateView<T>(T view) where T : NavigatedView
         {
             View = view;
+            if (view != null)
+            {
+                var provider = view.GetComponent<NavigatedViewLocalizeSpaceProvider>();
+                if (provider != null)
+                {
+                    requiredLocalizeSpace = provider.Space;
+                }
+            }
+
             NavigateOk();
         }
 
@@ -69,6 +87,17 @@ namespace MyFramework.Runtime.Services.UI
             Application.GetService<UIService>().NavigatedBack();
         }
 
+        protected string LocalizeText(string key)
+        {
+            if (requiredLocalizeSpace == null)
+            {
+                Debug.LogError($"Localize text failed, current view no space required {this.GetType().FullName}");
+                return key;
+            }
+            var localizationService = Application.GetService<LocalizationService>();
+            return localizationService.Translate(requiredLocalizeSpace, key);
+        }
+
         public void Dispose()
         {
             if (View != null)
@@ -82,6 +111,12 @@ namespace MyFramework.Runtime.Services.UI
             }
 
             _disposables.Clear();
+
+            if (!string.IsNullOrEmpty(requiredLocalizeSpace))
+            {
+                var localizationService = Application.GetService<LocalizationService>();
+                localizationService.UnmountTextSpace(requiredLocalizeSpace);
+            }
         }
     }
 }

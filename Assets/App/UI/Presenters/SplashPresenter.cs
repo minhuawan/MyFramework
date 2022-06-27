@@ -1,5 +1,7 @@
-﻿using App.UI.Views;
+﻿using App.StateMachine;
+using App.UI.Views;
 using MyFramework;
+using MyFramework.Runtime.Services.StateMachine;
 using MyFramework.Runtime.Services.UI;
 
 namespace App.UI.Presenters
@@ -7,6 +9,7 @@ namespace App.UI.Presenters
     public class SplashPresenter : NavigatedPresenter
     {
         private SplashView view;
+
         public override void OnNavigate(PresenterLocator locator)
         {
             this.locator = locator;
@@ -32,11 +35,8 @@ namespace App.UI.Presenters
 
         private void OnButtonClick()
         {
-            // var locator = PresenterLocator.Create<TestDialogPresenter2>();
-            // Application.GetService<UIService>().NavigateTo(locator);
-            
-            var locator = PresenterLocator.Create<MainPagePresenter>();
-            Application.GetService<UIService>().NavigateTo(locator);
+            var stateMachineService = Application.GetService<StateMachineService>();
+            stateMachineService.ChangeState<MainStateMachine>();
         }
     }
 }

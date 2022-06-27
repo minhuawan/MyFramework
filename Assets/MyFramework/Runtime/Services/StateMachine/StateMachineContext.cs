@@ -5,8 +5,8 @@ namespace MyFramework.Runtime.Services.StateMachine
     public class StateMachineContext
     {
         public StateMachineService service;
-        public AStateMachine previous;
-        public AStateMachine current;
+        public AbstructStateMachine previous;
+        public AbstructStateMachine current;
         public StateMachineParam Param;
     }
 

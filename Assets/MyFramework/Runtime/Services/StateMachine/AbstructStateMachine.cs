@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MyFramework.Runtime.Services.StateMachine
 {
-    public abstract class AStateMachine : IDisposable
+    public abstract class AbstructStateMachine : IDisposable
     {
         protected List<IDisposable> _disposables = new List<IDisposable>();
         public Type MachineType => this.GetType();

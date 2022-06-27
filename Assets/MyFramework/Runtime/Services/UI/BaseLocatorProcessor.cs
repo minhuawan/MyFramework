@@ -121,6 +121,8 @@ namespace MyFramework.Runtime.Services.UI
                     $"exception on OnNavigateResult processing type is " +
                     $"{processingLocator.ClassName} message:\n {ex}";
                 Debug.LogError(msg);
+                var previous = processingLocator;
+                navigationResultListener?.Invoke(previous, NavigateResult.Exception(ex));
                 ResetStates(); // reset if catch exception
                 presenter.Dispose();
             }
@@ -397,6 +399,11 @@ namespace MyFramework.Runtime.Services.UI
             isBackOperation = true;
             // Process(backTarget);
             Application.GetService<UIService>().NavigateTo(backTarget);
+        }
+
+        public void ClearHistory()
+        {
+            history.Clear();
         }
     }
 }

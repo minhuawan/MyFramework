@@ -473,6 +473,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7837168354982301334}
   - component: {fileID: -8763859703850486556}
+  - component: {fileID: 8177837449408256525}
   m_Layer: 0
   m_Name: MainPageView
   m_TagString: Untagged
@@ -510,6 +511,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buttonDialog: {fileID: 6902346359726387952}
   buttonTestPage: {fileID: 8210670555603566069}
+  title: {fileID: 1431327682771561648}
+--- !u!114 &8177837449408256525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7837168354982301332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fe8232cd68540378ca4a5271899242c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _space: ui.mainpageview
+  texts: []
 --- !u!1 &7837168356204447118
 GameObject:
   m_ObjectHideFlags: 0
