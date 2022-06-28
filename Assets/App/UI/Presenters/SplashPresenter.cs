@@ -1,8 +1,11 @@
-﻿using App.StateMachine;
+﻿using System.IO;
+using App.StateMachine;
 using App.UI.Views;
-using MyFramework;
 using MyFramework.Runtime.Services.StateMachine;
 using MyFramework.Runtime.Services.UI;
+using MyFramework.Runtime.Services.VirtualFileSystem;
+using UnityEngine;
+using Application = MyFramework.Application;
 
 namespace App.UI.Presenters
 {
@@ -14,6 +17,18 @@ namespace App.UI.Presenters
         {
             this.locator = locator;
             InstantiateViewAsyncWithNavigateResult<SplashView>();
+
+            var virtualFileSystemService = Application.GetService<VirtualFileSystemService>();
+            var path = virtualFileSystemService.GetVFSPath("test/hello.txt");
+            Debug.Log($"test/hello.txt --> {path}");
+            if (File.Exists(path))
+            {
+                Debug.Log(File.ReadAllText(path));
+            }
+            else
+            {
+                File.WriteAllText(path, "I am hello.txt");
+            }
         }
 
         public override void OnWillAppear() // 这里直接把 view 传递过来？
