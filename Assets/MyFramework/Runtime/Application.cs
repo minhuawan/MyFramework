@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using App.StateMachine;
 using MyFramework.Runtime.Services;
+using MyFramework.Runtime.Services.Bootstrap;
 using MyFramework.Runtime.Services.StateMachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -53,7 +54,7 @@ namespace MyFramework
         private static void Initialize()
         {
             RegisterServices();
-            GetService<StateMachineService>().ChangeState<SplashStateMachine>();
+            GetService<BootstrapService>().Run();
         }
 
         private static void RegisterServices()

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using MyFramework.Runtime.Services.BusyMask;
 using MyFramework.Runtime.Services.Event.UI;
 using MyFramework.Runtime.Services.Localization;
 using UnityEngine;
@@ -94,6 +96,7 @@ namespace MyFramework.Runtime.Services.UI
                 Debug.LogError($"Localize text failed, current view no space required {this.GetType().FullName}");
                 return key;
             }
+
             var localizationService = Application.GetService<LocalizationService>();
             return localizationService.Translate(requiredLocalizeSpace, key);
         }
@@ -117,6 +120,31 @@ namespace MyFramework.Runtime.Services.UI
                 var localizationService = Application.GetService<LocalizationService>();
                 localizationService.UnmountTextSpace(requiredLocalizeSpace);
             }
+        }
+
+        protected static void RetainBusy()
+        {
+            Application.GetService<BusyMaskService>().RetainBusy();
+        }
+
+        protected static void ReleaseBusy()
+        {
+            Application.GetService<BusyMaskService>().ReleaseBusy();
+        }
+
+        protected static async void ExecuteTaskWithBusyMask(Func<Task> func)
+        {
+            RetainBusy();
+            try
+            {
+                await func();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
+            ReleaseBusy();
         }
     }
 }

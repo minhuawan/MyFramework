@@ -1,10 +1,14 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using App.StateMachine;
 using App.UI.Views;
+using MyFramework.Runtime.Services.Network;
+using MyFramework.Runtime.Services.Network.HTTP;
 using MyFramework.Runtime.Services.StateMachine;
 using MyFramework.Runtime.Services.UI;
 using MyFramework.Runtime.Services.VirtualFileSystem;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using Application = MyFramework.Application;
 
 namespace App.UI.Presenters
@@ -34,12 +38,28 @@ namespace App.UI.Presenters
         public override void OnWillAppear() // 这里直接把 view 传递过来？
         {
             view = View.As<SplashView>();
-            var parameters = locator.Parameters;
-            var welcome = parameters.Get<string>("welcome");
-            var afterWelcome = parameters.Get<string>("afterWelcome");
-            view.Initialize(welcome, afterWelcome);
+            view.Initialize();
+            view.SyncUpdateProgress(0f);
             view.ButtonClickEvent.AddListener(OnButtonClick);
             base.OnWillAppear();
+        }
+
+        public override async void OnDidAppear()
+        {
+            base.OnDidAppear();
+            Update();
+        }
+
+        private async void Update()
+        {
+            var request = CommonHttpRequest.GET("http://www.baidu.com");
+            var response = await Application.GetService<NetworkService>().Http.SendAsyncWithBusyMask(request);
+            if (!response.IsSuccessful)
+            {
+                var locator = PresenterLocator.Create<ErrorNoticeDialogPresenter>();
+                locator.Parameters.Put("message", response.Message);
+                Application.GetService<UIService>().NavigateTo(locator);
+            }
         }
 
         public override void OnWillDisappear()

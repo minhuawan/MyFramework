@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using App.UI.Presenters;
+using MyFramework.Runtime.Services.BusyMask;
 using MyFramework.Runtime.Services.Event;
 using UnityEngine;
 
@@ -12,8 +13,6 @@ namespace MyFramework.Runtime.Services.UI
         private BaseLocatorProcessor navigatedProcessor;
         private BaseLocatorProcessor dialogProcessor;
         private PresenterLocator errorNoticeLocator;
-        private UITransition transition;
-
         public override void OnCreated()
         {
             errorNoticeLocator = PresenterLocator.Create<ErrorNoticeDialogPresenter>();
@@ -25,15 +24,11 @@ namespace MyFramework.Runtime.Services.UI
             navigatedProcessor = new NavigateLocatorProcessor(NavigationResultListener);
             dialogProcessor = new DialogLocatorProcessor(NavigationResultListener);
             Application.GetService<EventService>().Subscribe<BackKeyEvent>(OnBackKey).AddTo(disposables);
-
-            var prefab = Resources.Load<UITransition>("UITransition");
-            transition = GameObject.Instantiate(prefab);
-            transition.gameObject.SetActive(false);
         }
 
         private void NavigationResultListener(PresenterLocator locator, NavigateResult result)
         {
-            transition.gameObject.SetActive(false);
+            Application.GetService<BusyMaskService>().ReleaseBusy();
             if (locator == null || locator == errorNoticeLocator)
                 return;
             var message = string.Empty;
@@ -94,6 +89,17 @@ namespace MyFramework.Runtime.Services.UI
             }
 
             disposables.Clear();
+            // if (transition != null)
+            // {
+            //     GameObject.Destroy(transition);
+            //     transition = null;
+            // }
+        }
+
+        public void NavigateTo<T>() where T : NavigatedPresenter
+        {
+            var locator = PresenterLocator.Create<T>();
+            NavigateTo(locator);
         }
 
 
@@ -114,12 +120,12 @@ namespace MyFramework.Runtime.Services.UI
 
             if (type.IsSubclassOf(typeof(DialogPresenter)))
             {
-                transition.gameObject.SetActive(true);
+                Application.GetService<BusyMaskService>().RetainBusy();
                 dialogProcessor.Process(locator);
             }
             else if (type.IsSubclassOf(typeof(NavigatedPresenter)))
             {
-                transition.gameObject.SetActive(true);
+                Application.GetService<BusyMaskService>().RetainBusy();
                 navigatedProcessor.Process(locator);
             }
             else

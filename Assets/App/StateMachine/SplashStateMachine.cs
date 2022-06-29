@@ -31,16 +31,18 @@ namespace App.StateMachine
 
         private void OpenSplash()
         {
-            var localizationService = Application.GetService<LocalizationService>();
-            var gameName = localizationService.Translate("const", "game-name");
-            var welcome = localizationService.Translate("ui.base", "welcome");
-            Application.GetService<UIService>()
-                .NavigateTo(
-                    PresenterLocator.Create<SplashPresenter>(
-                        new PresenterLocatorParameters()
-                            .Put("welcome", gameName)
-                            .Put("afterWelcome", welcome)
-                    ));
+            // var localizationService = Application.GetService<LocalizationService>();
+            // var gameName = localizationService.Translate("const", "game-name");
+            // var welcome = localizationService.Translate("ui.base", "welcome");
+            // Application.GetService<UIService>()
+            //     .NavigateTo(
+            //         PresenterLocator.Create<SplashPresenter>(
+            //             new PresenterLocatorParameters()
+            //                 .Put("welcome", gameName)
+            //                 .Put("afterWelcome", welcome)
+            //         ));
+            
+            Application.GetService<UIService>().NavigateTo<SplashPresenter>();
         }
     }
 }

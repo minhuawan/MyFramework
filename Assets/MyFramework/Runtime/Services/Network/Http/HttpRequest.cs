@@ -12,10 +12,17 @@ namespace MyFramework.Runtime.Services.Network.HTTP
         POST,
     }
 
+    public enum HttpResponseType
+    {
+        Json,
+        PlainText,
+    }
+
     public abstract class HttpRequest<T> where T : HttpResponse
     {
         public abstract HttpMethod Method { get; }
         public abstract string RequestPath { get; }
+        public virtual HttpResponseType ResponseType => HttpResponseType.Json;
 
 
         public virtual void SetRequestParam(IHttpRequestParam requestParam)

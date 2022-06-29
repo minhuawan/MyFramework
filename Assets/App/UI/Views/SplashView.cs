@@ -14,16 +14,30 @@ namespace App.UI.Views
         [SerializeField] private Image background;
         [SerializeField] private ButtonView buttonMain;
 
-        private string welcome;
-        private string afterWelcome;
+        // private string welcome;
+        // private string afterWelcome;
 
         public ButtonView.ButtonEvent ButtonClickEvent => buttonMain.onClick;
 
-        public void Initialize(string welcome, string afterWelcome)
+        // public void Initialize(string welcome, string afterWelcome)
+        // {
+        //     this.welcome = welcome;
+        //     this.afterWelcome = afterWelcome;
+        //     text.text = welcome;
+        // }
+
+        public void Initialize()
         {
-            this.welcome = welcome;
-            this.afterWelcome = afterWelcome;
-            text.text = welcome;
+            buttonMain.gameObject.SetActive(false);
+        }
+
+        public void SyncUpdateProgress(float p)
+        {
+            text.text = $"{p:P2}";
+            if (p >= 1)
+            {
+                buttonMain.gameObject.SetActive(true);
+            }
         }
 
         public override void OnWillAppear()
@@ -61,7 +75,7 @@ namespace App.UI.Views
         public override void OnDidAppear()
         {
             base.OnDidAppear();
-            text.text = afterWelcome;
+            // text.text = afterWelcome;
             buttonMain.gameObject.SetActive(true);
         }
     }

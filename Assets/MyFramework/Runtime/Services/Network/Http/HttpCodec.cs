@@ -6,6 +6,7 @@ namespace MyFramework.Runtime.Services.Network.HTTP
 {
     public class HttpCodec
     {
+        public static Type CommonType = typeof(CommonHttpResponse);
         public static byte[] Encode<T>(HttpRequest<T> httpRequest) where T : HttpResponse
         {
             if (httpRequest.Method == HttpMethod.POST)

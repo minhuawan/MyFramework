@@ -54,6 +54,7 @@ namespace MyFramework.Runtime.Services.UI
 
     public class PresenterLocator
     {
+        public bool ClearHistory { get; set; } // todo clear history in locator processor
         public bool InUsing { get; set; }
         public string ClassName { get; protected set; }
         public PresenterLocatorParameters Parameters { get; protected set; }

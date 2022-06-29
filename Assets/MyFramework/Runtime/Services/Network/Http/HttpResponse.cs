@@ -19,6 +19,5 @@ namespace MyFramework.Runtime.Services.Network.HTTP
             httpResponse.ResponseCode = code;
             return httpResponse;
         }
-        
     }
 }
