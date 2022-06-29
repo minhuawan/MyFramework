@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using UnityEditor;
-using UnityEditor.AddressableAssets.HostingServices;
-using UnityEditor.Build.Pipeline;
-using UnityEditor.UIElements;
+﻿using System.IO;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace MyFramework.Runtime.Services.Localization
@@ -29,7 +25,7 @@ namespace MyFramework.Runtime.Services.Localization
 
 
             var text = File.ReadAllText(filePath);
-            var textSpace = Newtonsoft.Json.JsonConvert.DeserializeObject<LocalizeTextManager.LocalizeTextSpace>(text);
+            var textSpace = JsonConvert.DeserializeObject<LocalizeTextManager.LocalizeTextSpace>(text);
             return textSpace;
 
 #else
