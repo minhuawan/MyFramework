@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using UnityEngine.Rendering;
 
 namespace MyFramework.Runtime.Services.VirtualFileSystem
 {
@@ -14,10 +16,10 @@ namespace MyFramework.Runtime.Services.VirtualFileSystem
             hash = new Hash();
             disk = new Disk();
             basePath = Path.Combine(UnityEngine.Application.persistentDataPath, "vfs");
-            TryInstall();
+            PrepareDirectories();
         }
 
-        private void TryInstall()
+        private void PrepareDirectories()
         {
             if (!Directory.Exists(basePath))
             {
@@ -51,6 +53,34 @@ namespace MyFramework.Runtime.Services.VirtualFileSystem
             var hash128 = hash.Hash128(filePath, out var head);
             var vfsPath = Path.Combine(basePath, head, hash128);
             return vfsPath;
+        }
+
+        public void WriteBytes(string filePath, ArraySegment<byte> bytes)
+        {
+            var vfsPath = GetVFSPath(filePath);
+            File.WriteAllBytes(vfsPath, bytes.Array);
+        }
+
+        private void WriteAsync(string filePath, ArraySegment<byte> bytes, Action onFinished)
+        {
+            throw new NotImplementedException("todo");
+        }
+
+        public ArraySegment<byte> ReadBytes(string filePath)
+        {
+            var vfsPath = GetVFSPath(filePath);
+            if (!File.Exists(vfsPath))
+            {
+                return default;
+            }
+
+            var bytes = File.ReadAllBytes(vfsPath);
+            return new ArraySegment<byte>(bytes);
+        }
+
+        public void ReadBytesAsync(string filePath, Action<ArraySegment<byte>> onFinished)
+        {
+            throw new NotImplementedException("todo");
         }
     }
 }
