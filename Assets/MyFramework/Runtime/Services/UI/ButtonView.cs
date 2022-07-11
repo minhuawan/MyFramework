@@ -82,6 +82,10 @@ namespace MyFramework.Runtime.Services.UI
         private void OnDestroy()
         {
             DOTween.Kill(transform);
+            onClick = null;
+            onPointerUp = null;
+            onPointerDown = null;
+            onLongClick = null;
         }
     }
 }
