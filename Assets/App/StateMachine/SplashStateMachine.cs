@@ -3,7 +3,8 @@ using MyFramework;
 using MyFramework.Runtime.Services.Localization;
 using MyFramework.Runtime.Services.StateMachine;
 using MyFramework.Runtime.Services.Timer;
-using MyFramework.Runtime.Services.UI;
+using MyFramework.Runtime.Services.UI2;
+using UIService = MyFramework.Runtime.Services.UI.UIService;
 
 namespace App.StateMachine
 {
@@ -41,8 +42,10 @@ namespace App.StateMachine
             //                 .Put("welcome", gameName)
             //                 .Put("afterWelcome", welcome)
             //         ));
-            
-            Application.GetService<UIService>().NavigateTo<SplashPresenter>();
+
+            // Application.GetService<UIService>().NavigateTo<SplashPresenter>();
+
+            Application.GetService<MyFramework.Runtime.Services.UI2.UIService>().SwitchRoot<MainPresenter>();
         }
     }
 }

@@ -7,30 +7,74 @@ namespace MyFramework.Runtime.Services.UI2
     public class SwitchableMvpContextManager : IMvpContextManager
     {
         private MvpContext current;
-        private MvpContext waitingContext;
+        private MvpContext processing;
         private Stack<MvpContext> history = new Stack<MvpContext>();
         private bool backLocking = false;
 
+        public void Switch(Type presenterType, Model model = null)
+        {
+            if (processing != null && processing == current && current.state >= MvpContext.PresenterState.Appeared)
+            {
+                processing = null;
+            }
+
+            if (processing != null)
+            {
+#if UNITY_EDITOR
+                Debug.LogWarning("have a processing context, please wait");
+#endif
+                return;
+            }
+
+            if (current != null && current.state <= MvpContext.PresenterState.Appeared)
+            {
+#if UNITY_EDITOR
+                Debug.LogWarning("current state not appeared, please wait");
+#endif
+                return;
+            }
+
+            if (backLocking)
+            {
+#if UNITY_EDITOR
+                Debug.LogError("back locking");
+#endif
+                return;
+            }
+
+
+            var mvpContext = MvpContext.OfType(this, presenterType, model);
+            SwitchContextInternal(mvpContext);
+        }
 
         private void SwitchContextInternal(MvpContext mvpContext)
         {
             try
             {
+                if (mvpContext == null)
+                {
+                    return;
+                }
+
                 if (current != null)
                 {
-                    waitingContext = mvpContext;
-                    current.MoveNextState();
-                    current.WhenDisposed(() =>
+                    processing = mvpContext;
+                    processing.WhenAppeared(() =>
                     {
-                        current = waitingContext;
-                        waitingContext = null;
                         current.MoveNextState();
+                        current.WhenDisposed(() =>
+                        {
+                            history.Push(current); // store history
+                            current = processing;
+                        });
                     });
+                    processing.MoveNextState();
                 }
                 else
                 {
-                    mvpContext.MoveNextState();
                     current = mvpContext;
+                    processing = mvpContext;
+                    mvpContext.MoveNextState();
                 }
             }
             catch (Exception ex)
@@ -39,35 +83,6 @@ namespace MyFramework.Runtime.Services.UI2
             }
         }
 
-        public void SwitchContext<T>(Model model = null) where T : Presenter
-        {
-            if (waitingContext != null)
-            {
-#if UNITY_EDITOR
-                Debug.LogWarning("have a waiting context, please wait");
-                return;
-#endif
-            }
-
-            if (current == null || current.state >= MvpContext.PresenterState.Appeared)
-            {
-#if UNITY_EDITOR
-                Debug.LogWarning("current state not appeared, please wait");
-                return;
-#endif
-            }
-
-            if (backLocking)
-            {
-#if UNITY_EDITOR
-                Debug.LogError("back locking");
-                return;
-#endif
-            }
-
-            var mvpContext = MvpContext.OfType<T>(this, model);
-            SwitchContextInternal(mvpContext);
-        }
 
         private void HandleException(Exception ex)
         {
@@ -83,27 +98,16 @@ namespace MyFramework.Runtime.Services.UI2
                 return;
             }
 
-            if (mvpContext != current)
+            if (mvpContext != processing)
             {
-                Debug.LogError("abort MvpContext should be current context, " +
+                Debug.LogError("abort MvpContext should be processing context, " +
                                $"mvpContext type: {mvpContext.presenter.GetType().FullName}, " +
-                               $"current type: {current.presenter.GetType().FullName}");
+                               $"current type: {processing.presenter.GetType().FullName}");
                 return;
             }
 
-            if (current.state < MvpContext.PresenterState.Appeared)
-            {
-                current.Dispose();
-                current = null;
-            }
-            else if (current.state == MvpContext.PresenterState.Appeared)
-            {
-                Back();
-            }
-            else
-            {
-                return; // already in dispose progress ?
-            }
+            processing.Dispose();
+            processing = null;
         }
 
         public void Back()
@@ -111,6 +115,12 @@ namespace MyFramework.Runtime.Services.UI2
             if (history == null || history.Count == 0)
             {
                 Debug.LogError("no history to back !!");
+                return;
+            }
+
+            if (processing != null)
+            {
+                Debug.LogError("have a context in processing, please wait");
                 return;
             }
 

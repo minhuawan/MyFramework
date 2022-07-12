@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace MyFramework.Runtime.Services.UI2
 {
@@ -16,6 +17,25 @@ namespace MyFramework.Runtime.Services.UI2
             Disposed,
         }
 
+        /*
+         *
+         * 普通的全局界面， 也不用那么详细的生命周期
+
+Initialize
+DidAppaerd
+OnBack  
+Dispose
+
+就够了吧 
+
+
+WillAppeare
+DidAppeared
+WillDisappeare
+DidDisappeared
+
+         */
+
         private static readonly Dictionary<PresenterState, PresenterState> NextStateMap
             = new Dictionary<PresenterState, PresenterState>()
             {
@@ -31,8 +51,9 @@ namespace MyFramework.Runtime.Services.UI2
         public PresenterState state { get; private set; }
         public Model model { get; private set; }
 
-        private SwitchableMvpContextManager manager;
+        private IMvpContextManager manager;
         private Action whenDisposed;
+        private Action whenAppeared;
 
 
         public void WhenDisposed(Action when)
@@ -41,7 +62,14 @@ namespace MyFramework.Runtime.Services.UI2
             whenDisposed += when;
         }
 
-        private MvpContext(SwitchableMvpContextManager manager, Presenter presenter, Model model)
+
+        public void WhenAppeared(Action when)
+        {
+            whenAppeared -= when;
+            whenAppeared += when;
+        }
+
+        private MvpContext(IMvpContextManager manager, Presenter presenter, Model model)
         {
             if (presenter == null)
             {
@@ -54,9 +82,15 @@ namespace MyFramework.Runtime.Services.UI2
             state = PresenterState.Created;
         }
 
-        public static MvpContext OfType<T>(SwitchableMvpContextManager manager, Model model = null) where T : Presenter
+        public static MvpContext OfType<T>(IMvpContextManager manager, Model model = null) where T : Presenter
         {
             var presenter = Activator.CreateInstance<T>();
+            return new MvpContext(manager, presenter, model);
+        }
+
+        public static MvpContext OfType(IMvpContextManager manager, Type presenterType, Model model = null)
+        {
+            var presenter = Activator.CreateInstance(presenterType) as Presenter;
             return new MvpContext(manager, presenter, model);
         }
 
@@ -75,36 +109,57 @@ namespace MyFramework.Runtime.Services.UI2
                                     $"presenter type: {presenter.GetType().FullName}");
             }
 
-            state = nextState;
-            if (state == PresenterState.Created)
+            try
             {
-                presenter.OnCreated(this);
+                var previous = state;
+                state = nextState;
+                if (previous == PresenterState.Created)
+                {
+                    presenter.OnCreated(this);
+                }
+                else if (previous == PresenterState.Initialize)
+                {
+                    presenter.WillAppear();
+                }
+                else if (previous == PresenterState.Appearing)
+                {
+                    presenter.DidAppeared();
+                    if (whenAppeared != null)
+                    {
+                        whenAppeared.Invoke();
+                        whenAppeared = null;
+                    }
+                }
+                else if (previous == PresenterState.Appeared)
+                {
+                    presenter.WillDisappear();
+                }
+                else if (previous == PresenterState.Disappearing)
+                {
+                    presenter.DidDisappeared();
+                }
+                else if (previous == PresenterState.Disappeared)
+                {
+                    presenter.Dispose();
+                }
+                else
+                {
+                    throw new Exception("move next state error, next state peer method not found, " +
+                                        $"next state is {nextState}, " +
+                                        $"presenter type {presenter.GetType().FullName}");
+                }
             }
-            else if (state == PresenterState.Initialize)
+            catch (Exception e)
             {
-                presenter.WillAppear();
+                Debug.LogException(e);
             }
-            else if (state == PresenterState.Appearing)
+        }
+
+        public void HandleBackKey()
+        {
+            if (state == PresenterState.Appeared)
             {
-                presenter.DidAppeared();
-            }
-            else if (state == PresenterState.Appeared)
-            {
-                presenter.WillDisappear();
-            }
-            else if (state == PresenterState.Disappearing)
-            {
-                presenter.DidDisappeared();
-            }
-            else if (state == PresenterState.Disappeared)
-            {
-                presenter.Dispose();
-            }
-            else
-            {
-                throw new Exception("move next state error, next state peer method not found, " +
-                                    $"next state is {nextState}, " +
-                                    $"presenter type {presenter.GetType().FullName}");
+                presenter.OnBackKey();
             }
         }
 

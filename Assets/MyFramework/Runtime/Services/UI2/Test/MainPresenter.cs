@@ -3,12 +3,15 @@ using UnityEngine;
 
 namespace MyFramework.Runtime.Services.UI2
 {
-    public class MainPresenter : Presenter
+    public class MainPresenter : RootPresenter
     {
         private MainView _view;
+        private MainModel model;
 
         public override void OnCreated(MvpContext context)
         {
+            model = new MainModel();
+            model.DialogTitle = "hello world";
             // send network message
             InstantiateView<MainView>(context);
         }
@@ -24,6 +27,7 @@ namespace MyFramework.Runtime.Services.UI2
 
         private void OnClick()
         {
+            Application.GetService<UIService>().ShowDialog<MainDialogPresenter>(model);
         }
     }
 }

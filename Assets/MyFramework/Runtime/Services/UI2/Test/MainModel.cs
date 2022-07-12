@@ -2,6 +2,6 @@
 {
     public class MainModel : Model
     {
-        
+        public string DialogTitle;
     }
 }

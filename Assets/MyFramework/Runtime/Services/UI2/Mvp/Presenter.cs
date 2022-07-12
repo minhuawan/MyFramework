@@ -64,14 +64,19 @@ namespace MyFramework.Runtime.Services.UI2
             {
                 Debug.LogError("InstantiateView error presenter is null");
             }
-            else if (context.state != MvpContext.PresenterState.Created)
+            else if (context.state != MvpContext.PresenterState.Initialize)
             {
-                Debug.LogError("InstantiateView state not created");
+                Debug.LogError("InstantiateView state not Initialize");
             }
             else
             {
                 View.InstantiateView<T>(v =>
                 {
+                    if (v == null)
+                    {
+                        context.Abort($"InstantiateView failed, type: {typeof(T).FullName}");
+                        return;
+                    }
                     context.presenter.view = v;
                     context.presenter.context = context;
                     context.MoveNextState();

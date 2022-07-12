@@ -39,7 +39,14 @@ namespace MyFramework.Runtime.Services.UI2
             }
 
             var viewPath = attribute.path;
-            Application.GetService<ContentService>().LoadContent();
+            if (!viewPath.EndsWith(".prefab"))
+            {
+                viewPath += ".prefab";
+            }
+            // todo 这里需要换成正常的加载
+            var unityObject = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(viewPath);
+            var view = UnityEngine.Object.Instantiate(unityObject);
+            callback(view);
         }
     }
 }

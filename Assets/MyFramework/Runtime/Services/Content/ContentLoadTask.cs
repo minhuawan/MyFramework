@@ -50,10 +50,33 @@ namespace MyFramework.Runtime.Services.Content
 #if UNITY_EDITOR
         private void StartLoadEditor()
         {
+            try
+            {
+                // todo 这里貌似不太行， 还要先加载依赖 
+                // 难受
+                
+                var unityObject = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
+                if (unityObject == null)
+                {
+                    throw new Exception("loaded unity object is null");
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
         }
 #endif
+
         private void StartLoadInternal()
         {
+            throw new NotImplementedException();
+        }
+
+        private void HandleException(Exception exception)
+        {
+            state = TaskState.Failed;
+            Debug.LogException(exception);
         }
 
 
