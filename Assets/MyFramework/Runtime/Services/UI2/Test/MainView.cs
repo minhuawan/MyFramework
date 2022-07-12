@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace MyFramework.Runtime.Services.UI2
 {
-    [View("UI/View/MainView")]
+    [UI2.ViewPath("UI/View/MainView")]
     public class MainView : View
     {
         [SerializeField] private ButtonView button;

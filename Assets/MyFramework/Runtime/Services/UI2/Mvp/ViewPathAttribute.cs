@@ -2,11 +2,11 @@
 
 namespace MyFramework.Runtime.Services.UI2
 {
-    public class ViewAttribute : Attribute
+    public class ViewPathAttribute : Attribute
     {
         public string path;
 
-        public ViewAttribute(string path)
+        public ViewPathAttribute(string path)
         {
             this.path = path;
         }

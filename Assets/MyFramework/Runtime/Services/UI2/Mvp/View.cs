@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
+using MyFramework.Runtime.Services.Content;
 using UnityEngine;
 
 namespace MyFramework.Runtime.Services.UI2
@@ -20,7 +22,24 @@ namespace MyFramework.Runtime.Services.UI2
 
         public static void InstantiateView<T>(Action<T> callback) where T : View
         {
-            callback(null);
+            var viewType = typeof(T);
+            var attribute = viewType.GetCustomAttribute<ViewPathAttribute>();
+            if (attribute == null)
+            {
+                Debug.LogError($"typeof view ViewPathAttribute not found: {viewType.FullName}");
+                callback(null);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(attribute.path))
+            {
+                Debug.LogError($"typeof view ViewPathAttribute path is null or empty: {viewType.FullName}");
+                callback(null);
+                return;
+            }
+
+            var viewPath = attribute.path;
+            Application.GetService<ContentService>().LoadContent();
         }
     }
 }
