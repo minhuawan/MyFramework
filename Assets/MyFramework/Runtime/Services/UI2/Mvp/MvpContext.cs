@@ -14,25 +14,6 @@ namespace MyFramework.Runtime.Services.UI2
             Dispose,
         }
 
-        /*
-         *
-         * 普通的全局界面， 也不用那么详细的生命周期
-
-Initialize
-DidAppaerd
-OnBack  
-Dispose
-
-就够了吧 
-
-
-WillAppeare
-DidAppeared
-WillDisappeare
-DidDisappeared
-
-         */
-
         private static readonly Dictionary<PresenterState, PresenterState> NextStateMap
             = new Dictionary<PresenterState, PresenterState>()
             {
