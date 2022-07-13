@@ -8,13 +8,10 @@ namespace MyFramework.Runtime.Services.UI2
     {
         public enum PresenterState
         {
-            Created,
+            Create,
             Initialize,
-            Appearing,
             Appeared,
-            Disappearing,
-            Disappeared,
-            Disposed,
+            Dispose,
         }
 
         /*
@@ -39,12 +36,9 @@ DidDisappeared
         private static readonly Dictionary<PresenterState, PresenterState> NextStateMap
             = new Dictionary<PresenterState, PresenterState>()
             {
-                [PresenterState.Created] = PresenterState.Initialize,
-                [PresenterState.Initialize] = PresenterState.Appearing,
-                [PresenterState.Appearing] = PresenterState.Appeared,
-                [PresenterState.Appeared] = PresenterState.Disappearing,
-                [PresenterState.Disappearing] = PresenterState.Disappeared,
-                [PresenterState.Disappeared] = PresenterState.Disposed,
+                [PresenterState.Create] = PresenterState.Initialize,
+                [PresenterState.Initialize] = PresenterState.Appeared,
+                [PresenterState.Appeared] = PresenterState.Dispose,
             };
 
         public Presenter presenter { get; private set; }
@@ -79,7 +73,7 @@ DidDisappeared
             this.manager = manager;
             this.model = model;
             this.presenter = presenter;
-            state = PresenterState.Created;
+            state = PresenterState.Create;
         }
 
         public static MvpContext OfType<T>(IMvpContextManager manager, Model model = null) where T : Presenter
@@ -96,7 +90,7 @@ DidDisappeared
 
         public void MoveNextState()
         {
-            if (state == PresenterState.Disposed)
+            if (state == PresenterState.Dispose)
             {
                 throw new Exception($"move next state error, state is disposed, " +
                                     $"presenter type: {presenter.GetType().FullName}");
@@ -111,17 +105,12 @@ DidDisappeared
 
             try
             {
-                var previous = state;
                 state = nextState;
-                if (previous == PresenterState.Created)
+                if (nextState == PresenterState.Initialize)
                 {
-                    presenter.OnCreated(this);
+                    presenter.Initialize(this);
                 }
-                else if (previous == PresenterState.Initialize)
-                {
-                    presenter.WillAppear();
-                }
-                else if (previous == PresenterState.Appearing)
+                else if (nextState == PresenterState.Appeared)
                 {
                     presenter.DidAppeared();
                     if (whenAppeared != null)
@@ -130,17 +119,9 @@ DidDisappeared
                         whenAppeared = null;
                     }
                 }
-                else if (previous == PresenterState.Appeared)
+                else if (nextState == PresenterState.Dispose)
                 {
-                    presenter.WillDisappear();
-                }
-                else if (previous == PresenterState.Disappearing)
-                {
-                    presenter.DidDisappeared();
-                }
-                else if (previous == PresenterState.Disappeared)
-                {
-                    presenter.Dispose();
+                    Dispose();
                 }
                 else
                 {
@@ -170,7 +151,7 @@ DidDisappeared
 
         public void Dispose()
         {
-            state = PresenterState.Disposed;
+            state = PresenterState.Dispose;
             presenter?.Dispose();
             if (whenDisposed != null)
             {

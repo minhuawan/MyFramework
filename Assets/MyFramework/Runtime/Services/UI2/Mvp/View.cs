@@ -9,7 +9,7 @@ namespace MyFramework.Runtime.Services.UI2
 {
     public abstract class View : MonoBehaviour, IDisposable
     {
-        protected List<IDisposable> disposables;
+        protected List<IDisposable> disposables = new List<IDisposable>();
 
         public T As<T>() where T : View
         {
@@ -18,6 +18,13 @@ namespace MyFramework.Runtime.Services.UI2
 
         public virtual void Dispose()
         {
+            foreach (var disposable in disposables)
+            {
+                disposable.Dispose();
+            }
+            disposables.Clear();
+
+            UnityEngine.Object.Destroy(this.gameObject);
         }
 
         public static void InstantiateView<T>(Action<T> callback) where T : View

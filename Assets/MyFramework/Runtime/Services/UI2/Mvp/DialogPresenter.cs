@@ -2,5 +2,10 @@
 {
     public class DialogPresenter : Presenter
     {
+        protected DialogView dialogView => base.view as DialogView;
+
+        public override void OnBackKey()
+        {
+        }
     }
 }
