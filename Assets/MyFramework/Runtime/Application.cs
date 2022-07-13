@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using App.StateMachine;
 using MyFramework.Runtime.Services;
 using MyFramework.Runtime.Services.Bootstrap;
+using MyFramework.Runtime.Services.Lua;
 using MyFramework.Runtime.Services.StateMachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -79,6 +80,8 @@ namespace MyFramework
             {
                 service.Initialize();
             }
+            
+            Application.GetService<LuaService>().Start();
         }
 
         public static T GetService<T>() where T : AbstractService
