@@ -1,3 +1,4 @@
+---@class Presenter
 local M = class("Presenter")
 
 function M:ctor()

@@ -10,8 +10,6 @@ namespace MyFramework.Runtime.Services.Lua
 
         public override void OnCreated()
         {
-            luaEnv = new LuaEnv();
-            luaEnv.AddLoader(CustomLoader);
         }
 
         public override void OnDestroy()
@@ -25,6 +23,9 @@ namespace MyFramework.Runtime.Services.Lua
 
         public void Start()
         {
+            luaEnv = new LuaEnv();
+            luaEnv.AddLoader(CustomLoader);
+            luaEnv.errorFuncRef
             luaEnv.DoString("require 'GameStart'");
         }
 
@@ -34,7 +35,6 @@ namespace MyFramework.Runtime.Services.Lua
             {
                 luaEnv.Dispose();
             }
-            luaEnv = new LuaEnv();
             Start();
         }
 

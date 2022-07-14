@@ -4,10 +4,11 @@
     Appeared = 3,
     Disposed = 4,
 }
+---@class MvpContext
 local M = class("MvpContext")
 
 function M:ctor()
-    
+    self._state = State.Created
 end
 
 return M
