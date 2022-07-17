@@ -25,7 +25,6 @@ namespace MyFramework.Runtime.Services.Lua
         {
             luaEnv = new LuaEnv();
             luaEnv.AddLoader(CustomLoader);
-            luaEnv.errorFuncRef
             luaEnv.DoString("require 'GameStart'");
         }
 

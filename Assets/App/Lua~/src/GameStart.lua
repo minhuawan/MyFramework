@@ -1,5 +1,6 @@
 function __G__TRACEBACK__(msg)
     local _msg = debug.traceback(msg, 3)
+    log.error(_msg)
     return _msg
 end
 
