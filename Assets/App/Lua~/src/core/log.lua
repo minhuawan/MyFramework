@@ -43,5 +43,9 @@ log = {
     error = function(fmt, ...)
         local message = format(fmt, ...)
         log2CSharp("error", message)
+    end,
+    exception = function(fmt, ...)
+        local message = format(fmt, ...)
+        error(message) -- lua native exception
     end
 }

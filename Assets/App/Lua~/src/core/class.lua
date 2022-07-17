@@ -1,5 +1,5 @@
 function class(name, super)
-    local clazz = { __name__ = name, super = super }
+    local clazz = { __cname = name, super = super }
     if super then
         setmetatable(clazz, { __index = super })
     end

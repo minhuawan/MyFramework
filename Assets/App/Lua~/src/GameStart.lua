@@ -1,3 +1,4 @@
+-- todo all csharp-call-lua function should pcall with that
 function __G__TRACEBACK__(msg)
     local _msg = debug.traceback(msg, 3)
     log.error(_msg)
@@ -5,7 +6,6 @@ function __G__TRACEBACK__(msg)
 end
 
 xpcall(function()
-    require("core.class")
-    require("core.constant.Defined")
+    require("core.preclude")
     require("ui.splash.SplashPresenter").new()
 end, __G__TRACEBACK__)
