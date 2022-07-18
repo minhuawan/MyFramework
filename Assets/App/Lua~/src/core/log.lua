@@ -47,5 +47,11 @@ log = {
     exception = function(fmt, ...)
         local message = format(fmt, ...)
         error(message) -- lua native exception
+    end,
+    assert = function(exp, fmt, ...)
+        if exp ~= true then
+            local message = format(fmt, ...)
+            assert(false, message)
+        end
     end
 }

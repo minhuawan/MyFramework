@@ -8,10 +8,16 @@
 ---@class MvpContext
 local M = class("MvpContext")
 
-function M:ctor(presenter, model)
-    ---@type Presenter
-    self.presenter = presenter
-    self.model = model
+---@param configuration table
+function M:ctor(configuration)
+    if not configuration then
+        log.exception("configuration is nil value")
+    end
+    self.configuration = configuration
+    self.presenter = configuration.mvp.presenter.new()
+    if configuration.mvp.model then
+        self.model = configuration.mvp.model.new()
+    end
     self._state = State.Created
 
     if not self.presenter then
@@ -38,6 +44,18 @@ function M:moveNextState()
     else
         log.exception("move next state error, state is {}", self._state)
     end
+end
+
+function M:createViewAsync(next)
+    if not self.presenter then
+        log.exception("createViewAsync error, presenter is nil")
+    end
+    local prefab = self.configuration.prefab
+    log.assert(type(prefab) == "string" and prefab ~= "", "prefab is nil or empty")
+    -- todo CS load
+    local gameObject
+    gameObject:SetActive(false)
+    next(gameObject)
 end
 
 return M

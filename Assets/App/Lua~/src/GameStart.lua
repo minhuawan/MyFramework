@@ -7,5 +7,4 @@ end
 
 xpcall(function()
     require("core.preclude")
-    require("ui.splash.SplashPresenter").new()
 end, __G__TRACEBACK__)
