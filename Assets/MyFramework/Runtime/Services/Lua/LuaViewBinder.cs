@@ -13,8 +13,8 @@ namespace MyFramework.Runtime.Services.Lua
 {
     public class LuaViewBinder : MonoBehaviour
     {
-        private List<GameObject> keys;
-        private List<Type> values;
+         
+        public SerializedDictionary<GameObject, SerializedType> dictionary;
     }
 
     [CustomEditor(typeof(LuaViewBinder))]
