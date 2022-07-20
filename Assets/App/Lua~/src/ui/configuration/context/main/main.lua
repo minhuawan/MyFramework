@@ -6,5 +6,4 @@ return {
     },
     type = 'switchable',
     prefab = "",
-    
 }

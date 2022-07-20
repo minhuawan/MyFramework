@@ -2,9 +2,11 @@
 #endif
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using MyFramework.Runtime.Services.UI;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,6 +20,7 @@ namespace MyFramework.Runtime.Services.Lua
         public List<Transform> Transforms;
         public List<Text> Texts;
         public List<Image> Images;
+        public List<ButtonView> ButtonViews;
     }
 
     [CustomEditor(typeof(LuaViewBinder))]
@@ -26,7 +29,10 @@ namespace MyFramework.Runtime.Services.Lua
         private List<Transform> transforms = new List<Transform>();
         private List<GameObject> gameObjects = new List<GameObject>();
         private List<Text> texts = new List<Text>();
-        private Regex nameRegex = new Regex("^#_[a-zA-Z][a-zA-Z0-9_-]*$");
+        private List<Image> images = new List<Image>();
+        private List<ButtonView> buttonViews = new List<ButtonView>();
+
+        private Regex nameRegex = new Regex("^#_[a-zA-Z][a-zA-Z0-9_]*$");
         private Regex typeRegex = new Regex("");
 
         public override void OnInspectorGUI()
@@ -65,6 +71,8 @@ namespace MyFramework.Runtime.Services.Lua
             binder.GameObjects = gameObjects;
             binder.Transforms = transforms;
             binder.Texts = texts;
+            binder.Images = images;
+            binder.ButtonViews = buttonViews;
             EditorUtility.SetDirty(binder.gameObject);
 
             var luaCode = ExportLuaCode();
@@ -99,6 +107,18 @@ namespace MyFramework.Runtime.Services.Lua
             {
                 texts.Add(text);
             }
+
+            var image = child.GetComponent<Image>();
+            if (image != null)
+            {
+                images.Add(image);
+            }
+
+            var buttonView = child.GetComponent<ButtonView>();
+            if (buttonView != null)
+            {
+                buttonViews.Add(buttonView);
+            }
         }
 
         private string ExportLuaCode()
@@ -110,11 +130,13 @@ namespace MyFramework.Runtime.Services.Lua
             sb.AppendLine("-- date " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             sb.AppendLine("--");
             sb.AppendLine("return {");
-            sb.AppendLine("    bind = function(binder)");
+            sb.AppendLine("    attach = function(binder)");
             sb.AppendLine("       return {");
             ExportComponent<Transform>(sb, "transforms", binder.transforms);
             ExportComponent<GameObject>(sb, "gameObjects", binder.gameObjects);
             ExportComponent<Text>(sb, "texts", binder.texts);
+            ExportComponent<Image>(sb, "images", binder.images);
+            ExportComponent<ButtonView>(sb, "buttonViews", binder.buttonViews);
             sb.AppendLine("       }");
             sb.AppendLine("    end");
             sb.AppendLine("}");

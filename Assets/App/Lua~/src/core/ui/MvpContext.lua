@@ -1,9 +1,10 @@
-﻿local State = {
+﻿local type_binder = typeof(CS.MyFramework.Runtime.Services.Lua.LuaViewBinder)
+local State = {
     Created = 1,
     Initialize = 2,
     Appear = 3,
     Disappear = 4,
-    Disposed = 5,
+    Dispose = 5,
 }
 ---@class MvpContext
 local M = class("MvpContext")
@@ -14,6 +15,7 @@ function M:ctor(configuration)
         log.exception("configuration is nil value")
     end
     self.configuration = configuration
+    ---@type Presenter
     self.presenter = configuration.mvp.presenter.new()
     if configuration.mvp.model then
         self.model = configuration.mvp.model.new()
@@ -26,7 +28,7 @@ function M:ctor(configuration)
 end
 
 function M:moveNextState()
-    if self._state == State.Disposed then
+    if self._state == State.Dispose then
         log.exception(
                 "move next state error, state are disposed, presenter type {}",
                 self.presenter.class.__cname
@@ -39,11 +41,19 @@ function M:moveNextState()
         self.presenter:appear()
     elseif self._state == State.Disappear then
         self.presenter:disappear()
-    elseif self._state == State.Disposed then
-        self.presenter:dispose()
+    elseif self._state == State.Dispose then
+        self:onDispose()
     else
         log.exception("move next state error, state is {}", self._state)
     end
+end
+
+function M:onDispose()
+    self.presenter:dispose()
+    self.view.binder = nil
+    CS.UnityEngine.Object.Destroy(self.view.gameObject)
+    self.view.gameObject = nil
+    self.view = nil
 end
 
 function M:createViewAsync(next)
@@ -53,9 +63,19 @@ function M:createViewAsync(next)
     local prefab = self.configuration.prefab
     log.assert(type(prefab) == "string" and prefab ~= "", "prefab is nil or empty")
     -- todo CS load
+
+    ---@type View
+    self.view = self.configuration.mvp.view.new()
     local gameObject
     gameObject:SetActive(false)
-    next(gameObject)
+    self.view.gameObject = gameObject
+    local binder = gameObject:GetComponent(type_binder)
+    if binder then
+        self.view.binder = binder
+    else
+        self.view.binder = nil
+    end
+    next(self.view)
 end
 
 return M
