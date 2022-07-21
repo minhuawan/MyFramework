@@ -132,11 +132,11 @@ namespace MyFramework.Runtime.Services.Lua
             sb.AppendLine("return {");
             sb.AppendLine("    attach = function(binder)");
             sb.AppendLine("       return {");
-            ExportComponent<Transform>(sb, "transforms", binder.transforms);
-            ExportComponent<GameObject>(sb, "gameObjects", binder.gameObjects);
-            ExportComponent<Text>(sb, "texts", binder.texts);
-            ExportComponent<Image>(sb, "images", binder.images);
-            ExportComponent<ButtonView>(sb, "buttonViews", binder.buttonViews);
+            ExportComponent<Transform>(sb, "Transforms", binder.transforms);
+            ExportComponent<GameObject>(sb, "GameObjects", binder.gameObjects);
+            ExportComponent<Text>(sb, "Texts", binder.texts);
+            ExportComponent<Image>(sb, "Images", binder.images);
+            ExportComponent<ButtonView>(sb, "ButtonViews", binder.buttonViews);
             sb.AppendLine("       }");
             sb.AppendLine("    end");
             sb.AppendLine("}");

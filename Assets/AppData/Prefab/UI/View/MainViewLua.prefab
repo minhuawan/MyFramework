@@ -426,14 +426,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GameObjects:
   - {fileID: 1612850446400816233}
-  - {fileID: 1670949474832804109}
+  - {fileID: 6491352806050691929}
   Transforms:
   - {fileID: 7564922384204662946}
-  - {fileID: 593668270152645101}
+  - {fileID: 6718243118288758122}
   Texts:
   - {fileID: 1431327682771561648}
-  - {fileID: 8876715659298763334}
-  Images: []
+  Images:
+  - {fileID: 1153400182596828933}
+  ButtonViews:
+  - {fileID: 6902346359726387952}
 --- !u!1 &7837168356204447118
 GameObject:
   m_ObjectHideFlags: 0

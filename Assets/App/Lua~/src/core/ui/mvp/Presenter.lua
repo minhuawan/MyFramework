@@ -5,6 +5,7 @@ local M = class("Presenter")
 function M:initialize(mvpContext)
     self._context = mvpContext
     mvpContext:createViewAsync(function(view)
+        ---@type View
         self._view = view
         self._view:initialize(mvpContext.model)
         mvpContext:moveNextState()
@@ -30,19 +31,6 @@ function M:dispose()
 end
 
 function M:onBackKey()
-end
-
----@param mvpContext MvpContext
----@param next fun(view: View)
-function M.InstantiateViewAsync(mvpContext, next)
-    if not mvpContext then
-        log.exception("InstantiateViewAsync error, context is nil")
-    end
-    if not mvpContext.presenter then
-        log.exception("InstantiateViewAsync error, presenter is nil")
-    end
-    local gameObject
-    mvpContext:createViewAsync(nil)
 end
 
 return M

@@ -55,7 +55,8 @@ namespace MyFramework
         private static void Initialize()
         {
             RegisterServices();
-            GetService<BootstrapService>().Run();
+            GetService<LuaService>().Start();
+            // GetService<BootstrapService>().Run();
         }
 
         private static void RegisterServices()
@@ -80,8 +81,6 @@ namespace MyFramework
             {
                 service.Initialize();
             }
-            
-            Application.GetService<LuaService>().Start();
         }
 
         public static T GetService<T>() where T : AbstractService
@@ -92,6 +91,11 @@ namespace MyFramework
             }
 
             throw new Exception($"service not registration, type: {typeof(T)}");
+        }
+
+        public static GameObject LoadGameObject(string path)
+        {
+            return UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(path);
         }
     }
 }

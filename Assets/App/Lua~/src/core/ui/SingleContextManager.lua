@@ -1,5 +1,5 @@
 local MvpContext = require("core.ui.MvpContext")
----@class SingleContextManager
+---@class SingleContextManager : Singleton
 local M = singleton("SingleContextManager")
 
 function M:ctor()
@@ -7,15 +7,16 @@ function M:ctor()
     self._current = nil
 end
 
-function M:show(context)
+function M:show(configuration)
     if self._current then
         log.warn("show warning, have a dialog show type {}", self._current.presenter.class.__cname)
         return
     end
-    if not context then
-        log.error("show error, context is nil value")
+    if not configuration then
+        log.error("show error, configuration is nil value")
         return
     end
+    local context = MvpContext.new(configuration)
     self._current = context
     self._current:moveNextState()
 end

@@ -64,9 +64,11 @@ function M:createViewAsync(next)
     log.assert(type(prefab) == "string" and prefab ~= "", "prefab is nil or empty")
     -- todo CS load
 
+    local unityObject = CS.MyFramework.Application.LoadGameObject(self.configuration.prefab)
+    local gameObject = CS.UnityEngine.Object.Instantiate(unityObject)
+
     ---@type View
     self.view = self.configuration.mvp.view.new()
-    local gameObject
     gameObject:SetActive(false)
     self.view.gameObject = gameObject
     local binder = gameObject:GetComponent(type_binder)

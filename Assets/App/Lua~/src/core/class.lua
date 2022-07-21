@@ -13,6 +13,9 @@ function class(name, super)
     return clazz
 end
 
+---@generic T
+---@class Singleton
+---@field getInstance fun(T):T
 function singleton(name, super)
     local clazz = class(name, super)
     clazz.__instance__ = nil
@@ -20,6 +23,8 @@ function singleton(name, super)
         if clazz.__instance__ == nil then
             clazz.__instance__ = clazz.new()
         end
+        assert(clazz.__instance__, "singleton is nil")
         return clazz.__instance__
     end
+    return clazz
 end

@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using MyFramework.Runtime.Services.UI;
+using UnityEditor;
 using XLua;
 
 namespace MyFramework.Runtime.Services.Lua
@@ -7,13 +10,21 @@ namespace MyFramework.Runtime.Services.Lua
     public class LuaService : AbstractService
     {
         private LuaEnv luaEnv;
+        private List<LuaFunction> functions;
 
         public override void OnCreated()
         {
+            functions = new List<LuaFunction>();
         }
 
         public override void OnDestroy()
         {
+            foreach (var fn in functions)
+            {
+                fn.Dispose();
+            }
+            functions.Clear();
+
             if (luaEnv != null)
             {
                 luaEnv.Dispose();
