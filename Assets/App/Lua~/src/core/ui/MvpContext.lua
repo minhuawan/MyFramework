@@ -42,14 +42,15 @@ function M:moveNextState()
     elseif self._state == State.Disappear then
         self.presenter:disappear()
     elseif self._state == State.Dispose then
-        self:onDispose()
+        self:dispose()
     else
         log.exception("move next state error, state is {}", self._state)
     end
 end
 
-function M:onDispose()
+function M:dispose()
     self.presenter:dispose()
+    self.view:dispose()
     self.view.binder = nil
     CS.UnityEngine.Object.Destroy(self.view.gameObject)
     self.view.gameObject = nil

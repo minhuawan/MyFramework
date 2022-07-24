@@ -54,4 +54,11 @@ function M:back()
     end
 end
 
+function M:dispose()
+    if self._current then
+        self._current:dispose()
+        self._current = nil
+    end
+end
+
 return M

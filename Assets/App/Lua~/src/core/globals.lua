@@ -1,10 +1,15 @@
 -- function handler
-function handler(obj, method)
+function bind(func, obj)
     assert(obj, "handler obj is nil")
-    assert(type(method == "function"), "method not a function")
+    assert(type(func == "function"), "method not a function")
     return function(...)
-        return method(obj, ...)
+        return func(obj, ...)
     end
+end
+
+OnLuaEnvDisposeBefore = function()
+    --require("xlua.util").print_func_ref_by_csharp()
+    require("core.ui.UIManager").getInstance():dispose()
 end
 
 function global_set(k, v)

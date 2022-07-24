@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MyFramework.Runtime.Services.UI;
 using UnityEditor;
+using UnityEngine;
 using XLua;
 
 namespace MyFramework.Runtime.Services.Lua
@@ -23,13 +25,10 @@ namespace MyFramework.Runtime.Services.Lua
             {
                 fn.Dispose();
             }
+
             functions.Clear();
 
-            if (luaEnv != null)
-            {
-                luaEnv.Dispose();
-                luaEnv = null;
-            }
+            DisposeLuaEnv();
         }
 
         public void Start()
@@ -39,12 +38,23 @@ namespace MyFramework.Runtime.Services.Lua
             luaEnv.DoString("require 'GameStart'");
         }
 
-        public void Restart()
+        private void DisposeLuaEnv()
         {
             if (luaEnv != null)
             {
+                var disposeFunc = luaEnv.Global.Get<LuaFunction>("OnLuaEnvDisposeBefore");
+                if (disposeFunc != null)
+                {
+                    disposeFunc.Call();
+                    disposeFunc.Dispose();
+                }
                 luaEnv.Dispose();
             }
+        }
+
+        public void Restart()
+        {
+            DisposeLuaEnv();
             Start();
         }
 

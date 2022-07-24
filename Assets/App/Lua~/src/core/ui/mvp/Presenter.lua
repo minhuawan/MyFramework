@@ -13,14 +13,14 @@ function M:initialize(mvpContext)
 end
 
 function M:appear()
-    self._view:appearAsync(handler(self, self.didAppeared))
+    self._view:appearAsync(bind(self.didAppeared, self))
 end
 
 function M:didAppeared()
 end
 
 function M:disappear()
-    self._view:disappearAsync(handler(self, self.didDisappeared))
+    self._view:disappearAsync(bind(self.didDisappeared, self))
 end
 
 function M:didDisappeared()

@@ -22,4 +22,9 @@ function M:switch(configuration)
     self._switchable:switch(configuration)
 end
 
+function M:dispose()
+    self._switchable:dispose()
+    self._single:dispose()
+end
+
 return M

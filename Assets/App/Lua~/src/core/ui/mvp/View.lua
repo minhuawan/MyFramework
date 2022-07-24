@@ -15,4 +15,8 @@ function M:disappearAsync(next)
     next()
 end
 
+function M:dispose()
+end
+
+
 return M
