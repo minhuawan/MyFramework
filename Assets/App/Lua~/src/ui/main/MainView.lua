@@ -22,6 +22,7 @@ function M:setTitle(str)
 end
 
 function M:dispose()
+    -- https://blog.csdn.net/weixin_42205596/article/details/90608478
     self._vars.ButtonViews.buttonOk.onClick:RemoveAllListeners()
     self._vars.ButtonViews.buttonOk.onClick:Invoke()
 end
