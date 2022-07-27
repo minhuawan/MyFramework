@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: fbfcba070f5e9c34982bb77d0f8b28fb
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Fira Sans Extra Condensed
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: d93bb987d95cabc4b9fe8646d21490a9, type: 3}
+  - {fileID: 12800000, guid: 818c00af58a797347b7cf609683d3f0d, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
