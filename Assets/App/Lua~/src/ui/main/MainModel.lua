@@ -1,4 +1,10 @@
 local Model = require("core.ui.mvp.Model")
-local MainModel = class("MainModel", Model)
+---@class MainModel : Model
+local M = class("MainModel", Model)
 
-return MainModel
+
+function M:getName()
+    return 'test'
+end
+
+return M

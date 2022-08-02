@@ -1,30 +1,31 @@
+local ButtonEvent = require("core.ui.ButtonEvent")
 local View = require("core.ui.mvp.View")
 ---@class MainView: View
 local M = class("MainView", View)
 
+---@param model MainModel
 function M:initialize(model)
-    self._times = 0
     self._vars = require("ui.configuration.vars.main").attach(self.binder)
-    self._vars.ButtonViews.buttonOk.onClick:AddListener(bind(self.onClick, self))
-end
 
+    self.editEvent = ButtonEvent.new(self._vars.ButtonViews.btnEdit)
+    self.startEvent = ButtonEvent.new(self._vars.ButtonViews.btnStart)
+    self.wikiEvent = ButtonEvent.new(self._vars.ButtonViews.btnWiki)
+    self.analysisEvent = ButtonEvent.new(self._vars.ButtonViews.btnAnalysis)
+    self.settingEvent = ButtonEvent.new(self._vars.ButtonViews.btnSetting)
+    self.patchEvent = ButtonEvent.new(self._vars.ButtonViews.btnPatch)
+    self.exitEvent = ButtonEvent.new(self._vars.ButtonViews.btnExit)
 
-function M:onClick()
-    self._times = self._times + 1
-    log.debug("main view button clicked {}", self._times)
-    if self._times > 5 then
-        self._vars.ButtonViews.buttonOk.onClick:RemoveAllListeners()
-    end
-end
-
-function M:setTitle(str)
-    self._vars.Texts.title.text = str
+    self._vars.Texts.nickname.text = model:getName()
 end
 
 function M:dispose()
-    -- https://blog.csdn.net/weixin_42205596/article/details/90608478
-    self._vars.ButtonViews.buttonOk.onClick:RemoveAllListeners()
-    self._vars.ButtonViews.buttonOk.onClick:Invoke()
+    self.editEvent:dispose()
+    self.startEvent:dispose()
+    self.wikiEvent:dispose()
+    self.analysisEvent:dispose()
+    self.settingEvent:dispose()
+    self.patchEvent:dispose()
+    self.exitEvent:dispose()
 end
 
 return M

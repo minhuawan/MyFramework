@@ -5,5 +5,5 @@ return {
         presenter = require("ui.main.MainPresenter")
     },
     type = 'switchable',
-    prefab = "Assets/AppData/Prefab/UI/View/MainViewLua.prefab",
+    prefab = "Assets/AppData/Prefab/STS/View/MainView.prefab",
 }
