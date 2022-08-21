@@ -9,7 +9,7 @@ end
 
 OnLuaEnvDisposeBefore = function()
     --require("xlua.util").print_func_ref_by_csharp()
-    require("core.ui.UIManager").getInstance():dispose()
+    require("core.ui.UIManager"):dispose()
 end
 
 function global_set(k, v)

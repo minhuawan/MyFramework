@@ -5,6 +5,10 @@ function M:ctor(buttonView)
     self._bv = buttonView
 end
 
+function M:create(buttonView)
+    return M.new(buttonView)
+end
+
 function M:subscribe(fn)
     log.assert(type(fn) == 'function')
     if not self._clicks then

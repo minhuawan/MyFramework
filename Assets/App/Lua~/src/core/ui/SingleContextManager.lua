@@ -7,7 +7,7 @@ function M:ctor()
     self._current = nil
 end
 
-function M:show(configuration)
+function M:singleShow(configuration)
     if self._current then
         log.warn("show warning, have a dialog show type {}", self._current.presenter.class.__cname)
         return

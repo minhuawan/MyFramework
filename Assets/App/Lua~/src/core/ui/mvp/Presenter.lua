@@ -8,7 +8,7 @@ function M:initialize(mvpContext)
         ---@type View
         self._view = view
         self._view:initialize(mvpContext.model)
-        mvpContext:moveNextState()
+        mvpContext:moveNextState("createViewCallback")
     end)
 end
 
@@ -24,7 +24,7 @@ function M:disappear()
 end
 
 function M:didDisappeared()
-    self._context:moveNextState()
+    self._context:moveNextState("didDisappeared")
 end
 
 function M:dispose()

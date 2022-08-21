@@ -1,10 +1,10 @@
+local UIManager = require("core.ui.UIManager")
 local Presenter = require("core.ui.mvp.Presenter")
 ---@class MainPresenter : Presenter
 ---@field _view MainView
 local M = class("MainPresenter", Presenter)
 
 function M:didAppeared()
-    log.debug("start")
     self._view.editEvent:subscribe(bind(self.onEdit, self))
     self._view.startEvent:subscribe(bind(self.onStart, self))
     self._view.wikiEvent:subscribe(bind(self.onWiki, self))
@@ -12,7 +12,6 @@ function M:didAppeared()
     self._view.settingEvent:subscribe(bind(self.onSetting, self))
     self._view.patchEvent:subscribe(bind(self.onPatch, self))
     self._view.exitEvent:subscribe(bind(self.onExit, self))
-    log.debug("end")
 end
 
 function M:onEdit()
@@ -21,6 +20,8 @@ end
 
 function M:onStart()
     log.debug('start game')
+    local configuration = require("ui.configuration.context.start.start")
+    UIManager:switchTo(configuration)
 end
 
 function M:onWiki()

@@ -1,9 +1,11 @@
 local SwitchableContextManager = require("core.ui.SwitchableContextManager")
 local SingleContextManager = require("core.ui.SingleContextManager")
----@class UIManager : Singleton
-local M = singleton("UIManager")
+---@class UIManager
+local M = class("UIManager")
+---@type UIManager
+local __instance__
 
-function M:ctor()
+function M:initialize()
     ---@type SwitchableContextManager
     self._switchable = SwitchableContextManager.getInstance()
     ---@type SingleContextManager
@@ -14,12 +16,16 @@ function M:back()
 
 end
 
-function M:single(configuration)
-    self._single:show(configuration)
+function M:singleShow(configuration)
+    assert(type(configuration) == 'table', 'invalid configuration')
+    assert(configuration.type == 'single', 'invalid configuration type')
+    self._single:singleShow(configuration)
 end
 
-function M:switch(configuration)
-    self._switchable:switch(configuration)
+function M:switchTo(configuration)
+    assert(type(configuration) == 'table', 'invalid configuration')
+    assert(configuration.type == 'switchable', 'invalid configuration type')
+    self._switchable:switchTo(configuration)
 end
 
 function M:dispose()
@@ -27,4 +33,6 @@ function M:dispose()
     self._single:dispose()
 end
 
-return M
+__instance__ = M.new()
+
+return __instance__

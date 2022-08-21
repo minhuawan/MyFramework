@@ -28,6 +28,11 @@ local function format(fmt, ...)
 end
 
 log = {
+    verbose = function(fmt, ...)
+        local message = format(fmt, ...)
+        message = debug.traceback(message)
+        log2CSharp("log", message)
+    end,
     debug = function(fmt, ...)
         local message = format(fmt, ...)
         log2CSharp("log", message)
