@@ -27,15 +27,19 @@ end
 function M:onWiki()
     log.debug('wiki')
 end
+
 function M:onAnalysis()
     log.debug('analysis')
 end
+
 function M:onSetting()
     log.debug('setting')
 end
+
 function M:onPatch()
     log.debug('patch')
 end
+
 function M:onExit()
     log.debug('exit')
 end

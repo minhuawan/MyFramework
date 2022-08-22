@@ -2,7 +2,9 @@ local raw_error = _G.raw_error or error
 _G.raw_error = raw_error
 
 local function log2CSharp(type, message)
-    if type == "log" then
+    if type == "verbose" then
+        CS.UnityEngine.Debug.Log(message)
+    elseif type == "log" then
         CS.UnityEngine.Debug.Log(message)
     elseif type == "info" then
         CS.UnityEngine.Debug.LogInfo(message)
@@ -31,7 +33,7 @@ log = {
     verbose = function(fmt, ...)
         local message = format(fmt, ...)
         message = debug.traceback(message)
-        log2CSharp("log", message)
+        log2CSharp("verbose", message)
     end,
     debug = function(fmt, ...)
         local message = format(fmt, ...)

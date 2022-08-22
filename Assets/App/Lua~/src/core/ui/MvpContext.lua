@@ -1,4 +1,5 @@
-﻿local type_binder = typeof(CS.MyFramework.Runtime.Services.Lua.LuaViewBinder)
+﻿local TaskFactory = require("core.task.TaskFactory")
+local type_binder = typeof(CS.MyFramework.Runtime.Services.Lua.LuaViewBinder)
 local MvpContextState = require("core.ui.MvpContextState")
 ---@class MvpContext
 local M = class("MvpContext")
@@ -57,8 +58,8 @@ function M:moveNextState(from)
     log.debug("moveNextState start from {}", from or "NIL")
     if self._state == MvpContextState.Dispose then
         log.exception(
-                "move next state error, state are disposed, presenter type {}",
-                self.presenter.class.__cname
+            "move next state error, state are disposed, presenter type {}",
+            self.presenter.class.__cname
         )
     end
     log.verbose("move next state, current {}, next {}", self._state, self._state + 1)
@@ -75,7 +76,8 @@ function M:moveNextState(from)
         log.exception("move next state error, state is {}", self._state)
     end
     if self._stateListeners then
-        log.verbose("call state listener @{}, name:{}, state:{}, length: {}", tostring(self), self:getName(), self._state, #self._stateListeners)
+        log.verbose("call state listener @{}, name:{}, state:{}, length: {}", tostring(self), self:getName(), self._state
+            , #self._stateListeners)
         for _, l in ipairs(self._stateListeners) do
             l(self, self._state)
         end
@@ -118,7 +120,11 @@ function M:createViewAsync(next)
     else
         self.view.binder = nil
     end
-    next(self.view)
+    -- for avoid sync
+    TaskFactory:createTask()
+        :bind(bind(next, self.view))
+        :delay(1)
+        :start()
 end
 
 return M

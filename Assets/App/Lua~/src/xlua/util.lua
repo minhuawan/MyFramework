@@ -159,7 +159,7 @@ local function print_func_ref_by_csharp()
     for k, v in pairs(registry) do
         if type(k) == 'number' and type(v) == 'function' and registry[v] == k then
             local info = debug.getinfo(v)
-            print(string.format('%s:%d', info.short_src, info.linedefined))
+            print(string.format('%s:%d %s', info.short_src, info.linedefined))
         end
     end
 end
