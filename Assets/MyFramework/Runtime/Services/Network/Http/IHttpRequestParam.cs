@@ -8,5 +8,7 @@
         public void Set(string key, byte value);
         public void Set(string key, bool value);
         public void Set(string key, byte[] value);
+
+        public void SetJson(string json);
     }
 }

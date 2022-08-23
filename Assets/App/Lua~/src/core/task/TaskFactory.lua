@@ -30,9 +30,22 @@ function M:releaseTask(task)
     end
 end
 
-function M:tick()
-    for _, task in self._taskMap:iter() do
-        task:tick()
+function M:tick(deltaTime)
+    if self._taskMap:count() == 0 then
+        return
+    end
+    ---@param task TimeTask
+    for key, task in self._taskMap:iter() do
+        if not task:tick() then
+            self._taskMap:remove(key)
+        end
+    end
+end
+
+function M:disposeFactory()
+    if self._initialized then
+        self._tickWrapper = nil
+        self._initialized = false;
     end
 end
 

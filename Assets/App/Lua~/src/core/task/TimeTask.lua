@@ -5,17 +5,16 @@
 --
 
 
-
 ---@class TimeTask
 local M = class("TimeTask")
 
 function M:ctor()
-    self._createAt = os.time()
-    self._targetTime = os.time()
+    self._createAt = calendar.timestamp()
+    self._targetTime = calendar.timestamp()
     self._maxTimes = 1
     self._curTimes = 0
     self._interval = 0
-    self._invokeTime = 0
+    self._invokeTime = 1
 end
 
 function M:bind(callable)
@@ -49,30 +48,31 @@ end
 
 function M:tick()
     if not self._started then
-        return
+        return true
     end
     -- 1. check target time
     if self._targetTime then
-        if os.time() < self._targetTime then
-            return
+        if calendar.timestamp() < self._targetTime then
+            return true
         end
     end
     -- 2. check times
     if self._maxTimes then
         if self._curTimes >= self._maxTimes then
-            return
+            return false
         end
     end
     -- 3. check interval
     if self._interval > 0 then
-        if self._invokeTime + self._interval < os.time() then
-            return
+        if self._invokeTime + self._interval > calendar.timestamp() then
+            return true
         end
     end
 
-    self._invokeTime = os.time()
+    self._invokeTime = calendar.timestamp()
     self._curTimes = self._curTimes + 1
     self._callable()
+    return true
 end
 
 function M:release()

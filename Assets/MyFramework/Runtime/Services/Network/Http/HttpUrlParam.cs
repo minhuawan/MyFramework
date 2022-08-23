@@ -39,5 +39,10 @@ namespace MyFramework.Runtime.Services.Network.HTTP
         {
             query[key] = value.ToString();
         }
+
+        public void SetJson(string json)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

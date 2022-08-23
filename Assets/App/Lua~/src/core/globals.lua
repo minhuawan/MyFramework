@@ -1,18 +1,11 @@
 -- function handler
-local bc = 0
 function bind(func, obj)
     assert(obj, "handler obj is nil")
     assert(type(func == "function"), "method not a function")
-    bc = bc + 1
-    log.verbose("bind {}", bc)
-    return function(...)
+    local closure = function(...)
         return func(obj, ...)
     end
-end
-
-OnLuaEnvDisposeBefore = function()
-    require("xlua.util").print_func_ref_by_csharp()
-    require("core.ui.UIManager"):dispose()
+    return closure
 end
 
 function global_set(k, v)

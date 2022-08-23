@@ -5,6 +5,13 @@ function __G__TRACEBACK__(msg)
     return _msg
 end
 
+OnLuaEnvDisposeBefore = function()
+    CS.MyFramework.Runtime.Utils.UnityTickWrapper.ForceCleanAll()
+    require("core.ui.UIManager"):dispose()
+    require("core.task.TaskFactory"):disposeFactory()
+    os.time()
+end
+
 xpcall(function()
     require("core.preclude")
     local UIManager = require("core.ui.UIManager")

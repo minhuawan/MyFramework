@@ -21,6 +21,7 @@ namespace MyFramework.Runtime.Utils
         {
             foreach(var w in createdInstances)
             {
+                w.Value.updateTick = null;
                 GameObject.Destroy(w.Value.gameObject);
             }
             createdInstances.Clear();

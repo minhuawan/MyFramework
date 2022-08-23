@@ -1,8 +1,8 @@
-﻿﻿using System;
- using System.Collections.Generic;
- using System.Text;
- using Newtonsoft.Json;
- using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Newtonsoft.Json;
+using UnityEngine;
 
 namespace MyFramework.Runtime.Services.Network.HTTP
 {
@@ -12,7 +12,18 @@ namespace MyFramework.Runtime.Services.Network.HTTP
         // private WWWForm form = new WWWForm();
         // public WWWForm Form => form;
 
-        public byte[] data => Encoding.GetBytes(JsonConvert.SerializeObject(jsonDict));
+        private string rawSetJson;
+        public byte[] data
+        {
+            get
+            {
+                if (null != rawSetJson)
+                {
+                    return Encoding.GetBytes(JsonConvert.SerializeObject(rawSetJson));
+                }
+                return Encoding.GetBytes(JsonConvert.SerializeObject(jsonDict));
+            }
+        }
 
         private Dictionary<string, object> jsonDict = new Dictionary<string, object>();
 
@@ -50,6 +61,11 @@ namespace MyFramework.Runtime.Services.Network.HTTP
         {
             // form.AddBinaryData(key, value);
             jsonDict[key] = value;
+        }
+
+        public void SetJson(string json)
+        {
+            rawSetJson = json;
         }
     }
 }

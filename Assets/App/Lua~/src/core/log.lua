@@ -1,14 +1,15 @@
 local raw_error = _G.raw_error or error
 _G.raw_error = raw_error
 
-local function log2CSharp(type, message)
+local function log2CSharp(type, ...)
+    local message = table.concat({ "LUA: ", ... })
     if type == "verbose" then
         CS.UnityEngine.Debug.Log(message)
     elseif type == "log" then
         CS.UnityEngine.Debug.Log(message)
     elseif type == "info" then
-        CS.UnityEngine.Debug.LogInfo(message)
-    elseif type == "warning" then
+        CS.UnityEngine.Debug.Log(message)
+    elseif type == "warn" then
         CS.UnityEngine.Debug.LogWarning(message)
     elseif type == "error" then
         CS.UnityEngine.Debug.LogError(message)
@@ -32,8 +33,7 @@ end
 log = {
     verbose = function(fmt, ...)
         local message = format(fmt, ...)
-        message = debug.traceback(message)
-        log2CSharp("verbose", message)
+        log2CSharp(level, message, debug.traceback(message))
     end,
     debug = function(fmt, ...)
         local message = format(fmt, ...)
@@ -45,7 +45,7 @@ log = {
     end,
     warn = function(fmt, ...)
         local message = format(fmt, ...)
-        log2CSharp("warning", message)
+        log2CSharp("warn", message)
     end,
     error = function(fmt, ...)
         local message = format(fmt, ...)
@@ -60,5 +60,6 @@ log = {
             local message = format(fmt, ...)
             assert(false, message)
         end
-    end
+    end,
+    traceback = debug.traceback,
 }

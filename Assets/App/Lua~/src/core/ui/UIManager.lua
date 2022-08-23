@@ -29,8 +29,12 @@ function M:switchTo(configuration)
 end
 
 function M:dispose()
-    self._switchable:dispose()
-    self._single:dispose()
+    if self._switchable then
+        self._switchable:dispose()
+    end
+    if self._single then
+        self._single:dispose()
+    end
 end
 
 __instance__ = M.new()
