@@ -16,19 +16,7 @@ local function log2CSharp(type, ...)
     end
 end
 
-local function format(fmt, ...)
-    local message = tostring(fmt)
-    local args = { ... }
-    if #args == 0 then
-        return message
-    end
-    local i = 0
-    message = string.gsub(message, "%{%}", function(...)
-        i = i + 1
-        return tostring(args[i])
-    end)
-    return message
-end
+local format = formatter.string
 
 log = {
     verbose = function(fmt, ...)

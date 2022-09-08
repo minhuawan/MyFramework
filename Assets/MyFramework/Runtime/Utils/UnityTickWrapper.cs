@@ -19,7 +19,7 @@ namespace MyFramework.Runtime.Utils
 
         public static void ForceCleanAll()
         {
-            foreach(var w in createdInstances)
+            foreach (var w in createdInstances)
             {
                 w.Value.updateTick = null;
                 GameObject.Destroy(w.Value.gameObject);
@@ -36,15 +36,26 @@ namespace MyFramework.Runtime.Utils
         public delegate void UpdateTick(float time);
 
         private UpdateTick updateTick;
-        public void BindUpdateTick(UpdateTick tick)
+        private int rate = 1; // 1 frame 1 call, if rate is 2, 2 frame 1 call
+        private int frame = 0;
+        public void BindUpdateTick(UpdateTick tick, int rate)
         {
+            Debug.Assert(rate >= 1, "rate >= 1");
             updateTick = tick;
+            this.rate = rate;
+            frame = 0;
         }
 
         private void Update()
         {
             if (updateTick != null)
             {
+                if (rate > 1 && frame < rate)
+                {
+                    frame++;
+                    return;
+                }
+                frame = 0;
                 updateTick.Invoke(Time.deltaTime);
             }
         }

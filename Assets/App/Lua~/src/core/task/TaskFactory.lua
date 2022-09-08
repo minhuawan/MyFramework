@@ -1,4 +1,5 @@
 local TimeTask = require("core.task.TimeTask")
+---@class TaskFactory
 local M = class("TaskFactory")
 
 function M:initialize()
@@ -10,7 +11,7 @@ function M:initialize()
     self._taskMap = collections.map()
 
     self._tickWrapper = CS.MyFramework.Runtime.Utils.UnityTickWrapper.Create('Lua-TaskFactory')
-    self._tickWrapper:BindUpdateTick(bind(self.tick, self))
+    self._tickWrapper:BindUpdateTick(bind(self.tick, self), 60)
 end
 
 function M:createTask()

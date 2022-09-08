@@ -15,7 +15,7 @@ local function check_timestamp(timestamp)
 end
 
 local presets = {
-    std = {
+    ['std-datetime'] = {
         format = function(timestamp)
             check_timestamp(timestamp)
             return date("%Y-%m-%d %H:%M:%S", timestamp)
@@ -32,12 +32,12 @@ local presets = {
                 sec = tonumber(sec),
             }
         end
-    }
+    },
+    ['std-date'] = {},
+    ['std-time'] = {}
 }
 
-
 calendar = {}
-
 
 function calendar.synctime(now)
     offset = now - os.time()
@@ -66,7 +66,7 @@ end
 -- calendar.synctime(offset)
 -- print('synctime', offset)
 -- local now = calendar.timestamp()
--- local formatted = calendar.format(now, 'std')
+-- local formatted = calendar.format(now, 'std-datetime')
 -- print('formatted', formatted)
--- local reverse = calendar.reverse(formatted, 'std')
+-- local reverse = calendar.reverse(formatted, 'std-datetime')
 -- print('reverse', reverse)

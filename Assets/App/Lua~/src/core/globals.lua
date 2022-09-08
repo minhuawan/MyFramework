@@ -8,6 +8,15 @@ function bind(func, obj)
     return closure
 end
 
+function assert_f(condition, format, ...)
+    if condition then
+        return
+    else
+        local msg = formatter.string(format, ...)
+        error(msg, 2)
+    end
+end
+
 function global_set(k, v)
     rawset(_G, k, v)
 end
