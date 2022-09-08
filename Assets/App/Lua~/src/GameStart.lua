@@ -9,7 +9,9 @@ OnLuaEnvDisposeBefore = function()
     CS.MyFramework.Runtime.Utils.UnityTickWrapper.ForceCleanAll()
     require("core.ui.UIManager"):dispose()
     require("core.task.TaskFactory"):disposeFactory()
-    os.time()
+    --log.debug("=== START PRINT FUNC REF BY C-SHARP ===")
+    --require("xlua.util").print_func_ref_by_csharp()
+    --log.debug("=== END   PRINT FUNC REF BY C-SHARP ===")
 end
 
 xpcall(function()

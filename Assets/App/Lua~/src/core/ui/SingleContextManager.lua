@@ -9,11 +9,11 @@ end
 
 function M:singleShow(configuration)
     if self._current then
-        log.warn("show warning, have a dialog show type {}", self._current.presenter.class.__cname)
+        log.warn("[SingleContextManager] show warning, have a dialog show type {}", self._current.presenter.class.__cname)
         return
     end
     if not configuration then
-        log.error("show error, configuration is nil value")
+        log.error("[SingleContextManager] show error, configuration is nil value")
         return
     end
     local context = MvpContext.new(configuration)
@@ -23,15 +23,15 @@ end
 
 function M:hide(context)
     if not context then
-        log.error("hide error, context is nil value")
+        log.error("[SingleContextManager] hide error, context is nil value")
         return
     end
     if not self._current then
-        log.error("hide error, current context is nil, no context to hide")
+        log.error("[SingleContextManager] hide error, current context is nil, no context to hide")
         return
     end
     if self._current ~= context then
-        log.error("hide error, self._current ~= context")
+        log.error("[SingleContextManager] hide error, self._current ~= context")
         return
     end
     self._current:dispose()
@@ -39,9 +39,9 @@ function M:hide(context)
 end
 
 function M:abort(message)
-    log.error("abort message {}", message)
+    log.error("[SingleContextManager] abort message {}", message)
     if not self._current then
-        log.error("abort error current context is nil")
+        log.error("[SingleContextManager] abort error current context is nil")
         return
     end
     self._current:dispose()
