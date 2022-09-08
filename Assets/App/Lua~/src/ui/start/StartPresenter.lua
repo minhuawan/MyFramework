@@ -8,7 +8,7 @@ function M:didAppeared()
 end
 
 function M:onCloseEvent()
-    log.debug("close click {}", "hello")
+    self._context:moveNextState()
 end
 
 return M

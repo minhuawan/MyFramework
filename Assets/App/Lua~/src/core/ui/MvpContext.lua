@@ -1,4 +1,5 @@
-﻿local TaskFactory = require("core.task.TaskFactory")
+﻿local CanvasSortingBaseValue = 0
+local TaskFactory = require("core.task.TaskFactory")
 local type_binder = typeof(CS.MyFramework.Runtime.Services.Lua.LuaViewBinder)
 local MvpContextState = require("core.ui.MvpContextState")
 ---@class MvpContext
@@ -19,6 +20,13 @@ function M:ctor(configuration)
 
     if not self.presenter then
         log.exception("presenter is nil value")
+    end
+
+    CanvasSortingBaseValue = CanvasSortingBaseValue + 1
+    if self.configuration.type == 'switchable' then
+        self.canvasOrder = 1000 + CanvasSortingBaseValue
+    else
+        self.canvasOrder = CanvasSortingBaseValue
     end
 end
 
@@ -58,8 +66,8 @@ function M:moveNextState(from)
     log.debug("moveNextState start from {}", from or "NIL")
     if self._state == MvpContextState.Dispose then
         log.exception(
-            "move next state error, state are disposed, presenter type {}",
-            self.presenter.class.__cname
+                "move next state error, state are disposed, presenter type {}",
+                self.presenter.class.__cname
         )
     end
     log.verbose("move next state, current {}, next {}", self._state, self._state + 1)
@@ -77,7 +85,7 @@ function M:moveNextState(from)
     end
     if self._stateListeners then
         log.verbose("call state listener @{}, name:{}, state:{}, length: {}", tostring(self), self:getName(), self._state
-            , #self._stateListeners)
+        , #self._stateListeners)
         for _, l in ipairs(self._stateListeners) do
             l(self, self._state)
         end
@@ -97,6 +105,7 @@ function M:dispose()
     self.view.gameObject = nil
     self.view = nil
     self._stateListeners = nil
+    CanvasSortingBaseValue = CanvasSortingBaseValue - 1
 end
 
 function M:createViewAsync(next)
@@ -112,6 +121,13 @@ function M:createViewAsync(next)
 
     ---@type View
     self.view = self.configuration.mvp.view.new()
+    if self.canvasOrder then
+        local canvas = gameObject.transform:Find("Canvas"):GetComponent(typeof(CS.UnityEngine.Canvas))
+        if not canvas then
+            log.error("can't find canvas object in {}", self.view.class.__cname)
+        end
+        canvas.sortingOrder = self.canvasOrder
+    end
     gameObject:SetActive(false)
     self.view.gameObject = gameObject
     local binder = gameObject:GetComponent(type_binder)
@@ -122,9 +138,9 @@ function M:createViewAsync(next)
     end
     -- for avoid sync
     TaskFactory:createTask()
-        :bind(bind(next, self.view))
-        :delay(1)
-        :start()
+               :bind(bind(next, self.view))
+               :delay(1)
+               :start()
 end
 
 return M

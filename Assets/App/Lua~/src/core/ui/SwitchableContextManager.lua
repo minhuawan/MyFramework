@@ -13,6 +13,7 @@ function M:ctor()
     ---@private
     ---@type MvpContext
     self._processing = nil
+    --self._topCanvasOrder = 0
 end
 
 function M:switchTo(configuration)
@@ -25,6 +26,8 @@ function M:switchTo(configuration)
         return
     end
     local context = MvpContext.new(configuration)
+    --self._topCanvasOrder = self._topCanvasOrder + 1
+    --context:setViewCanvasOrder(self._topCanvasOrder)
     self._processingListener = bind(self.onProcessingStateChanged, self)
     context:addStateChangeListener(self._processingListener)
     table.insert(self._history, configuration)

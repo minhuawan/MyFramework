@@ -17,6 +17,7 @@ function assert_f(condition, format, ...)
     end
 end
 
+
 function global_set(k, v)
     rawset(_G, k, v)
 end

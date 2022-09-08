@@ -2,7 +2,6 @@
 local M = class("View")
 
 function M:initialize(model)
-
 end
 
 function M:appearAsync(next)
