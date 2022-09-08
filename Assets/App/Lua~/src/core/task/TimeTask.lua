@@ -71,8 +71,11 @@ function M:tick()
 
     self._invokeTime = calendar.timestamp()
     self._curTimes = self._curTimes + 1
-    self._callable()
-    return true
+    local ok, msg = pcall(self._callable)
+    if not ok then
+        log.error('TimeTask call failed with msg: {}', msg)
+    end
+    return ok
 end
 
 function M:release()
