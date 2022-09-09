@@ -30,7 +30,7 @@ function M:ctor(configuration)
     end
 end
 
-function M:getName()
+function M:getPrefabPath()
     if self.configuration then
         return self.configuration.prefab or "NIL"
     end
@@ -123,7 +123,7 @@ function M:createViewAsync(next)
     if self.canvasOrder then
         local canvas = gameObject.transform:Find("Canvas"):GetComponent(typeof(CS.UnityEngine.Canvas))
         if not canvas then
-            log.error("[MvpContext] can't find canvas object in {}", self.view.class.__cname)
+            log.error("[MvpContext] can't find canvas object in {}", self.view)
         end
         canvas.sortingOrder = self.canvasOrder
     end

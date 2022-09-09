@@ -1,8 +1,7 @@
 local raw_error = _G.raw_error or error
 _G.raw_error = raw_error
 
-local function log2CSharp(type, ...)
-    local message = table.concat({ "[", string.sub(type, 1, 3):upper(), "] ", ... })
+local function log2CSharp(type, message)
     if type == "verbose" then
         CS.UnityEngine.Debug.Log(message)
     elseif type == "log" then
@@ -16,36 +15,40 @@ local function log2CSharp(type, ...)
     end
 end
 
-local format = formatter.string
+local function format(tag, fmt, ...)
+    fmt = tostring(tag) .. ' ' .. tostring(fmt)
+    return formatter.string(fmt, ...)
+end
 
 log = {
     verbose = function(fmt, ...)
-        local message = format(fmt, ...)
+        local message = format("[ver]", fmt, ...)
         log2CSharp("verbose", debug.traceback(message))
     end,
     debug = function(fmt, ...)
-        local message = format(fmt, ...)
+        local message = format("[deb]", fmt, ...)
         log2CSharp("log", message)
     end,
     info = function(fmt, ...)
-        local message = format(fmt, ...)
+        local message = format("[inf]", fmt, ...)
         log2CSharp("log", message)
     end,
     warn = function(fmt, ...)
-        local message = format(fmt, ...)
+        local message = format("[war]", fmt, ...)
         log2CSharp("warn", message)
     end,
     error = function(fmt, ...)
-        local message = format(fmt, ...)
+        local message = format("[err]", fmt, ...)
         log2CSharp("error", message)
     end,
     exception = function(fmt, ...)
-        local message = format(fmt, ...)
-        error(message) -- lua native exception
+        local message = format("[exp]", fmt, ...)
+        error(message, 2) -- lua native exception
     end,
     assert = function(exp, fmt, ...)
-        if exp ~= true then
-            local message = format(fmt, ...)
+        if exp then
+        else
+            local message = format("[ass]", fmt, ...)
             assert(false, message)
         end
     end,

@@ -18,11 +18,11 @@ end
 
 function M:switchTo(configuration)
     if self._processing then
-        log.warn("[SwitchableContextManager] can not switch context, because have a processing context. name: {}", self._processing:getName())
+        log.warn("[SwitchableContextManager] can not switch context, because have a processing context. path: {}", self._processing:getPrefabPath())
         return
     end
     if self._current and not self._current:canSwitch() then
-        log.warn("[SwitchableContextManager] current context can not switch context. name: {}", self._processing:getName())
+        log.warn("[SwitchableContextManager] current context can not switch context. path: {}", self._processing:getPrefabPath())
         return
     end
     local context = MvpContext.new(configuration)
@@ -34,7 +34,7 @@ function M:switchTo(configuration)
     self._processing = context
     if not self._current then
         self._current = context
-        log.debug("[SwitchableContextManager] now current is {}", context:getName())
+        log.debug("[SwitchableContextManager] now current path: {}", context:getPrefabPath())
     end
     context:moveNextState()
     log.debug("[SwitchableContextManager] switch to {}", configuration.prefab)
@@ -47,7 +47,7 @@ end
 ---@private
 ---@param context MvpContext
 function M:onProcessingStateChanged(context, state)
-    log.debug("[SwitchableContextManager] onProcessingStateChanged context {} state {} ", context:getName(), state)
+    log.debug("[SwitchableContextManager] onProcessingStateChanged context path: {}, state {} ", context:getPrefabPath(), state)
     if not context or context ~= self._processing then
         -- log.debug("[SwitchableContextManager] context not processing context return")
         return
