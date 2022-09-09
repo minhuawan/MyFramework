@@ -2,11 +2,11 @@ local offset = 0
 local time = os.time
 local date = os.date
 os.time = function(...)
-    log.verbose('try to use with "calendar" for time/date manipulate')
+    log.warn('try to use with "calendar" for time/date manipulate')
     return time(...)
 end
 os.date = function(...)
-    log.verbose('try to use with "calendar" for time/date manipulate')
+    log.warn('try to use with "calendar" for time/date manipulate')
     return date(...)
 end
 

@@ -8,7 +8,7 @@ local M = class("MvpContext")
 ---@param configuration table
 function M:ctor(configuration)
     if not configuration then
-        log.exception("configuration is nil value")
+        log.exception("[MvpContext] configuration is nil value")
     end
     self.configuration = configuration
     ---@type Presenter
@@ -19,7 +19,7 @@ function M:ctor(configuration)
     self._state = MvpContextState.Created
 
     if not self.presenter then
-        log.exception("presenter is nil value")
+        log.exception("[MvpContext] presenter is nil value")
     end
 
     CanvasSortingBaseValue = CanvasSortingBaseValue + 1
@@ -38,7 +38,6 @@ function M:getName()
 end
 
 function M:addStateChangeListener(l)
-    log.verbose("addStateChangeListener")
     assert(type(l) == 'function', 'listener should be a function')
     if not self._stateListeners then
         self._stateListeners = {}
@@ -62,15 +61,15 @@ function M:removeStateChangeListener(l)
     end
 end
 
-function M:moveNextState(from)
-    log.debug("moveNextState start from {}", from or "NIL")
+function M:moveNextState()
     if self._state == MvpContextState.Dispose then
-        log.exception(
-                "move next state error, state are disposed, presenter type {}",
-                self.presenter.class.__cname
+        log.error(
+                "[MvpContext] move next state error, state are disposed, presenter type {}",
+                self.presenter
         )
+        return
     end
-    log.verbose("move next state, current {}, next {}", self._state, self._state + 1)
+    log.verbose("[MvpContext] perform moveNextState, current state {}, self: {}", self._state, self)
     self._state = self._state + 1
     if self._state == MvpContextState.Initialize then
         self.presenter:initialize(self)
@@ -81,16 +80,14 @@ function M:moveNextState(from)
     elseif self._state == MvpContextState.Dispose then
         self:dispose()
     else
-        log.exception("move next state error, state is {}", self._state)
+        log.exception("[MvpContext] move next state error, state is {}", self._state)
     end
     if self._stateListeners then
-        log.verbose("call state listener @{}, name:{}, state:{}, length: {}", tostring(self), self:getName(), self._state
-        , #self._stateListeners)
+        -- log.verbose("[MvpContext] call state listener, name:{}, state: {}", self:getName(), self._state)
         for _, l in ipairs(self._stateListeners) do
             l(self, self._state)
         end
     end
-    log.debug("moveNextState end from {}", from or "NIL")
 end
 
 function M:canSwitch()
@@ -99,18 +96,20 @@ end
 
 function M:dispose()
     self.presenter:dispose()
-    self.view:dispose()
-    self.view.binder = nil
-    CS.UnityEngine.Object.Destroy(self.view.gameObject)
-    self.view.gameObject = nil
-    self.view = nil
+    if self.view then
+        self.view:dispose()
+        self.view.binder = nil
+        CS.UnityEngine.Object.Destroy(self.view.gameObject)
+        self.view.gameObject = nil
+        self.view = nil
+    end
     self._stateListeners = nil
     CanvasSortingBaseValue = CanvasSortingBaseValue - 1
 end
 
 function M:createViewAsync(next)
     if not self.presenter then
-        log.exception("createViewAsync error, presenter is nil")
+        log.exception("[MvpContext] createViewAsync error, presenter is nil")
     end
     local prefab = self.configuration.prefab
     log.assert(type(prefab) == "string" and prefab ~= "", "prefab is nil or empty")
@@ -124,7 +123,7 @@ function M:createViewAsync(next)
     if self.canvasOrder then
         local canvas = gameObject.transform:Find("Canvas"):GetComponent(typeof(CS.UnityEngine.Canvas))
         if not canvas then
-            log.error("can't find canvas object in {}", self.view.class.__cname)
+            log.error("[MvpContext] can't find canvas object in {}", self.view.class.__cname)
         end
         canvas.sortingOrder = self.canvasOrder
     end

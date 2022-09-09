@@ -19,7 +19,6 @@ function M:onEdit()
 end
 
 function M:onStart()
-    log.debug('start game')
     local configuration = require("ui.configuration.context.start.start")
     UIManager:switchTo(configuration)
 end

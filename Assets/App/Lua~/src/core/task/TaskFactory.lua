@@ -14,6 +14,7 @@ function M:initialize()
     self._tickWrapper:BindUpdateTick(bind(self.tick, self), 60)
 end
 
+---@return TimeTask
 function M:createTask()
     self:initialize()
     local task = TimeTask.new()

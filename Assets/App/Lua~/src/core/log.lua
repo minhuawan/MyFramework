@@ -2,7 +2,7 @@ local raw_error = _G.raw_error or error
 _G.raw_error = raw_error
 
 local function log2CSharp(type, ...)
-    local message = table.concat({ "LUA: ", ... })
+    local message = table.concat({ "[", string.sub(type, 1, 3):upper(), "] ", ... })
     if type == "verbose" then
         CS.UnityEngine.Debug.Log(message)
     elseif type == "log" then
@@ -21,7 +21,7 @@ local format = formatter.string
 log = {
     verbose = function(fmt, ...)
         local message = format(fmt, ...)
-        log2CSharp(level, message, debug.traceback(message))
+        log2CSharp("verbose", debug.traceback(message))
     end,
     debug = function(fmt, ...)
         local message = format(fmt, ...)

@@ -5,7 +5,11 @@ function class(name, super)
         setmetatable(clazz, { __index = super })
     end
     clazz.new = function(...)
-        local instance = setmetatable({}, { __index = clazz })
+        local instance = {}
+        local addr = tostring(instance)
+        setmetatable(instance, { __index = clazz, __tostring = function(t)
+            return formatter.string("{}@{}", t.class.__cname, addr)
+        end })
         if clazz.ctor then
             clazz.ctor(instance, ...)
         end
@@ -13,6 +17,8 @@ function class(name, super)
     end
     return clazz
 end
+
+
 
 ---@generic T
 ---@class Singleton

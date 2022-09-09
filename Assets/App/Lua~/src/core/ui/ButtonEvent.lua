@@ -5,6 +5,7 @@ function M:ctor(buttonView)
     self._bv = buttonView
 end
 
+---@return ButtonEvent
 function M:create(buttonView)
     return M.new(buttonView)
 end
