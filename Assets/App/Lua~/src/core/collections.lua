@@ -59,6 +59,7 @@ end
 function list:set(index, value)
     assert(type(index) == 'number', 'index should be a number')
     assert(index >= 1 and self._count and index <= self._count, 'index out of range')
+    self._inner[index] = value
     return self
 end
 
@@ -111,7 +112,10 @@ end
 
 function map:get(key, default)
     assert(key ~= nil, 'key should not be a nil value')
-    return self._inner[key] or default
+    if self:has(key) then
+        return self._inner[key]
+    end
+    return default
 end
 
 function map:has(key)
