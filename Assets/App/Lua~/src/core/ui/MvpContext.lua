@@ -65,7 +65,7 @@ function M:moveNextState(from)
     end
     if self._state == MvpContextState.Initialize and from ~= 'create-view-async' then
         -- to avoid `move state` duplicate in async method performing
-        log.warn('[MvpContext] can not move next, because in `initialize` move without force')
+        log.warn('[MvpContext] can not move next, because in `initialize` move without force, target: {}', self.configuration.prefab)
         return
     end
     -- log.verbose("[MvpContext] perform moveNextState, current state {}, self: {}", self._state, self)

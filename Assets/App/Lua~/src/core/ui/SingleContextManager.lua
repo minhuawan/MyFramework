@@ -10,7 +10,7 @@ end
 
 function M:singleShow(configuration)
     if self._current then
-        log.warn("[SingleContextManager] show warning, have a dialog show type {}", self._current.presenter.class.__cname)
+        log.warn("[SingleContextManager] show warning, have a dialog show type: {}", self._current.presenter)
         return
     end
     if not configuration then
