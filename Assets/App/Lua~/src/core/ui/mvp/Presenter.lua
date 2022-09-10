@@ -8,7 +8,7 @@ function M:initialize(mvpContext)
         ---@type View
         self._view = view
         self._view:initialize(mvpContext.model)
-        mvpContext:moveNextState()
+        mvpContext:moveNextState('create-view-async')
     end)
 end
 
@@ -31,6 +31,7 @@ function M:dispose()
 end
 
 function M:onBackKey()
+    require("core.ui.UIManager"):onBackKey()
 end
 
 return M

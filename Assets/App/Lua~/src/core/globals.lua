@@ -8,7 +8,7 @@ end
 -- function handler
 function bind(func, obj)
     assert(obj, "handler obj is nil")
-    assert(type(func == "function"), "method not a function")
+    assert(type(func) == "function", "method not a function")
     local closure = function(...)
         return func(obj, ...)
     end
@@ -23,7 +23,6 @@ function assert_f(condition, format, ...)
         error(msg, 2)
     end
 end
-
 
 function global_set(k, v)
     rawset(_G, k, v)

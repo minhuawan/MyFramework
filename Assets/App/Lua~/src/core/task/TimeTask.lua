@@ -9,8 +9,8 @@
 local M = class("TimeTask")
 
 function M:ctor()
-    self._createAt = calendar.timestamp()
-    self._targetTime = calendar.timestamp()
+    self._createAt = CS.UnityEngine.Time.realtimeSinceStartup
+    self._targetTime = self._createAt
     self._maxTimes = 1
     self._curTimes = 0
     self._interval = 0
@@ -23,14 +23,15 @@ function M:bind(callable)
 end
 
 function M:delay(seconds)
-    assert(type(seconds) == 'number' and seconds > 0, 'delay second should great than zero.')
+    assert(type(seconds) == 'number' and seconds >= 0, 'delay seconds should great or equals zero.')
     self._targetTime = self._createAt + seconds
+
     return self
 end
 
-function M:interval(second)
-    assert(type(second) == 'number' and second > 0, 'interval second should great than zero.')
-    self._interval = second
+function M:interval(seconds)
+    assert(type(seconds) == 'number' and seconds > 0, 'interval seconds should great than zero.')
+    self._interval = seconds
     return self
 end
 
@@ -46,13 +47,15 @@ function M:start()
     return self
 end
 
-function M:tick()
+function M:tick(deltaTime)
     if not self._started then
         return true
     end
+
+    local now = CS.UnityEngine.Time.realtimeSinceStartup
     -- 1. check target time
     if self._targetTime then
-        if calendar.timestamp() < self._targetTime then
+        if now < self._targetTime then
             return true
         end
     end
@@ -64,16 +67,16 @@ function M:tick()
     end
     -- 3. check interval
     if self._interval > 0 then
-        if self._invokeTime + self._interval > calendar.timestamp() then
+        if self._invokeTime + self._interval > now then
             return true
         end
     end
 
-    self._invokeTime = calendar.timestamp()
+    self._invokeTime = now
     self._curTimes = self._curTimes + 1
     local ok, msg = pcall(self._callable)
     if not ok then
-        log.error('TimeTask call failed with msg: {}', msg)
+        log.error('TimeTask perform tick with error msg: {}', msg)
     end
     return ok
 end

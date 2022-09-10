@@ -23,6 +23,7 @@ function M:createTask()
 end
 
 function M:releaseTask(task)
+    self:initialize()
     local key = tostring(task)
     if self._taskMap:has(key) then
         ---@type TimeTask
@@ -38,7 +39,7 @@ function M:tick(deltaTime)
     end
     ---@param task TimeTask
     for key, task in self._taskMap:iter() do
-        if not task:tick() then
+        if not task:tick(deltaTime) then
             self._taskMap:remove(key)
         end
     end

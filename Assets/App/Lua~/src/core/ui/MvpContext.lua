@@ -17,6 +17,8 @@ function M:ctor(configuration)
         self.model = configuration.mvp.model.new()
     end
     self._state = MvpContextState.Created
+    ---@type list
+    self._stateListeners = collections.list()
 
     if not self.presenter then
         log.exception("[MvpContext] presenter is nil value")
@@ -24,10 +26,14 @@ function M:ctor(configuration)
 
     CanvasSortingBaseValue = CanvasSortingBaseValue + 1
     if self.configuration.type == 'switchable' then
-        self.canvasOrder = 1000 + CanvasSortingBaseValue
+        self.canvasOrder = CanvasSortingBaseValue
+    elseif configuration.type == 'single' then
+        self.canvasOrder = CanvasSortingBaseValue + 1000
     else
+        log.warn('[MvpContext] unknown type {}', self.configuration.type)
         self.canvasOrder = CanvasSortingBaseValue
     end
+
 end
 
 function M:getPrefabPath()
@@ -39,29 +45,17 @@ end
 
 function M:addStateChangeListener(l)
     assert(type(l) == 'function', 'listener should be a function')
-    if not self._stateListeners then
-        self._stateListeners = {}
-    end
-    table.insert(self._stateListeners, l)
+    self._stateListeners:append(l)
 end
 
 function M:removeStateChangeListener(l)
-    if type(l ~= "function") or not self._stateListeners then
-        return
-    end
-    local index
-    for i, listener in ipairs(self._stateListeners) do
-        if listener == i then
-            index = i
-            break
-        end
-    end
+    local index = self._stateListeners:find(l)
     if index then
-        table.remove(self._stateListeners, index)
+        self._stateListeners:remove(index)
     end
 end
 
-function M:moveNextState()
+function M:moveNextState(from)
     if self._state == MvpContextState.Dispose then
         log.error(
                 "[MvpContext] move next state error, state are disposed, presenter type {}",
@@ -69,7 +63,12 @@ function M:moveNextState()
         )
         return
     end
-    log.verbose("[MvpContext] perform moveNextState, current state {}, self: {}", self._state, self)
+    if self._state == MvpContextState.Initialize and from ~= 'create-view-async' then
+        -- to avoid `move state` duplicate in async method performing
+        log.warn('[MvpContext] can not move next, because in `initialize` move without force')
+        return
+    end
+    -- log.verbose("[MvpContext] perform moveNextState, current state {}, self: {}", self._state, self)
     self._state = self._state + 1
     if self._state == MvpContextState.Initialize then
         self.presenter:initialize(self)
@@ -78,33 +77,26 @@ function M:moveNextState()
     elseif self._state == MvpContextState.Disappear then
         self.presenter:disappear()
     elseif self._state == MvpContextState.Dispose then
-        self:dispose()
+        -- self:dispose()
+        -- delay perform
     else
-        log.exception("[MvpContext] move next state error, state is {}", self._state)
+        log.error("[MvpContext] move next state error, state is {}", self._state)
+        return
     end
-    if self._stateListeners then
-        -- log.verbose("[MvpContext] call state listener, name:{}, state: {}", self:getName(), self._state)
-        for _, l in ipairs(self._stateListeners) do
-            l(self, self._state)
+    for _, l in self._stateListeners:iter() do
+        local ok, msg = pcall(l, self, self._state)
+        if not ok then
+            log.error('[MvpContext] call state listener with error, msg: {}', msg)
         end
     end
+    if self._state == MvpContextState.Dispose then
+        self:dispose()
+    end
+    -- log.verbose("[MvpContext] call state listener, name:{}, state: {}", self:getName(), self._state)
 end
 
 function M:canSwitch()
     return self._state >= MvpContextState.Appear
-end
-
-function M:dispose()
-    self.presenter:dispose()
-    if self.view then
-        self.view:dispose()
-        self.view.binder = nil
-        CS.UnityEngine.Object.Destroy(self.view.gameObject)
-        self.view.gameObject = nil
-        self.view = nil
-    end
-    self._stateListeners = nil
-    CanvasSortingBaseValue = CanvasSortingBaseValue - 1
 end
 
 function M:createViewAsync(next)
@@ -138,8 +130,21 @@ function M:createViewAsync(next)
     -- for avoid sync
     TaskFactory:createTask()
                :bind(bind(next, self.view))
-               :delay(1)
+               :delay(0)
                :start()
+end
+
+function M:dispose()
+    self.presenter:dispose()
+    if self.view then
+        self.view:dispose()
+        self.view.binder = nil
+        CS.UnityEngine.Object.Destroy(self.view.gameObject)
+        self.view.gameObject = nil
+        self.view = nil
+    end
+    self._stateListeners:clear()
+    CanvasSortingBaseValue = CanvasSortingBaseValue - 1
 end
 
 return M

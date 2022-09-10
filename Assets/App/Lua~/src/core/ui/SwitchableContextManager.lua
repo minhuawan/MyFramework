@@ -6,14 +6,13 @@ local M = singleton("SwitchableContextManager")
 function M:ctor()
     ---@private
     ---@type stack
-    self._history = collections.stack()
+    self._histories = collections.stack()
     ---@private
     ---@type MvpContext
     self._current = nil
     ---@private
     ---@type MvpContext
     self._processing = nil
-    --self._topCanvasOrder = 0
 end
 
 function M:switchTo(configuration)
@@ -26,50 +25,51 @@ function M:switchTo(configuration)
         return
     end
     local context = MvpContext.new(configuration)
-    --self._topCanvasOrder = self._topCanvasOrder + 1
-    --context:setViewCanvasOrder(self._topCanvasOrder)
     self._processingListener = bind(self.onProcessingStateChanged, self)
     context:addStateChangeListener(self._processingListener)
-    self._history:push(configuration)
     self._processing = context
     if not self._current then
         self._current = context
-        log.debug("[SwitchableContextManager] now current path: {}", context:getPrefabPath())
+        -- log.debug("[SwitchableContextManager] now current path: {}", context:getPrefabPath())
     end
     context:moveNextState()
-    log.debug("[SwitchableContextManager] switch to {}", configuration.prefab)
-end
-
-function M:back()
-
+    -- log.debug("[SwitchableContextManager] switch to {}", configuration.prefab)
 end
 
 ---@private
 ---@param context MvpContext
 function M:onProcessingStateChanged(context, state)
-    log.debug("[SwitchableContextManager] onProcessingStateChanged context path: {}, state {} ", context:getPrefabPath(), state)
-    if not context or context ~= self._processing then
-        -- log.debug("[SwitchableContextManager] context not processing context return")
+    if state == MvpContextState.Appear then
+        if self._processing and self._processing == context and self._processing:canSwitch() then
+            if self._current == self._processing then
+                -- first
+                self._processing = nil
+            else
+                -- after first
+                self._current:moveNextState() -- should move to dispose
+                self._current = self._processing
+                self._processing = nil
+            end
+        end
+    elseif state == MvpContextState.Dispose then
+        self._histories:push(context.configuration)
+    end
+end
+
+function M:canHandleBack()
+    return self._histories and self._histories:count() > 0
+end
+
+function M:back()
+    if self._processing then
+        log.warn('[SwitchableContextManager] back canceled, because have a processing target')
+        return
+    elseif self._histories:count() == 0 then
+        log.warn('[SwitchableContextManager] back canceled, because history stack are empty')
         return
     end
-    if not self._processing:canSwitch() then
-        -- log.debug("[SwitchableContextManager] processing context can't switch return")
-        return
-    end
-
-    -- remove event listener
-    self._processing:removeStateChangeListener(self._processingListener)
-    self._processingListener = nil
-
-    if self._current == self._processing then
-        -- first
-        self._processing = nil
-    else
-        -- after first
-        self._current:moveNextState() -- should move to dispose
-        self._current = self._processing
-        self._processing = nil
-    end
+    local last = self._histories:pop()
+    self:switchTo(last)
 end
 
 function M:dispose()
@@ -80,12 +80,12 @@ function M:dispose()
         self._processing:dispose()
         self._processingListener = nil
     end
-    if self._history then
-        self._history:clear()
+    if self._histories then
+        self._histories:clear()
     end
     self._processing = nil
     self._current = nil
-    self._history = nil
+    self._histories = nil
 end
 
 return M

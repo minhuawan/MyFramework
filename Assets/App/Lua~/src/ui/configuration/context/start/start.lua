@@ -4,6 +4,6 @@ return {
         view = require("ui.start.StarView"),
         presenter = require("ui.start.StartPresenter")
     },
-    type = 'switchable',
+    type = 'single',
     prefab = "Assets/AppData/Prefab/STS/View/StartView.prefab",
 }

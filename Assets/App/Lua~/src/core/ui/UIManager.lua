@@ -10,22 +10,19 @@ function M:initialize()
     self._switchable = SwitchableContextManager.getInstance()
     ---@type SingleContextManager
     self._single = SingleContextManager.getInstance()
+
+    self._escapeKeyListener = CS.MyFramework.Runtime.Utils.EscapeKeyListener.Create('Lua-UIManager', bind(self.onBackKeyFromKeyboard, self))
 end
 
-function M:back()
-
-end
-
-function M:singleShow(configuration)
+function M:navigateTo(configuration)
     assert(type(configuration) == 'table', 'invalid configuration')
-    assert(configuration.type == 'single', 'invalid configuration type')
-    self._single:singleShow(configuration)
-end
-
-function M:switchTo(configuration)
-    assert(type(configuration) == 'table', 'invalid configuration')
-    assert(configuration.type == 'switchable', 'invalid configuration type')
-    self._switchable:switchTo(configuration)
+    if configuration.type == 'single' then
+        self._single:singleShow(configuration)
+    elseif configuration.type == 'switchable' then
+        self._switchable:switchTo(configuration)
+    else
+        log.assert(false, 'invalid configuration type: {}', configuration.type)
+    end
 end
 
 function M:dispose()
@@ -34,6 +31,23 @@ function M:dispose()
     end
     if self._single then
         self._single:dispose()
+    end
+
+    if self._escapeKeyListener then
+        self._escapeKeyListener:Dispose()
+        self._escapeKeyListener = nil
+    end
+end
+
+function M:onBackKeyFromKeyboard()
+    self:onBackKey()
+end
+
+function M:onBackKey()
+    if self._single:canHandleBack() then
+        self._single:back()
+    elseif self._switchable:canHandleBack() then
+        self._switchable:back()
     end
 end
 

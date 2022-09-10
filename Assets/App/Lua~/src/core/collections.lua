@@ -8,18 +8,21 @@ local stack = {}
 collections = {
     ---@return list
     list = function()
+        ---@type list
         local object = setmetatable({}, { __index = list })
         object:clear()
         return object
     end,
     ---@return map
     map = function()
+        ---@type map
         local object = setmetatable({}, { __index = map })
         object:clear()
         return object
     end,
     ---@return stack
     stack = function()
+        ---@type stack
         local object = setmetatable({}, { __index = stack })
         object:clear()
         return object
@@ -45,10 +48,19 @@ end
 
 function list:remove(index)
     assert(type(index) == 'number', 'index should be a number')
-    assert(index > 0 and index < self._count, 'index out of range')
+    assert(index >= 1 and index <= self._count, 'index out of range')
     table.remove(self._inner, index)
     self._count = self._count - 1
     return self
+end
+
+function list:find(value)
+    for i, v in self:iter() do
+        if v == value then
+            return i
+        end
+    end
+    return nil
 end
 
 function list:get(index)
@@ -171,6 +183,10 @@ function stack:pop()
     local c = self._count
     self._count = self._count - 1
     return table.remove(self._inner, c)
+end
+
+function stack:peek()
+    return self._inner[self._count]
 end
 
 function stack:count()

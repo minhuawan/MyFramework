@@ -33,7 +33,7 @@ namespace MyFramework.Runtime.Utils
             GameObject.Destroy(this.gameObject);
         }
 
-        public delegate void UpdateTick(float time);
+        public delegate void UpdateTick(float deltaTime);
 
         private UpdateTick updateTick;
         private int rate = 1; // 1 frame 1 call, if rate is 2, 2 frame 1 call
@@ -56,7 +56,7 @@ namespace MyFramework.Runtime.Utils
                     return;
                 }
                 frame = 0;
-                updateTick.Invoke(Time.deltaTime);
+                updateTick.Invoke(UnityEngine.Time.deltaTime);
             }
         }
     }

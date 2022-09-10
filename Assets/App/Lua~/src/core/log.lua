@@ -39,7 +39,7 @@ log = {
     end,
     error = function(fmt, ...)
         local message = format("[err]", fmt, ...)
-        log2CSharp("error", message)
+        log2CSharp("error", debug.traceback(message))
     end,
     exception = function(fmt, ...)
         local message = format("[exp]", fmt, ...)

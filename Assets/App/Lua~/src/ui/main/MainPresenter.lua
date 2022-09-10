@@ -20,7 +20,7 @@ end
 
 function M:onStart()
     local configuration = require("ui.configuration.context.start.start")
-    UIManager:switchTo(configuration)
+    UIManager:navigateTo(configuration)
 end
 
 function M:onWiki()
