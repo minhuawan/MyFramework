@@ -8,8 +8,8 @@
 ---@class TimeTask
 local M = class("TimeTask")
 
-function M:ctor()
-    self._createAt = CS.UnityEngine.Time.realtimeSinceStartup
+function M:ctor(now)
+    self._createAt = now
     self._targetTime = self._createAt
     self._maxTimes = 1
     self._curTimes = 0
@@ -47,15 +47,14 @@ function M:start()
     return self
 end
 
-function M:tick(deltaTime)
+function M:tick(realtimeSinceStartup, deltaTime)
     if not self._started then
         return true
     end
 
-    local now = CS.UnityEngine.Time.realtimeSinceStartup
     -- 1. check target time
     if self._targetTime then
-        if now < self._targetTime then
+        if realtimeSinceStartup < self._targetTime then
             return true
         end
     end
@@ -67,12 +66,12 @@ function M:tick(deltaTime)
     end
     -- 3. check interval
     if self._interval > 0 then
-        if self._invokeTime + self._interval > now then
+        if self._invokeTime + self._interval > realtimeSinceStartup then
             return true
         end
     end
 
-    self._invokeTime = now
+    self._invokeTime = realtimeSinceStartup
     self._curTimes = self._curTimes + 1
     local ok, msg = pcall(self._callable)
     if not ok then

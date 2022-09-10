@@ -6,6 +6,7 @@ function M:initialize()
     if self._initialized then
         return
     end
+    self._realtimeSinceStartup = CS.UnityEngine.Time.realtimeSinceStartup
     self._initialized = true
     ---@type map
     self._taskMap = collections.map()
@@ -17,7 +18,7 @@ end
 ---@return TimeTask
 function M:createTask()
     self:initialize()
-    local task = TimeTask.new()
+    local task = TimeTask.new(self._realtimeSinceStartup)
     self._taskMap:set(tostring(task), task)
     return task
 end
@@ -27,19 +28,20 @@ function M:releaseTask(task)
     local key = tostring(task)
     if self._taskMap:has(key) then
         ---@type TimeTask
-        local task = self._taskMap:get(key)
+        task = self._taskMap:get(key)
         task:release()
         self._taskMap:remove(key)
     end
 end
 
-function M:tick(deltaTime)
+function M:tick(realtimeSinceStartup, deltaTime)
+    self._realtimeSinceStartup = realtimeSinceStartup
     if self._taskMap:count() == 0 then
         return
     end
     ---@param task TimeTask
     for key, task in self._taskMap:iter() do
-        if not task:tick(deltaTime) then
+        if not task:tick(realtimeSinceStartup, deltaTime) then
             self._taskMap:remove(key)
         end
     end

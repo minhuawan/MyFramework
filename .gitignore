@@ -75,3 +75,6 @@ crashlytics-build.properties
 *.idea
 # vscode config
 *.vscode
+
+# xlua gen
+/Assets/XLua/Gen/*
