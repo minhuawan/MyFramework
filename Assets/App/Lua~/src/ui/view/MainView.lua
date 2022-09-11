@@ -5,7 +5,7 @@ local M = class("MainView", View)
 
 ---@param model MainModel
 function M:initialize(model)
-    self._vars = require("ui.configuration.vars.main").attach(self.binder)
+    self._vars = require("ui.configuration.vars.MainViewVars").attach(self.binder)
 
     self.editEvent = ButtonEvent:create(self._vars.ButtonViews.btnEdit)
     self.startEvent = ButtonEvent:create(self._vars.ButtonViews.btnStart)

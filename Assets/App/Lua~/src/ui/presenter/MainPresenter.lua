@@ -19,7 +19,7 @@ function M:onEdit()
 end
 
 function M:onStart()
-    local configuration = require("ui.configuration.context.start")
+    local configuration = require("ui.configuration.context.StartContext")
     UIManager:navigateTo(configuration)
 end
 

@@ -312,7 +312,7 @@ GameObject:
   - component: {fileID: 7734652453723316356}
   - component: {fileID: 5242896461232927949}
   m_Layer: 0
-  m_Name: menu_1
+  m_Name: '#_menu1'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -897,12 +897,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GameObjects:
   - {fileID: 7196061646564779882}
+  - {fileID: 3263283088608217477}
   Transforms:
   - {fileID: 2520839929375506372}
+  - {fileID: 3754123443770115446}
   Texts: []
-  Images: []
+  Images:
+  - {fileID: 7734652453723316356}
   ButtonViews:
   - {fileID: 9033187033207035622}
+  - {fileID: 5242896461232927949}
 --- !u!1 &7837168356204447118
 GameObject:
   m_ObjectHideFlags: 0

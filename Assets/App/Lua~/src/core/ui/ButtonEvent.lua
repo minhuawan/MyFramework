@@ -2,6 +2,8 @@
 local M = class("ButtonEvent")
 
 function M:ctor(buttonView)
+    ---@type map
+    self._map = collections.map()
     self._bv = buttonView
 end
 
@@ -11,43 +13,32 @@ function M:create(buttonView)
 end
 
 function M:subscribe(fn)
-    log.assert(type(fn) == 'function')
-    if not self._clicks then
-        self._clicks = {}
+    log.assert(type(fn) == 'function', '[ButtonEvent] subscribe `fn` not a function', self._name)
+    local k = tostring(fn)
+    if self._map:has(fn) then
+        log.warn('[ButtonEvent] subscribe duplicated, traceback: {}', log.traceback())
+        return
     end
-    table.insert(self._clicks, fn)
+    self._map:set(k, fn)
     self._bv.onClick:AddListener(fn)
 end
 
 function M:unsubscribe(fn)
     log.assert(type(fn) == 'function')
-    if not self._clicks then
-        log.warn('no function subscribed in this object')
-        return
+    local k = tostring(fn)
+    if self._map:has(k) then
+        self._map:remove(k)
+        self._bv.onClick:RemoveListener(fn)
     end
-    local index
-    for i = 1, self._clicks do
-        if self._clicks[i] == fn then
-            index = i
-            break
-        end
-    end
-    if not index then
-        log.warn('unsubscribe target not found in cache')
-        return
-    end
-    table.remove(self._clicks, index)
-    self._bv.onClick:RemoveListener(fn)
 end
 
 function M:dispose()
-    if self._clicks then
-        -- https://blog.csdn.net/weixin_42205596/article/details/90608478
-        self._bv.onClick:RemoveAllListeners()
-        self._bv.onClick:Invoke()
-        self._clicks = nil
-        self._bv = nil
-    end
+    -- https://blog.csdn.net/weixin_42205596/article/details/90608478
+    self._bv.onClick:RemoveAllListeners()
+    self._bv.onClick:Invoke()
+    self._map:clear()
+    self._map = nil
+    self._bv = nil
 end
 
 return M
