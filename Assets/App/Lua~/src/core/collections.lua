@@ -151,7 +151,6 @@ end
 function map:iter()
     local k = nil
     return function()
-        log.debug('map iter next key: {}, size: {}', k, self:count())
         k = next(self._inner, k)
         if k == nil then
             return
