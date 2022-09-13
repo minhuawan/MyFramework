@@ -103,6 +103,11 @@ function list:iter(b, e, s)
     end
 end
 
+function list:sort(fn)
+    table.sort(self._inner, fn)
+    return self
+end
+
 ---
 --- map
 ---
