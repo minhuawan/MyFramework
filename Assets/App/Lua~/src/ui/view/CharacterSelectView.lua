@@ -11,10 +11,10 @@ function M:initialize(model)
 
     self._vars.Texts.characterName.text = model:getName()
     self._vars.Texts.description.text = model:getDescription()
-    self._vars.Texts.goldText = model:getGoldText()
-    self._vars.Texts.hpText = model:getHpText()
-    self._vars.Texts.relicsName = model:getRelicsName()
-    self._vars.Texts.relicsDescription = model:getRelicsDescription()
+    self._vars.Texts.goldText.text = model:getGoldText()
+    self._vars.Texts.hpText.text = model:getHpText()
+    self._vars.Texts.relicsName.text = model:getRelicsName()
+    self._vars.Texts.relicsDescription.text = model:getRelicsDescription()
 
     self.characterSelectEvent = ButtonGroupEvent:create(
             {

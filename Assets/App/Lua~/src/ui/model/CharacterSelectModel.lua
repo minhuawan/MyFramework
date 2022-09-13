@@ -11,7 +11,7 @@ function M:getName()
 end
 
 function M:getHpText()
-    return '生命:   80/80'
+    return '生命:   100/9999'
 end
 
 function M:getGoldText()
