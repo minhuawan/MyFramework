@@ -44,6 +44,11 @@ function list:find(value)
     return nil
 end
 
+function list:contains(value)
+    local index = self:find(value)
+    return index ~= nil
+end
+
 function list:get(index)
     assert(type(index) == 'number', 'index should be a number')
     return self._inner[index]

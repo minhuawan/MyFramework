@@ -35,6 +35,15 @@ function stack:peek()
     return self._inner[self._count]
 end
 
+function stack:has(value)
+    for _, v in self:iter() do
+        if v == value then
+            return true
+        end
+    end
+    return false
+end
+
 function stack:count()
     return self._count
 end
