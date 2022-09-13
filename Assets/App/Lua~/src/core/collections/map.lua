@@ -13,10 +13,12 @@ end })
 function map:clear()
     self._inner = {}
     self._count = 0
+    self._iterating = false
     return self
 end
 
 function map:set(key, value)
+    assert(not self._iterating, 'do dot call `map.set` in iterating')
     assert(key ~= nil, 'key should not be a nil value')
     assert(value ~= nil, 'value should not be a nil value, if you want to remove, use remove')
     if not self:has(key) then
@@ -40,6 +42,7 @@ function map:has(key)
 end
 
 function map:remove(key)
+    assert(not self._iterating, 'do dot call `map.remove` in iterating')
     assert(key ~= nil, 'key should not be a nil value')
     if self:has(key) then
         self._inner[key] = nil
@@ -53,14 +56,39 @@ function map:count()
 end
 
 function map:iter()
+    assert(not self._iterating, 'map already in iterating')
+    self._iterating = true
     local k = nil
     return function()
+        if not self._iterating then
+            return
+        end
         k = next(self._inner, k)
         if k == nil then
+            self._iterating = false
             return
         end
         local v = self._inner[k]
         return k, v
+    end
+end
+
+function map:remove_if(fn)
+    assert(type(fn) == 'function', 'fn not a function')
+
+    local to_remove = {}
+    for k, v in self:iter() do
+        local ok, r = pcall(fn, k, v)
+        if not ok then
+            log.error('call remove_if with error msg: {}', r)
+            return
+        end
+        if r then
+            table.insert(to_remove, k)
+        end
+    end
+    for _, k in ipairs(to_remove) do
+        self:remove(k)
     end
 end
 
@@ -81,7 +109,7 @@ function map:tostring()
         return '{}'
     end
     local t = {}
-    for k, v in self:iter() do
+    for k, v in pairs(self._inner) do
         assert(k ~= self and v ~= self, 'map tostring failed, can not contains self')
         -- {"key": value}
         local key = tostring(k)

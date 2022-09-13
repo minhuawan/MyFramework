@@ -16,10 +16,12 @@ end })
 function list:clear()
     self._inner = {}
     self._count = 0
+    self._iterating = false
     return self
 end
 
 function list:append(value)
+    assert(not self._iterating, 'do dot call `list.append` in iterating')
     local idx = self._count
     idx = idx + 1
     self._inner[idx] = value
@@ -28,6 +30,7 @@ function list:append(value)
 end
 
 function list:remove(index)
+    assert(not self._iterating, 'do dot call `list.remove` in iterating')
     assert(type(index) == 'number', 'index should be a number')
     assert(index >= 1 and index <= self._count, 'index out of range')
     table.remove(self._inner, index)
@@ -55,6 +58,7 @@ function list:get(index)
 end
 
 function list:set(index, value)
+    assert(not self._iterating, 'do dot call `list.set` in iterating')
     assert(type(index) == 'number', 'index should be a number')
     assert(index >= 1 and self._count and index <= self._count, 'set index out of range')
     self._inner[index] = value
@@ -62,6 +66,7 @@ function list:set(index, value)
 end
 
 function list:insert(index, value)
+    assert(not self._iterating, 'do dot call `list.insert` in iterating')
     assert(type(index) == 'number', 'index should be a number')
     assert(index >= 1 and self._count and index <= self._count, 'insert index out of range')
     table.insert(self._inner, index, value)
@@ -82,6 +87,7 @@ function list:reverse()
 end
 
 function list:iter(b, e, s)
+    assert(not self._iterating, 'list already in iterating')
     if self._count == 0 then
         return function()
             return nil
@@ -102,11 +108,17 @@ function list:iter(b, e, s)
     elseif step == 0 then
         log.assert(false, 'invalid parameters with step = 0, b: {}, e: {}, s: {}', b, e, s)
     end
+    self._iterating = true
     local cursor = begin
     return function()
+        if not self._iterating then
+            return
+        end
         if step > 0 and cursor > end_ then
+            self._iterating = false
             return
         elseif step < 0 and cursor < end_ then
+            self._iterating = false
             return
         end
         local v = self._inner[cursor]
@@ -116,12 +128,14 @@ function list:iter(b, e, s)
 end
 
 function list:sort(fn)
+    assert(not self._iterating, 'do dot call `list.sort` in iterating')
     table.sort(self._inner, fn)
     return self
 end
 
 ---@param t1 list
 function list:concat(t1)
+    assert(not self._iterating, 'do dot call `list.concat` in iterating')
     local new = self:clone()
     for _, v in t1:iter() do
         new:append(v)
@@ -131,7 +145,7 @@ end
 
 function list:clone()
     local new = list()
-    for _, v in self:iter() do
+    for _, v in ipairs(self._inner) do
         new:append(v)
     end
     return new
@@ -154,7 +168,7 @@ function list:tostring()
         return '[]'
     end
     local t = {}
-    for _, v in self:iter() do
+    for _, v in ipairs(self._inner) do
         assert(v ~= self, 'list tostring failed, can not contains self')
         table.insert(t, tostring(v))
     end

@@ -16,7 +16,7 @@ function M:initialize(model)
     self._vars.Texts.relicsName = model:getRelicsName()
     self._vars.Texts.relicsDescription = model:getRelicsDescription()
 
-    self.characterSelectEvent = ButtonGroupEvent:createGroup(
+    self.characterSelectEvent = ButtonGroupEvent:create(
             {
                 self._vars.ButtonViews.buttonIron
             },

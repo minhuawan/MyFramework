@@ -47,7 +47,7 @@ function M:start()
     return self
 end
 
-function M:tick(realtimeSinceStartup, deltaTime)
+function M:tick(realtimeSinceStartup)
     if not self._started then
         return true
     end
@@ -69,6 +69,10 @@ function M:tick(realtimeSinceStartup, deltaTime)
         if self._invokeTime + self._interval > realtimeSinceStartup then
             return true
         end
+    end
+    -- 4. check callable
+    if not self._callable then
+        return false
     end
 
     self._invokeTime = realtimeSinceStartup

@@ -13,6 +13,8 @@ function M:initialize()
 
     self._tickWrapper = CS.MyFramework.Runtime.Utils.UnityTickWrapper.Create('Lua-TaskFactory')
     self._tickWrapper:BindUpdateTick(bind(self.tick, self), 60)
+
+    self._removeTick = bind(self.removeTick, self)
 end
 
 ---@return TimeTask
@@ -23,14 +25,15 @@ function M:createTask()
     return task
 end
 
+---@param task TimeTask
 function M:releaseTask(task)
     self:initialize()
     local key = tostring(task)
     if self._taskMap:has(key) then
-        ---@type TimeTask
         task = self._taskMap:get(key)
         task:release()
-        self._taskMap:remove(key)
+        -- self._taskMap:remove(key)
+        -- remove at next tick
     end
 end
 
@@ -39,12 +42,16 @@ function M:tick(realtimeSinceStartup, deltaTime)
     if self._taskMap:count() == 0 then
         return
     end
-    ---@param task TimeTask
-    for key, task in self._taskMap:iter() do
-        if not task:tick(realtimeSinceStartup, deltaTime) then
-            self._taskMap:remove(key)
-        end
-    end
+
+    self._taskMap:remove_if(self._removeTick)
+end
+
+---@private
+---@param task TimeTask
+function M:removeTick(_, task)
+    local alive = task:tick(self._realtimeSinceStartup)
+    log.debug('task: {}, alive: {}', task, alive)
+    return not alive
 end
 
 function M:disposeFactory()

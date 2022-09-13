@@ -2,7 +2,7 @@ local ButtonEvent = require("core.ui.ButtonEvent")
 ---@class ButtonGroupEvent
 local M = class("ButtonGroupEvent")
 
-function M:createGroup(bvs, peer)
+function M:create(bvs, peer)
     return M.new(bvs, peer)
 end
 
