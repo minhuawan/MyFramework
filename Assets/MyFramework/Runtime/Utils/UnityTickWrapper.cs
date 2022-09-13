@@ -34,7 +34,7 @@ namespace MyFramework.Runtime.Utils
             Destroy(this.gameObject);
         }
 
-        public delegate void UpdateTick(float realtimeSinceStartup, float deltaTime);
+        public delegate void UpdateTick(double realtimeSinceStartup, double deltaTime);
 
         private UpdateTick updateTick;
         private int rate = 1; // 1 frame 1 call, if rate is 2, 2 frame 1 call
