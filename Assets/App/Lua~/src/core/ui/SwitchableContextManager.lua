@@ -13,6 +13,9 @@ function M:ctor()
     ---@private
     ---@type MvpContext
     self._processing = nil
+    ---@private
+    ---@type MvpContext
+    self._backTriggerContext = nil
 end
 
 function M:switchTo(configuration)
@@ -27,6 +30,7 @@ function M:switchTo(configuration)
     local context = MvpContext.new(configuration)
     self._processingListener = bind(self.onProcessingStateChanged, self)
     context:addStateChangeListener(self._processingListener)
+
     self._processing = context
     if not self._current then
         self._current = context
@@ -52,7 +56,12 @@ function M:onProcessingStateChanged(context, state)
             end
         end
     elseif state == MvpContextState.Dispose then
-        self._histories:push(context.configuration)
+        --log.debug('onProcessingStateChanged withoutHistory {}, path: {}', withoutHistory, context:getPrefabPath())
+        if self._backTriggerContext ~= nil and self._backTriggerContext == context then
+            self._backTriggerContext = nil
+        else
+            self._histories:push(context.configuration)
+        end
     end
 end
 
@@ -61,6 +70,7 @@ function M:canHandleBack()
 end
 
 function M:back()
+    log.debug('switchable back')
     if self._processing then
         log.warn('[SwitchableContextManager] back canceled, because have a processing target')
         return
@@ -69,7 +79,8 @@ function M:back()
         return
     end
     local last = self._histories:pop()
-    self:switchTo(last)
+    self._backTriggerContext = self._current
+    self:switchTo(last, true)
 end
 
 function M:dispose()
@@ -86,6 +97,7 @@ function M:dispose()
     self._processing = nil
     self._current = nil
     self._histories = nil
+    self._backTriggerContext = nil
 end
 
 return M

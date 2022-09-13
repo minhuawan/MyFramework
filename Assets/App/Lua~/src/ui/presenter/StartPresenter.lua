@@ -9,7 +9,6 @@ function M:didAppeared()
 end
 
 function M:onModeSelected(model)
-    log.debug('onModeSelected {}', model)
     self._context:moveNextState()
 
     local configuration = require("ui.configuration.context.CharacterSelectContext")

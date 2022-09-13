@@ -15,6 +15,33 @@ function bind(func, obj)
     return closure
 end
 
+function bind_p1(func, obj, p1)
+    assert(obj, "handler obj is nil")
+    assert(type(func) == "function", "method not a function")
+    local closure = function(...)
+        return func(obj, p1, ...)
+    end
+    return closure
+end
+
+function bind_p2(func, obj, p1, p2)
+    assert(obj, "handler obj is nil")
+    assert(type(func) == "function", "method not a function")
+    local closure = function(...)
+        return func(obj, p1, p2, ...)
+    end
+    return closure
+end
+
+function bind_p2(func, obj, p1, p2, p3)
+    assert(obj, "handler obj is nil")
+    assert(type(func) == "function", "method not a function")
+    local closure = function(...)
+        return func(obj, p1, p2, p3, ...)
+    end
+    return closure
+end
+
 function assert_f(condition, format, ...)
     if condition then
         return

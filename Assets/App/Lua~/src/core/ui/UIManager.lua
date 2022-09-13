@@ -48,6 +48,8 @@ function M:onBackKey()
         self._single:back()
     elseif self._switchable:canHandleBack() then
         self._switchable:back()
+    else
+        log.debug('unhandled back key')
     end
 end
 

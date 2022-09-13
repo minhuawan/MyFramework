@@ -50,7 +50,7 @@ end
 ---@param task TimeTask
 function M:removeTick(_, task)
     local alive = task:tick(self._realtimeSinceStartup)
-    log.debug('task: {}, alive: {}', task, alive)
+    -- log.debug('task: {}, alive: {}', task, alive)
     return not alive
 end
 
