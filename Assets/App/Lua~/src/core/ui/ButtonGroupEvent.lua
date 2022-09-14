@@ -2,10 +2,6 @@ local ButtonEvent = require("core.ui.ButtonEvent")
 ---@class ButtonGroupEvent
 local M = class("ButtonGroupEvent")
 
-function M:create(bvs, peer)
-    return M.new(bvs, peer)
-end
-
 function M:ctor(bvs, peer)
     self._bvs = bvs
     self._peer = peer
@@ -14,7 +10,7 @@ function M:ctor(bvs, peer)
 
     self._buttonEvents = {}
     for i, bv in ipairs(bvs) do
-        local event = ButtonEvent:create(bv)
+        local event = ButtonEvent(bv)
         event:subscribe(function()
             self:onButtonTrigger(i)
         end)

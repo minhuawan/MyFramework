@@ -1,9 +1,15 @@
 function class(name, super)
     local clazz = { __cname = name, super = super }
     clazz.class = clazz
-    if super then
-        setmetatable(clazz, { __index = super })
-    end
+    setmetatable(clazz, {
+        __index = super,
+        __call = function(t, ...)
+            return t.new(...)
+        end,
+        __tostring = function(t)
+            return formatter.string("class@{}", t.__cname)
+        end
+    })
     clazz.new = function(...)
         local instance = {}
         local addr = tostring(instance)
@@ -18,11 +24,9 @@ function class(name, super)
     return clazz
 end
 
-
-
 ---@generic T
 ---@class Singleton
----@field getInstance fun(T):T
+---@return fun(T):T
 function singleton(name, super)
     local clazz = class(name, super)
     clazz.__instance__ = nil

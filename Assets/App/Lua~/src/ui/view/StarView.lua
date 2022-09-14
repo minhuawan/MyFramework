@@ -5,8 +5,8 @@ local M = class("StartView", require("core.ui.mvp.View"))
 
 function M:initialize(model)
     self._vars = require("ui.configuration.vars.StartViewVars").attach(self.binder)
-    self.closeEvent = ButtonEvent:create(self._vars.ButtonViews.btnBack)
-    self.modeEvent = ButtonGroupEvent:create({
+    self.closeEvent = ButtonEvent(self._vars.ButtonViews.btnBack)
+    self.modeEvent = ButtonGroupEvent({
         self._vars.ButtonViews.menu1
     })
 end

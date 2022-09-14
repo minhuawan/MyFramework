@@ -7,11 +7,6 @@ function M:ctor(buttonView)
     self._bv = buttonView
 end
 
----@return ButtonEvent
-function M:create(buttonView)
-    return M.new(buttonView)
-end
-
 function M:subscribe(fn)
     log.assert(type(fn) == 'function', '[ButtonEvent] subscribe `fn` not a function', self._name)
     local k = tostring(fn)

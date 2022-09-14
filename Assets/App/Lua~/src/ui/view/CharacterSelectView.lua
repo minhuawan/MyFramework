@@ -6,8 +6,8 @@ local M = class("CharacterSelectView", require("core.ui.mvp.View"))
 ---@param model CharacterSelectModel
 function M:initialize(model)
     self._vars = require("ui.configuration.vars.CharacterSelectViewVars").attach(self.binder)
-    self.backEvent = ButtonEvent:create(self._vars.ButtonViews.btnBack)
-    self.startEvent = ButtonEvent:create(self._vars.ButtonViews.btnStart)
+    self.backEvent = ButtonEvent(self._vars.ButtonViews.btnBack)
+    self.startEvent = ButtonEvent(self._vars.ButtonViews.btnStart)
 
     self._vars.Texts.characterName.text = model:getName()
     self._vars.Texts.description.text = model:getDescription()
@@ -16,7 +16,7 @@ function M:initialize(model)
     self._vars.Texts.relicsName.text = model:getRelicsName()
     self._vars.Texts.relicsDescription.text = model:getRelicsDescription()
 
-    self.characterSelectEvent = ButtonGroupEvent:create(
+    self.characterSelectEvent = ButtonGroupEvent(
             {
                 self._vars.ButtonViews.buttonIron
             },
