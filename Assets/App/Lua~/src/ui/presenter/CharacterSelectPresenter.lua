@@ -12,8 +12,8 @@ function M:onStart()
     log.debug('onStart')
 end
 
-function M:onCharacterSelected(character)
-    log.debug('onCharacterSelected {}', character)
+function M:onCharacterSelected(characterName)
+    self._view:selectCharacter(characterName)
 end
 
 return M

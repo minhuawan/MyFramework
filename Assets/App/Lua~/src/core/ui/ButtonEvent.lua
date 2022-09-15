@@ -36,4 +36,10 @@ function M:dispose()
     self._bv = nil
 end
 
+---@param list list
+function M:addTo(list)
+    list:append(self)
+    return self
+end
+
 return M

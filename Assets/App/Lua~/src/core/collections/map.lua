@@ -92,6 +92,16 @@ function map:remove_if(fn)
     end
 end
 
+function map:kvs()
+    local keys = collections.list()
+    local values = collections.list()
+    for k, v in self:iter() do
+        keys:append(k)
+        values:append(v)
+    end
+    return keys, values
+end
+
 function map:raw()
     local t = {}
     for k, v in self:iter() do

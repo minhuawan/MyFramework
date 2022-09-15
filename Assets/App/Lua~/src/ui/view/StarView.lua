@@ -5,15 +5,10 @@ local M = class("StartView", require("core.ui.mvp.View"))
 
 function M:initialize(model)
     self._vars = require("ui.configuration.vars.StartViewVars").attach(self.binder)
-    self.closeEvent = ButtonEvent(self._vars.ButtonViews.btnBack)
-    self.modeEvent = ButtonGroupEvent({
-        self._vars.ButtonViews.menu1
-    })
-end
+    self.closeEvent = ButtonEvent(self._vars.ButtonViews.btnBack):addTo(self.disposable)
 
-function M:dispose()
-    self.closeEvent:dispose()
-    self.modeEvent:dispose()
+    local bts = { self._vars.ButtonViews.menu1 }
+    local peer = nil
+    self.modeEvent = ButtonGroupEvent(bts, peer):addTo(self.disposable)
 end
-
 return M

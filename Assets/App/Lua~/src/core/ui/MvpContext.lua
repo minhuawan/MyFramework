@@ -15,6 +15,7 @@ function M:ctor(configuration)
     self.presenter = configuration.mvp.presenter.new()
     if configuration.mvp.model then
         self.model = configuration.mvp.model.new()
+        self.model:initialize()
     end
     self._state = MvpContextState.Created
     ---@type list

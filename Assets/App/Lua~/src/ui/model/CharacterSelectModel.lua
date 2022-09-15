@@ -1,6 +1,11 @@
 ---@class CharacterSelectModel : Model
 local M = class("CharacterSelectModel", require("core.ui.mvp.Model"))
 
+
+function M:initialize()
+
+end
+
 function M:getPosterPath()
     -- todo
     return ''
@@ -11,7 +16,7 @@ function M:getName()
 end
 
 function M:getHpText()
-    return '生命:   100/9999'
+    return '生命:   100/99'
 end
 
 function M:getGoldText()

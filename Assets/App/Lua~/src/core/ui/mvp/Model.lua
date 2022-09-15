@@ -5,6 +5,10 @@ function M:ctor()
     self._tbl = {}
 end
 
+function M:initialize()
+
+end
+
 function M:getValue(key, default)
     if key and self._tbl[key] then
         return self._tbl[key]

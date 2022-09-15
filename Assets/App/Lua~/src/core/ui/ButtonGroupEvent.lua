@@ -62,4 +62,10 @@ function M:dispose()
     self._map = nil
 end
 
+---@param list list
+function M:addTo(list)
+    list:append(self)
+    return self
+end
+
 return M

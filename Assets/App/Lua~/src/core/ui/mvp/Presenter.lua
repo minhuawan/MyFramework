@@ -7,8 +7,11 @@ function M:initialize(mvpContext)
     mvpContext:createViewAsync(function(view)
         ---@type View
         self._view = view
-        self._view:initialize(mvpContext.model)
-        mvpContext:moveNextState('create-view-async')
+        -- Control the mvpContext flow manually
+        local continueManually = self._view:initialize(mvpContext.model)
+        if not continueManually then
+            mvpContext:moveNextState('create-view-async')
+        end
     end)
 end
 
