@@ -22,7 +22,7 @@ namespace MyFramework.Runtime.Services.Lua
         public List<Image> Images;
         public List<ButtonView> ButtonViews;
     }
-
+#if UNITY_EDITOR
     [CustomEditor(typeof(LuaViewBinder))]
     public class LuaViewBinderEditor : Editor
     {
@@ -156,4 +156,5 @@ namespace MyFramework.Runtime.Services.Lua
             sb.AppendLine("        },");
         }
     }
+#endif
 }

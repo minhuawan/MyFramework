@@ -22,6 +22,7 @@ namespace MyFramework.Runtime.Services.UI2
             {
                 disposable.Dispose();
             }
+
             disposables.Clear();
 
             UnityEngine.Object.Destroy(this.gameObject);
@@ -51,9 +52,13 @@ namespace MyFramework.Runtime.Services.UI2
                 viewPath += ".prefab";
             }
             // todo 这里需要换成正常的加载
+#if UNITY_EDITOR
             var unityObject = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(viewPath);
             var view = UnityEngine.Object.Instantiate(unityObject);
             callback(view);
+#else
+            callback(null);
+#endif
         }
     }
 }

@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading.Tasks;
-using App.UI.Views;
 using MyFramework.Runtime.Services.Event.UI;
 using UnityEditor;
 using UnityEngine;
-using Random = System.Random;
 
 namespace MyFramework.Runtime.Services.UI
 {
@@ -73,11 +70,15 @@ namespace MyFramework.Runtime.Services.UI
                 throw new Exception($"instantiate view async failed, view path not found typeof {typeof(T)}");
             }
 
+#if UNITY_EDITOR
             // todo 这里直接 load 了
             var asset = AssetDatabase.LoadAssetAtPath<T>(path);
             var view = GameObject.Instantiate(asset);
             view.gameObject.SetActive(false); // hide before all load process finish
             return view;
+#else
+            return null;
+#endif
         }
 
         public static async void InstantiateViewAsync<T>(Action<T> action, Action<Exception> errorHandler)

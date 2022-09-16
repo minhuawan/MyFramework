@@ -33,8 +33,8 @@ namespace MyFramework
         {
 #if UNITY_EDITOR
             var constructor = SynchronizationContext.Current.GetType()
-                .GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] {typeof(int)}, null);
-            var newContext = constructor.Invoke(new object[] {Thread.CurrentThread.ManagedThreadId});
+                .GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(int) }, null);
+            var newContext = constructor.Invoke(new object[] { Thread.CurrentThread.ManagedThreadId });
             SynchronizationContext.SetSynchronizationContext(newContext as SynchronizationContext);
 #endif
 
@@ -95,7 +95,11 @@ namespace MyFramework
 
         public static GameObject LoadGameObject(string path)
         {
+#if UNITY_EDITOR
             return UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(path);
+#else
+            return null;
+#endif
         }
     }
 }
