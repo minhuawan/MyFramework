@@ -2,21 +2,33 @@ formatter = {}
 
 function formatter.string(fmt, ...)
     local message = tostring(fmt)
-    local args = { ... }
-    --if #args == 0 then
-    --    return message
-    --end
+    local n = select('#', ...)
+    if n == 0 then
+        return message
+    end
+    local t = { ... }
     local i = 0
-    message = string.gsub(message, "%{%}", function(...)
+    local str, _ = string.gsub(message, "%{%}", function()
         i = i + 1
-        return tostring(args[i])
+        return tostring(t[i])
+    end, n)
+    return str
+end
+
+function formatter.string2(fmt, t)
+    assert(type(t) == 'table', 'invalid parameter: t, type: ' .. type(t))
+    local message = tostring(fmt)
+    local str, _ = string.gsub(message, "%$(%w+)", function(k)
+        return tostring(t[k])
     end)
-    return message
+    return str
 end
 
 function formatter.number(num, fmt)
+    assert(type(num) == 'number', 'invalid parameter: num, type: ' .. type(num))
     if fmt then
-        return string.format(tostring(fmt), num)
+        assert(type(fmt) == 'string', 'invalid parameter: fmt, type: ' .. type(fmt))
+        return string.format(fmt, num)
     end
     local s = tostring(num)
     if #s <= 3 then
@@ -34,16 +46,4 @@ function formatter.number(num, fmt)
     end
 
     return table.concat(parts, ',')
-end
-
-function formatter.date(timestamp)
-    -- todo
-end
-
-function formatter.time(timestamp)
-    -- todo
-end
-
-function formatter.datetime(timestamp)
-    -- todo
 end
