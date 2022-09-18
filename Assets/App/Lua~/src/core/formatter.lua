@@ -24,12 +24,13 @@ function formatter.string2(fmt, t)
     return str
 end
 
-function formatter.number(num, fmt)
+function formatter.int(num, fmt)
     assert(type(num) == 'number', 'invalid parameter: num, type: ' .. type(num))
     if fmt then
         assert(type(fmt) == 'string', 'invalid parameter: fmt, type: ' .. type(fmt))
         return string.format(fmt, num)
     end
+    num = math.floor(num)
     local s = tostring(num)
     if #s <= 3 then
         return s
@@ -47,3 +48,5 @@ function formatter.number(num, fmt)
 
     return table.concat(parts, ',')
 end
+
+

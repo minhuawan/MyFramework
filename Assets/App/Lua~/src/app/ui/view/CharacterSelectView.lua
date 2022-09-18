@@ -25,7 +25,7 @@ end
 function M:selectCharacter(name)
     self:setCharacterVisible(true)
     local charMeta = require("app.metadata.character." .. name)
-    local id = formatter.number(charMeta.properties.relicsId, "%03d")
+    local id = formatter.int(charMeta.properties.relicsId, "%03d")
     local relicsMeta = require("app.metadata.relics.relics_" .. id)
     self:setCharacterInfo(charMeta, relicsMeta)
 end
