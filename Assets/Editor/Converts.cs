@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using Newtonsoft.Json;
 using UnityEditor;
 using UnityEditor.Experimental;
 using UnityEngine;
@@ -12,7 +14,7 @@ public class Converts
     [MenuItem("Tools/Convert Texture2d To Sprites")]
     public static void ConvertTexture2DToSprite()
     {
-        var guids = AssetDatabase.FindAssets("t: texture2d", new string[] { "Assets/AppData" });
+        var guids = AssetDatabase.FindAssets("t: texture2d", new string[] {"Assets/AppData"});
         foreach (var guid in guids)
         {
             var path = AssetDatabase.GUIDToAssetPath(guid);
@@ -105,7 +107,7 @@ public class Converts
         //     builds2.ToArray(),
         //     BuildAssetBundleOptions.None,
         //     EditorUserBuildSettings.activeBuildTarget);
-        
+
         var targetPath = "Assets/AppData/Prefab/STS/test";
         var dirs = System.IO.Directory.GetDirectories(targetPath);
         var builds = dirs.Select(dir => CreateAssetBundleBuildWithFolder(dir)).ToArray();
@@ -113,7 +115,7 @@ public class Converts
         {
             Debug.Log($"bundle name {build.assetBundleName}, assets: {string.Join(", ", build.assetNames)}");
         }
-        
+
         BuildPipeline.BuildAssetBundles(
             outputPath,
             builds,
@@ -209,7 +211,7 @@ public class Converts
         {
             Debug.LogWarning($"folder is empty, path: {folderPath}");
         }
-        
+
         var assetBundleName = bundleName ?? sub.Name;
         return new AssetBundleBuild()
         {
@@ -217,5 +219,60 @@ public class Converts
             addressableNames = names,
             assetBundleName = assetBundleName,
         };
+    }
+
+
+    private class Asset
+    {
+        public string name;
+        public string[] dependencies;
+    }
+
+    private class AssetManifest
+    {
+        public string datetime;
+        public string version;
+        public Dictionary<string, Asset> assets;
+    }
+
+    [MenuItem("Tools/Calculate Dependencies")]
+    public static void CalculateDependencies()
+    {
+        var objects = UnityEditor.Selection.objects;
+        if (objects == null || objects.Length == 0)
+        {
+            return;
+        }
+
+        var manifest = new AssetManifest();
+        manifest.assets = new Dictionary<string, Asset>();
+        var exportTypes = new List<Type> {typeof(UnityEngine.Texture2D), typeof(UnityEngine.Font)};
+        foreach (var obj in objects)
+        {
+            var path = AssetDatabase.GetAssetPath(obj);
+            var dependencies = AssetDatabase.GetDependencies(path, true);
+            dependencies = dependencies
+                .Select(d => d.ToLower())
+                .Where(d => exportTypes.Contains(AssetDatabase.GetMainAssetTypeAtPath(d)))
+                .Where(d => !d.Contains("/editor/"))
+                .ToArray();
+            Array.Sort(dependencies);
+            var asset = new Asset();
+            asset.name = obj.name;
+            asset.dependencies = dependencies;
+            var lp = path.ToLower();
+            if (manifest.assets.ContainsKey(lp))
+            {
+                Debug.LogError($"have same key {lp}");
+                return;
+            }
+
+            manifest.assets[lp] = asset;
+        }
+
+        manifest.datetime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        manifest.version = "0.1.dev";
+        var jsonStr = Newtonsoft.Json.JsonConvert.SerializeObject(manifest, Formatting.Indented);
+        File.WriteAllText(UnityEngine.Application.dataPath + "/assets.json", jsonStr);
     }
 }
