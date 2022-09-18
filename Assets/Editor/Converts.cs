@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using UnityEditor;
 using UnityEditor.Experimental;
 using UnityEngine;
@@ -224,7 +225,7 @@ public class Converts
 
     private class Asset
     {
-        public string name;
+        [JsonProperty(NullValueHandling= NullValueHandling.Ignore)]
         public string[] dependencies;
     }
 
@@ -235,44 +236,86 @@ public class Converts
         public Dictionary<string, Asset> assets;
     }
 
-    [MenuItem("Tools/Calculate Dependencies")]
-    public static void CalculateDependencies()
+
+    private static List<string> ExportAssetPath = new List<string>()
     {
-        var objects = UnityEditor.Selection.objects;
-        if (objects == null || objects.Length == 0)
+        "AppData/Prefab/STS",
+        "AppData/STS",
+    };
+
+    private static List<Type> ExportTypes = new List<Type>()
+    {
+        typeof(UnityEngine.Texture2D),
+        // typeof(UnityEngine.Font)
+        typeof(UnityEngine.GameObject),
+    };
+
+    [MenuItem("Tools/Export/Asset Manifest")]
+    public static void ExportAssetManifest()
+    {
+        var filePaths = new List<string>();
+
+        var root = UnityEngine.Application.dataPath;
+        foreach (var p in ExportAssetPath)
         {
-            return;
+            var path = Path.Combine(UnityEngine.Application.dataPath, p);
+            if (File.Exists(path))
+            {
+                filePaths.Add(path);
+            }
+            else if (Directory.Exists(path))
+            {
+                var files = Directory
+                        .GetFiles(path, "*", SearchOption.AllDirectories)
+                        .Where(f => !f.EndsWith(".meta"))
+                        .Select(f => "Assets/" + f.Substring(root.Length + 1).Replace("\\", "/"))
+                    ;
+                filePaths.AddRange(files);
+            }
+            else
+            {
+                Debug.LogError($"path not existed {path}");
+                return;
+            }
+        }
+
+        filePaths.Sort();
+        var assets = new Dictionary<string, Asset>();
+        foreach (var filePath in filePaths)
+        {
+            var type = AssetDatabase.GetMainAssetTypeAtPath(filePath);
+            if (!ExportTypes.Contains(type))
+            {
+                continue;
+            }
+
+            var lower = filePath.ToLower();
+            var dependencies = AssetDatabase.GetDependencies(filePath);
+            dependencies = dependencies
+                .Where(d => ExportTypes.Contains(AssetDatabase.GetMainAssetTypeAtPath(d)))
+                .Select(d => d.ToLower())
+                .Where(d => !d.Contains("/editor/") && d != lower)
+                .ToArray();
+            Array.Sort(dependencies);
+            if (assets.ContainsKey(filePath))
+            {
+                throw new Exception($"duplicated key {filePath}");
+            }
+            
+            assets.Add(lower, new Asset()
+            {
+                dependencies = dependencies.Length > 0 ? dependencies : null,
+            });
         }
 
         var manifest = new AssetManifest();
-        manifest.assets = new Dictionary<string, Asset>();
-        var exportTypes = new List<Type> {typeof(UnityEngine.Texture2D), typeof(UnityEngine.Font)};
-        foreach (var obj in objects)
-        {
-            var path = AssetDatabase.GetAssetPath(obj);
-            var dependencies = AssetDatabase.GetDependencies(path, true);
-            dependencies = dependencies
-                .Select(d => d.ToLower())
-                .Where(d => exportTypes.Contains(AssetDatabase.GetMainAssetTypeAtPath(d)))
-                .Where(d => !d.Contains("/editor/"))
-                .ToArray();
-            Array.Sort(dependencies);
-            var asset = new Asset();
-            asset.name = obj.name;
-            asset.dependencies = dependencies;
-            var lp = path.ToLower();
-            if (manifest.assets.ContainsKey(lp))
-            {
-                Debug.LogError($"have same key {lp}");
-                return;
-            }
-
-            manifest.assets[lp] = asset;
-        }
-
+        manifest.assets = assets;
         manifest.datetime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         manifest.version = "0.1.dev";
+        EditorUtility.DisplayProgressBar("Exporting", "Please wait", 0f);
         var jsonStr = Newtonsoft.Json.JsonConvert.SerializeObject(manifest, Formatting.Indented);
-        File.WriteAllText(UnityEngine.Application.dataPath + "/assets.json", jsonStr);
+        File.WriteAllText(UnityEngine.Application.dataPath + "/App/Lua~/res/assets/manifest.json", jsonStr);
+        EditorUtility.DisplayProgressBar("Exporting", "Please wait", 1f);
+        EditorUtility.ClearProgressBar();
     }
 }

@@ -8,6 +8,7 @@ require("core.collections.setup")
 require("core.calendar")
 require("core.storage")
 require("core.event")
+require("core.resources")
 
 
 -- require modules before global

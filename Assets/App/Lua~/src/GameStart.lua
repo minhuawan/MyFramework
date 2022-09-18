@@ -25,4 +25,7 @@ xpcall(function()
     local UIManager = require("app.ui.base.UIManager")
     UIManager:initialize()
     UIManager:navigateTo(require("app.ui.configuration.context.MainContext"))
+
+    local mgr = require("core.asset.manager.AssetLoaderManager")()
+
 end, __G__TRACEBACK__)
