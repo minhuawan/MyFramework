@@ -21,20 +21,30 @@ setmetatable(device, {
 })
 
 local app = CS.UnityEngine.Application
-local RuntimePlatform = UnityEngine.RuntimePlatform
+local RuntimePlatform = CS.UnityEngine.RuntimePlatform
+local SystemLanguage = CS.UnityEngine.SystemLanguage
 local platform = app.platform
 device.editor = app.isEditor == true
 device.ios = false
 device.windows = false
 device.android = false
-device.language = ''
+device.language = 'unknown'
+device.platform = platform:ToString()
 
 if RuntimePlatform.IPhonePlayer == platform then
     device.ios = true
+    device.platform = 'ios'
 elseif RuntimePlatform.WindowsPlayer == platform then
     device.windows = true
+    device.platform = 'windows'
 elseif RuntimePlatform.Android == platform then
     device.android = true
+    device.platform = 'android'
 end
+
+-- unity 对这个语言及地区支持不是很好。。 后续再做吧
+--if app.systemLanguage == SystemLanguage.ChineseSimplified then
+--elseif app.systemLanguage == SystemLanguage.ChineseTraditional then
+--end
 
 FLAG = false

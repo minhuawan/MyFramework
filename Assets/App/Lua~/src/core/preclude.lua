@@ -1,3 +1,4 @@
+require("core.device")
 require("core.class")
 require("core.formatter")
 require("core.log")
