@@ -164,6 +164,9 @@ end
 --- 尽量避免在 相互引用的 collection 中使用 tostring 方法
 ---
 function list:tostring()
+    if json then
+        return json.encode(self._inner)
+    end
     if not self._inner or self._count == 0 then
         return '[]'
     end
@@ -173,6 +176,10 @@ function list:tostring()
         table.insert(t, tostring(v))
     end
     return '[' .. table.concat(t, ', ') .. ']'
+end
+
+function list:tojson()
+    return self:tostring()
 end
 
 return list

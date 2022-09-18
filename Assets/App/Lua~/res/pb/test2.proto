@@ -1,0 +1,8 @@
+package test2;
+message Phone {
+  optional string name = 1;
+  optional bool  phonenumber = 2;
+}
+
+message Person {
+}

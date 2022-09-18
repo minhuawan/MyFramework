@@ -78,3 +78,4 @@ crashlytics-build.properties
 
 # xlua gen
 /Assets/XLua/Gen/*
+/Assets/XLua/Gen.meta

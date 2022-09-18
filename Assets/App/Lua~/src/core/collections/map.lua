@@ -115,6 +115,9 @@ end
 --- 尽量避免在 相互引用的 collection 中使用 tostring 方法
 ---
 function map:tostring()
+    if json then
+        return json.encode(self._inner)
+    end
     if not self._inner or self._count == 0 then
         return '{}'
     end
@@ -135,6 +138,10 @@ function map:tostring()
         table.insert(t, kvp)
     end
     return '{' .. table.concat(t, ', ') .. '}'
+end
+
+function map:tojson()
+    return self:tostring()
 end
 
 return map

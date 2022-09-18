@@ -1,5 +1,7 @@
 require("core.class")
 require("core.formatter")
+require("core.json")
+require("core.pb.setup")
 require("core.log")
 require("core.device")
 require("core.collections.setup")

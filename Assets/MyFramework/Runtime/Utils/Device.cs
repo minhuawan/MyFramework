@@ -1,6 +1,5 @@
 using UnityEditor;
 using UnityEngine;
-using XLua.CSObjectWrap;
 
 namespace MyFramework.Runtime.Utils
 {
