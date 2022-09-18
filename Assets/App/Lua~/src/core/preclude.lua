@@ -1,7 +1,7 @@
-require("core.device")
 require("core.class")
 require("core.formatter")
 require("core.log")
+require("core.device")
 require("core.collections.setup")
 require("core.calendar")
 require("core.storage")
