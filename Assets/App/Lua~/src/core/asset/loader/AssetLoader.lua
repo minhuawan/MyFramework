@@ -23,12 +23,12 @@ end
 
 ---@private
 function M:requireInternal()
-    if device.editor then
+    if app.device.editor then
         self:requireInternal_Editor()
-    elseif device.android or device.ios or device.windows then
+    elseif app.device.android or app.device.ios or app.device.windows then
         self:requireInternal_WithBundle()
     else
-        log.assert(false, 'device platform unsupported {}', device.platform)
+        log.assert(false, 'device platform unsupported {}', app.device.platform)
     end
 end
 

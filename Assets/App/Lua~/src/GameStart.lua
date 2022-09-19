@@ -19,8 +19,7 @@ xpcall(function()
         --log.debug("=== END   PRINT FUNC REF BY C-SHARP ===")
     end
 
-    require("core.preclude")
-    protoc.loadall(true)
+    require("app.setup")
 
     local UIManager = require("app.ui.base.UIManager")
     UIManager:initialize()

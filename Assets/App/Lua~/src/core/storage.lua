@@ -1,4 +1,4 @@
-storage = {}
+local storage = {}
 
 local DEBUG = false
 
@@ -77,4 +77,4 @@ function storage.delete(scope, key)
     return Storage.Delete(p)
 end
 
-
+return storage

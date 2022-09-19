@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading;
 using XLua;
 
 namespace MyFramework.Runtime.Utils

@@ -1,4 +1,4 @@
-event = {}
+local event = {}
 
 ---@type map
 local subjects = collections.map()
@@ -45,3 +45,5 @@ function event.dispatch(name, ...)
         end
     end
 end
+
+return event

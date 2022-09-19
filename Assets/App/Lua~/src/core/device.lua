@@ -1,6 +1,6 @@
 local __internal__ = {}
 ---@class device
-device = {
+local device = {
     ---@privateN
     __internal__ = __internal__
 }
@@ -48,3 +48,5 @@ end
 --end
 
 FLAG = false
+
+return device
