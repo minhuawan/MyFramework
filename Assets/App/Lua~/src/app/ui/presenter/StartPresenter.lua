@@ -12,7 +12,8 @@ function M:onModeSelected(model)
     self._context:moveNextState()
 
     local configuration = require("app.ui.configuration.context.CharacterSelectContext")
-    require("app.ui.base.UIManager"):navigateTo(configuration)
+    local app = require("app.app")
+    app.ui.UIManager:navigateTo(configuration)
 end
 
 

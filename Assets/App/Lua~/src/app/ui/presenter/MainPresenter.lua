@@ -1,4 +1,4 @@
-local UIManager = require("app.ui.base.UIManager")
+local app = require("app.app")
 local Presenter = require("app.ui.base.mvp.Presenter")
 ---@class MainPresenter : Presenter
 ---@field _view MainView
@@ -20,7 +20,7 @@ end
 
 function M:onStart()
     local configuration = require("app.ui.configuration.context.StartContext")
-    UIManager:navigateTo(configuration)
+    app.ui.UIManager:navigateTo(configuration)
 end
 
 function M:onWiki()

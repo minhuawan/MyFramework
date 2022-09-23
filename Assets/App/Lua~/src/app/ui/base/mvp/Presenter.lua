@@ -34,7 +34,8 @@ function M:dispose()
 end
 
 function M:onBackKey()
-    require("app.ui.base.UIManager"):onBackKey()
+    local app = require("app.app")
+    app.ui.UIManager:onBackKey()
 end
 
 return M

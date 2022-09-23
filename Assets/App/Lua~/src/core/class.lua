@@ -31,10 +31,12 @@ function singleton(name, super)
     local clazz = class(name, super)
     clazz.__instance__ = nil
     clazz.getInstance = function()
+        log.debug("call instance")
         if clazz.__instance__ == nil then
             clazz.__instance__ = clazz.new()
         end
         assert(clazz.__instance__, "singleton is nil")
+        log.debug("return instance {}, {}", clazz, clazz.__instance__)
         return clazz.__instance__
     end
     return clazz

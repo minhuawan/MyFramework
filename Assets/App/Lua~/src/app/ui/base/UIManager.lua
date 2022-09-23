@@ -6,9 +6,11 @@ local M = class("UIManager")
 
 function M:ctor()
     self:initialize()
+    log.debug("ctor {}", self)
 end
 
 function M:initialize()
+    log.debug("init {}", self)
     ---@type SwitchableContextManager
     self._switchable = SwitchableContextManager.getInstance()
     ---@type SingleContextManager

@@ -12,26 +12,26 @@ require("core.calendar")
 require("core.globals")
 
 local readonly = require("core.utils.readonly")
-
----@field device device
----@field storage storage
----@field resources resources
-local App = readonly {
+local app = {
     device = require("core.device"),
     storage = require("core.storage"),
     resources = require("core.resources"),
-    assets = readonly {
-        ---@type AssetLoaderManager
+    asset = {
         AssetLoaderManager = require("core.asset.manager.AssetLoaderManager")(),
     },
-    ui = readonly {
+    ui = {
         UIManager = require("app.ui.base.UIManager")(),
     },
-    protocol = readonly {
+    protocol = {
         ProtocolManager = require("app.network.protocol.ProtocolManager")()
     }
 }
 
+local internal = {}
+for name, module in pairs(app) do
+    internal[name] = readonly(module)
+end
 
+app = internal
 
-return App
+return app
