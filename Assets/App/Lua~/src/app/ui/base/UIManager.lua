@@ -2,8 +2,11 @@ local SwitchableContextManager = require("app.ui.base.SwitchableContextManager")
 local SingleContextManager = require("app.ui.base.SingleContextManager")
 ---@class UIManager
 local M = class("UIManager")
----@type UIManager
-local __instance__
+
+
+function M:ctor()
+    self:initialize()
+end
 
 function M:initialize()
     ---@type SwitchableContextManager
@@ -53,6 +56,4 @@ function M:onBackKey()
     end
 end
 
-__instance__ = M.new()
-
-return __instance__
+return M

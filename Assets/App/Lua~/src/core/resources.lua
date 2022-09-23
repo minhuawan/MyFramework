@@ -1,4 +1,5 @@
 local LOAD = CS.MyFramework.Runtime.Utils.LuaResourceUtils.Load
+---@class resources
 local resources = {}
 
 function resources.load(path)

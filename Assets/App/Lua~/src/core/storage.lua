@@ -1,3 +1,4 @@
+---@class storage
 local storage = {}
 
 local DEBUG = false

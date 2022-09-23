@@ -19,12 +19,6 @@ xpcall(function()
         --log.debug("=== END   PRINT FUNC REF BY C-SHARP ===")
     end
 
-    require("app.setup")
-
-    local UIManager = require("app.ui.base.UIManager")
-    UIManager:initialize()
-    UIManager:navigateTo(require("app.ui.configuration.context.MainContext"))
-
-    local mgr = require("core.asset.manager.AssetLoaderManager")()
-
+    require("app.App")
+    app.ui.UIManager:navigateTo("app.ui.configuration.context.MainContext")
 end, __G__TRACEBACK__)

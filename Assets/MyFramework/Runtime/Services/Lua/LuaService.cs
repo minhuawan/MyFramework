@@ -35,7 +35,7 @@ namespace MyFramework.Runtime.Services.Lua
         {
             luaEnv = new LuaEnv();
             luaEnv.AddLoader(CustomLoader);
-            luaEnv.DoString("require 'GameStart'");
+            luaEnv.DoString("require 'main'");
         }
 
         private void DisposeLuaEnv()
