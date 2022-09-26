@@ -1,7 +1,7 @@
 local MvpContextState = require("app.ui.base.MvpContextState")
 local MvpContext = require("app.ui.base.MvpContext")
 ---@class SingleContextManager : Singleton
-local M = singleton("SingleContextManager")
+local M = class("SingleContextManager")
 
 function M:ctor()
     ---@type MvpContext

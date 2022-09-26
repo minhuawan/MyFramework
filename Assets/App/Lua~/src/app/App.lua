@@ -11,27 +11,17 @@ require("core.calendar")
 -- require modules before global
 require("core.globals")
 
-local readonly = require("core.utils.readonly")
-local app = {
+
+-- modules
+local App = {
+    asset = require("app.asset.init"),
+    ui = require("app.ui.init"),
+    network = require("app.network.init"),
     device = require("core.device"),
     storage = require("core.storage"),
-    resources = require("core.resources"),
-    asset = {
-        AssetLoaderManager = require("core.asset.manager.AssetLoaderManager")(),
-    },
-    ui = {
-        UIManager = require("app.ui.base.UIManager")(),
-    },
-    protocol = {
-        ProtocolManager = require("app.network.protocol.ProtocolManager")()
-    }
+    resources = require("app.asset.resources"),
 }
+local readonly = require("core.utils.readonly")
+App = readonly(App)
 
-local internal = {}
-for name, module in pairs(app) do
-    internal[name] = readonly(module)
-end
-
-app = internal
-
-return app
+return App

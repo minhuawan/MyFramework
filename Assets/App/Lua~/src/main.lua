@@ -11,16 +11,17 @@ end
 
 xpcall(function()
     OnLuaEnvDisposeBefore = function()
-        local app = require("app.app")
+        local App = require("app.App")
         CS.MyFramework.Runtime.Utils.UnityTickWrapper.ForceCleanAll()
-        app.ui.UIManager:dispose()
+        App.ui.UIManager:dispose()
         require("core.task.TaskFactory"):disposeFactory()
         --log.debug("=== START PRINT FUNC REF BY C-SHARP ===")
         --require("misc.xlua.util").print_func_ref_by_csharp()
         --log.debug("=== END   PRINT FUNC REF BY C-SHARP ===")
     end
 
-    local app = require("app.app")
+    local App = require("app.App")
+
     local configuration = require("app.ui.configuration.context.MainContext")
-    app.ui.UIManager:navigateTo(configuration)
+    App.ui.UIManager:navigateTo(configuration)
 end, __G__TRACEBACK__)

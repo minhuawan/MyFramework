@@ -1,7 +1,7 @@
 local MvpContext = require("app.ui.base.MvpContext")
 local MvpContextState = require("app.ui.base.MvpContextState")
 ---@class SwitchableContextManager
-local M = singleton("SwitchableContextManager")
+local M = class("SwitchableContextManager")
 
 function M:ctor()
     ---@private

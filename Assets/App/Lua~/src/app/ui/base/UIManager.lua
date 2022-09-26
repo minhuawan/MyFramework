@@ -6,15 +6,11 @@ local M = class("UIManager")
 
 function M:ctor()
     self:initialize()
-    log.debug("ctor {}", self)
 end
 
 function M:initialize()
-    log.debug("init {}", self)
-    ---@type SwitchableContextManager
-    self._switchable = SwitchableContextManager.getInstance()
-    ---@type SingleContextManager
-    self._single = SingleContextManager.getInstance()
+    self._switchable = SwitchableContextManager()
+    self._single = SingleContextManager()
 
     self._escapeKeyListener = CS.MyFramework.Runtime.Utils.EscapeKeyListener.Create('Lua-UIManager', bind(self.onBackKeyFromKeyboard, self))
 end
