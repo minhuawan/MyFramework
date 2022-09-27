@@ -1,4 +1,4 @@
-local ButtonEvent = require("app.ui.base.ButtonEvent")
+local ButtonViewWrap = require("app.ui.base.ButtonViewWrap")
 ---@class ButtonGroupEvent
 local M = class("ButtonGroupEvent")
 
@@ -10,7 +10,7 @@ function M:ctor(bvs, peer)
 
     self._buttonEvents = {}
     for i, bv in ipairs(bvs) do
-        local event = ButtonEvent(bv)
+        local event = ButtonViewWrap(bv)
         event:subscribe(function()
             self:onButtonTrigger(i)
         end)
@@ -62,10 +62,5 @@ function M:dispose()
     self._map = nil
 end
 
----@param list list
-function M:addTo(list)
-    list:append(self)
-    return self
-end
 
 return M

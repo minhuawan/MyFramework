@@ -1,17 +1,16 @@
-local app = require("app.app")
 local Presenter = require("app.ui.base.mvp.Presenter")
 ---@class MainPresenter : Presenter
 ---@field _view MainView
 local M = class("MainPresenter", Presenter)
 
 function M:didAppeared()
-    self._view.editEvent:subscribe(bind(self.onEdit, self))
-    self._view.startEvent:subscribe(bind(self.onStart, self))
-    self._view.wikiEvent:subscribe(bind(self.onWiki, self))
-    self._view.analysisEvent:subscribe(bind(self.onAnalysis, self))
-    self._view.settingEvent:subscribe(bind(self.onSetting, self))
-    self._view.patchEvent:subscribe(bind(self.onPatch, self))
-    self._view.exitEvent:subscribe(bind(self.onExit, self))
+    self.disposable:append(self._view.btnEdit.clickEvent:subscribe(bind(self.onEdit, self)))
+    self.disposable:append(self._view.btnStart.clickEvent:subscribe(bind(self.onStart, self)))
+    self.disposable:append(self._view.btnWiki.clickEvent:subscribe(bind(self.onWiki, self)))
+    self.disposable:append(self._view.btnAnalysis.clickEvent:subscribe(bind(self.onAnalysis, self)))
+    self.disposable:append(self._view.btnSetting.clickEvent:subscribe(bind(self.onSetting, self)))
+    self.disposable:append(self._view.btnPatch.clickEvent:subscribe(bind(self.onPatch, self)))
+    self.disposable:append(self._view.btnExit.clickEvent:subscribe(bind(self.onExit, self)))
 end
 
 function M:onEdit()
@@ -20,7 +19,7 @@ end
 
 function M:onStart()
     local configuration = require("app.ui.configuration.context.StartContext")
-    app.ui.UIManager:navigateTo(configuration)
+    App.ui.UIManager:navigateTo(configuration)
 end
 
 function M:onWiki()

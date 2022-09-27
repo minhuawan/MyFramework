@@ -1,4 +1,4 @@
-local TimeTask = require("core.task.TimeTask")
+local TimeTask = require("app.task.TimeTask")
 ---@class TaskFactory
 local M = class("TaskFactory")
 

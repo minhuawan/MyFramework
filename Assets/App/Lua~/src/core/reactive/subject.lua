@@ -2,6 +2,7 @@ local subscription = require("core.reactive.subscription")
 ---@class subject
 local M = class("subject")
 
+---@private
 function M:ctor()
     self._disposed = nil
     self._packs = {}

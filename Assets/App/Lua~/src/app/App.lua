@@ -8,6 +8,14 @@ require("core.calendar")
 --require("core.event")
 --require("core.resources")
 
+OnLuaEnvDisposeBefore = function()
+    CS.MyFramework.Runtime.Utils.UnityTickWrapper.ForceCleanAll()
+    App.ui.UIManager:dispose()
+    App.task.TaskFactory:disposeFactory()
+    --log.debug("=== START PRINT FUNC REF BY C-SHARP ===")
+    --require("misc.xlua.util").print_func_ref_by_csharp()
+    --log.debug("=== END   PRINT FUNC REF BY C-SHARP ===")
+end
 
 
 App = {}

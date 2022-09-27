@@ -1,4 +1,4 @@
-local ButtonEvent = require("app.ui.base.ButtonEvent")
+local ButtonViewWrap = require("app.ui.base.ButtonViewWrap")
 local View = require("app.ui.base.mvp.View")
 ---@class MainView: View
 local M = class("MainView", View)
@@ -7,13 +7,13 @@ local M = class("MainView", View)
 function M:initialize(model)
     self._vars = require("app.ui.configuration.vars.MainViewVars").attach(self.binder)
 
-    self.editEvent = ButtonEvent(self._vars.ButtonViews.btnEdit):addTo(self.disposable)
-    self.startEvent = ButtonEvent(self._vars.ButtonViews.btnStart):addTo(self.disposable)
-    self.wikiEvent = ButtonEvent(self._vars.ButtonViews.btnWiki):addTo(self.disposable)
-    self.analysisEvent = ButtonEvent(self._vars.ButtonViews.btnAnalysis):addTo(self.disposable)
-    self.settingEvent = ButtonEvent(self._vars.ButtonViews.btnSetting):addTo(self.disposable)
-    self.patchEvent = ButtonEvent(self._vars.ButtonViews.btnPatch):addTo(self.disposable)
-    self.exitEvent = ButtonEvent(self._vars.ButtonViews.btnExit):addTo(self.disposable)
+    self.btnEdit = self.disposable:append(ButtonViewWrap(self._vars.ButtonViews.btnEdit))
+    self.btnStart = self.disposable:append(ButtonViewWrap(self._vars.ButtonViews.btnStart))
+    self.btnWiki = self.disposable:append(ButtonViewWrap(self._vars.ButtonViews.btnWiki))
+    self.btnAnalysis = self.disposable:append(ButtonViewWrap(self._vars.ButtonViews.btnAnalysis))
+    self.btnSetting = self.disposable:append(ButtonViewWrap(self._vars.ButtonViews.btnSetting))
+    self.btnPatch = self.disposable:append(ButtonViewWrap(self._vars.ButtonViews.btnPatch))
+    self.btnExit = self.disposable:append(ButtonViewWrap(self._vars.ButtonViews.btnExit))
 
     self._vars.Texts.nickname.text = model:getName()
 end

@@ -1,5 +1,5 @@
 local ButtonGroupEvent = require("app.ui.base.ButtonGroupEvent")
-local ButtonEvent = require("app.ui.base.ButtonEvent")
+local ButtonViewWrap = require("app.ui.base.ButtonViewWrap")
 ---@class CharacterSelectView: View
 local M = class("CharacterSelectView", require("app.ui.base.mvp.View"))
 
@@ -7,8 +7,8 @@ local M = class("CharacterSelectView", require("app.ui.base.mvp.View"))
 function M:initialize(model)
 
     self._vars = require("app.ui.configuration.vars.CharacterSelectViewVars").attach(self.binder)
-    self.backEvent = ButtonEvent(self._vars.ButtonViews.btnBack):addTo(self.disposable)
-    self.startEvent = ButtonEvent(self._vars.ButtonViews.btnStart):addTo(self.disposable)
+    self.backEvent = ButtonViewWrap(self._vars.ButtonViews.btnBack):addTo(self.disposable)
+    self.startEvent = ButtonViewWrap(self._vars.ButtonViews.btnStart):addTo(self.disposable)
 
     self.characterSelectEvent = ButtonGroupEvent(
             {

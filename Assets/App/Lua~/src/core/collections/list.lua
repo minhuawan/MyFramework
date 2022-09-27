@@ -20,13 +20,16 @@ function list:clear()
     return self
 end
 
+---@generic T
+---@param value T
+---@return T
 function list:append(value)
     assert(not self._iterating, 'do dot call `list.append` in iterating')
     local idx = self._count
     idx = idx + 1
     self._inner[idx] = value
     self._count = idx
-    return self
+    return value
 end
 
 function list:remove(index)

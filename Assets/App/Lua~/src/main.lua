@@ -10,15 +10,7 @@ function __G__TRACEBACK__(msg)
 end
 
 xpcall(function()
-    OnLuaEnvDisposeBefore = function()
-        CS.MyFramework.Runtime.Utils.UnityTickWrapper.ForceCleanAll()
-        App.ui.UIManager:dispose()
-        App.task.TaskFactory:disposeFactory()
-        --log.debug("=== START PRINT FUNC REF BY C-SHARP ===")
-        --require("misc.xlua.util").print_func_ref_by_csharp()
-        --log.debug("=== END   PRINT FUNC REF BY C-SHARP ===")
-    end
-
+    require("app.App")
     local configuration = require("app.ui.configuration.context.MainContext")
     App.ui.UIManager:navigateTo(configuration)
 end, __G__TRACEBACK__)
