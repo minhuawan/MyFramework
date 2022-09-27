@@ -1,5 +1,4 @@
 ﻿local CanvasSortingBaseValue = 0
-local TaskFactory = require("core.task.TaskFactory")
 local type_binder = typeof(CS.MyFramework.Runtime.Services.Lua.LuaViewBinder)
 local MvpContextState = require("app.ui.base.MvpContextState")
 ---@class MvpContext
@@ -129,14 +128,17 @@ function M:createViewAsync(next)
         self.view.binder = nil
     end
     -- for avoid sync
-    TaskFactory:createTask()
-               :bind(bind(next, self.view))
-               :delay(0)
-               :start()
+    self._task = App.task.TaskFactory:createTask()
+    self._task:bind(bind(next, self.view))
+        :delay(0)
+        :start()
 end
 
 function M:dispose()
     self.presenter:dispose()
+    if self._task then
+        App.task.TaskFactory:disposeTask(self._task)
+    end
     if self.view then
         self.view:dispose()
         self.view.binder = nil

@@ -26,7 +26,7 @@ function M:createTask()
 end
 
 ---@param task TimeTask
-function M:releaseTask(task)
+function M:disposeTask(task)
     self:initialize()
     local key = tostring(task)
     if self._taskMap:has(key) then

@@ -8,20 +8,22 @@ require("core.calendar")
 --require("core.event")
 --require("core.resources")
 
+
+
+App = {}
 -- require modules before global
 require("core.globals")
 
 
 -- modules
-local App = {
+App = {
     asset = require("app.asset.init"),
     ui = require("app.ui.init"),
     network = require("app.network.init"),
     device = require("core.device"),
     storage = require("core.storage"),
     resources = require("app.asset.resources"),
+    task = require("app.task.init"),
 }
 local readonly = require("core.utils.readonly")
 App = readonly(App)
-
-return App
