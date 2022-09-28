@@ -22,4 +22,46 @@ function M:dispose()
     end
 end
 
+--
+-- extension
+--
+---@param ob observable
+---@reutrn observable
+function M:merge(ob)
+    assert(ob and ob.class.__cname == "observable", 'invalid observable')
+    local subject = require("core.reactive.subject")
+    local sj = subject()
+    local new_ob = M(sj)
+    local fn = function(...)
+        sj:onNext(...)
+    end
+    self:subscribe(fn)
+    ob:subscribe(fn)
+    return new_ob
+end
+
+function M:select(selectFn)
+    local subject = require("core.reactive.subject")
+    local sj = subject()
+    local new_ob = M(sj)
+    local fn = function(...)
+        sj:onNext(selectFn(...))
+    end
+    self:subscribe(fn)
+    return new_ob
+end
+
+function M:where(whereFn)
+    local subject = require("core.reactive.subject")
+    local sj = subject()
+    local new_ob = M(sj)
+    local fn = function(...)
+        if whereFn(...) then
+            sj:onNext(...)
+        end
+    end
+    self:subscribe(fn)
+    return new_ob
+end
+
 return M
