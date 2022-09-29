@@ -1,24 +1,17 @@
-local ButtonGroupEvent = require("app.ui.base.ButtonGroupEvent")
-local ButtonViewWrap = require("app.ui.base.ButtonViewWrap")
 ---@class CharacterSelectView: View
 local M = class("CharacterSelectView", require("app.ui.base.mvp.View"))
 
 ---@param model CharacterSelectModel
 function M:initialize(model)
-
     self._vars = require("app.ui.configuration.vars.CharacterSelectViewVars").attach(self.binder)
-    self.backEvent = ButtonViewWrap(self._vars.ButtonViews.btnBack):addTo(self.disposable)
-    self.startEvent = ButtonViewWrap(self._vars.ButtonViews.btnStart):addTo(self.disposable)
+    self.disposable:append(self._vars)
 
-    self.characterSelectEvent = ButtonGroupEvent(
-            {
-                self._vars.ButtonViews.buttonIron,
-                self._vars.ButtonViews.buttonSilent
-            },
-            {
-                'iron', 'silent'
-            }
-    ):addTo(self.disposable)
+    self.backEvent = self._vars.ButtonViews.btnBack.clickEvent
+    self.startEvent = self._vars.ButtonViews.btnStart.clickEvent
+
+    local ironEvent = self._vars.ButtonViews.buttonIron.clickEvent:selectTo('iron')
+    local silentEvent = self._vars.ButtonViews.buttonSilent.clickEvent:selectTo('silent')
+    self.characterSelectEvent = ironEvent:merge(silentEvent)
     self:setCharacterVisible(false)
 end
 

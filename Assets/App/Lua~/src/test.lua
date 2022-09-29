@@ -69,18 +69,32 @@ local observable = require("core.reactive.observable")
 --end
 
 
+-- test merge & selectTo
+--local sj1 = subject()
+--local sj2 = subject()
+--local sj3 = subject()
+--local ob1 = observable(sj1):selectTo(2, 4)
+--local ob2 = observable(sj2):selectTo(6, 8)
+--local ob3 = observable(sj3):selectTo(1, 3)
+--
+--local merged1 = ob1:merge(ob2, ob3):whereEquation('>=', 0)
+--local merged2 = observable(sj1, sj2, sj3)
+--
+--merged1:subscribe(function(...)
+--    print('merge1', ...)
+--end)
+--merged2:subscribe(function(...)
+--    print('merge2', ...)
+--end)
+--
+--sj1:onNext('sj1')
+--sj2:onNext('sj2')
+--sj3:onNext('sj3')
+--sj3:onNext('sj4')
+
+
+-- test map
 local sj1 = subject()
 local sj2 = subject()
-local sj3 = subject()
-local ob1 = observable(sj1):selectTo(1)
-local ob2 = observable(sj2):selectTo(2)
-local ob3 = observable(sj3):selectTo(3)
 
-local merged = ob1:merge(ob2):merge(ob3):whereEquation('>=', 2)
-
-merged:subscribe(_G.print)
-
-sj1:onNext()
-sj2:onNext()
-sj3:onNext()
-sj3:onNext()
+observable(sj1, sj2):selectFrom({}):subscribe(_G.print)

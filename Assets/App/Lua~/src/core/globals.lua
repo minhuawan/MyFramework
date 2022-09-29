@@ -1,8 +1,8 @@
-local p = print
-print = function(...)
-    log.warn('consider use log instant of print')
-    p(...)
-end
+--local p = print
+--print = function(...)
+--    log.warn('consider use log instant of print')
+--    p(...)
+--end
 
 
 -- function handler

@@ -2,12 +2,12 @@
 #endif
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using MyFramework.Runtime.Services.UI;
 using UnityEditor;
+using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -59,7 +59,8 @@ namespace MyFramework.Runtime.Services.Lua
                 {
                     if (!nameRegex.IsMatch(child.name))
                     {
-                        Debug.LogError($"invalid export name: {child.name}, does not match regex: {nameRegex.ToString()}");
+                        Debug.LogError(
+                            $"invalid export name: {child.name}, does not match regex: {nameRegex.ToString()}");
                         continue;
                     }
 
@@ -86,7 +87,13 @@ namespace MyFramework.Runtime.Services.Lua
             //         GUIUtility.systemCopyBuffer = luaCode;
             //         break;
             // }
-            if (EditorUtility.DisplayDialog("Result", luaCode, "Copy"))
+            var message = luaCode;
+            if (message.Length > 600)
+            {
+                message = message.Substring(0, 600) + "\n......";
+            }
+
+            if (EditorUtility.DisplayDialog("Result", message, "Copy"))
             {
                 GUIUtility.systemCopyBuffer = luaCode;
             }
@@ -121,39 +128,87 @@ namespace MyFramework.Runtime.Services.Lua
             }
         }
 
+        private void AppendLine(StringBuilder sb, int space, string line)
+        {
+            for (int i = 0; i < space; i++)
+            {
+                sb.Append(" ");
+            }
+
+            sb.Append(line + "\n");
+        }
+
         private string ExportLuaCode()
         {
             var binder = this;
             var sb = new StringBuilder();
-            sb.AppendLine("--");
-            sb.AppendLine("-- Auto generated, do not edit manually");
-            sb.AppendLine("-- date " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-            sb.AppendLine("--");
-            sb.AppendLine("return {");
-            sb.AppendLine("    attach = function(binder)");
-            sb.AppendLine("       return {");
-            ExportComponent<Transform>(sb, "Transforms", binder.transforms);
-            ExportComponent<GameObject>(sb, "GameObjects", binder.gameObjects);
-            ExportComponent<Text>(sb, "Texts", binder.texts);
-            ExportComponent<Image>(sb, "Images", binder.images);
-            ExportComponent<ButtonView>(sb, "ButtonViews", binder.buttonViews);
-            sb.AppendLine("       }");
-            sb.AppendLine("    end");
-            sb.AppendLine("}");
+            AppendLine(sb, 0, "--");
+            AppendLine(sb, 0, "-- date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            AppendLine(sb, 0, "-- file: " + GetPrefabPath());
+            AppendLine(sb, 0, "-- Auto generated, do not edit manually");
+            AppendLine(sb, 0, "--");
+            AppendLine(sb, 0, "local __return__");
+            AppendLine(sb, 0, "local ButtonViewWrap = require('app.ui.base.ButtonViewWrap')");
+            AppendLine(sb, 0, "return {");
+            AppendLine(sb, 4, "attach = function(binder)");
+            AppendLine(sb, 8, "__return__ = {");
+            ExportComponent<Transform>(sb, 12, "Transforms", binder.transforms);
+            ExportComponent<GameObject>(sb, 12, "GameObjects", binder.gameObjects);
+            ExportComponent<Text>(sb, 12, "Texts", binder.texts);
+            ExportComponent<Image>(sb, 12, "Images", binder.images);
+            ExportComponent<ButtonView>(sb, 12, "ButtonViews", binder.buttonViews);
+            AppendLine(sb, 12, "dispose = function()");
+            DisposeComponent<ButtonView>(sb, 16, "ButtonViews", binder.buttonViews);
+            AppendLine(sb, 12, "end,");
+            AppendLine(sb, 8, "}");
+            AppendLine(sb, 8, "return __return__");
+            AppendLine(sb, 4, "end,");
+            AppendLine(sb, 0, "}");
             return sb.ToString();
         }
 
-        private void ExportComponent<T>(StringBuilder sb, string name, List<T> list) where T : Object
+        private void ExportComponent<T>(StringBuilder sb, int space, string name, List<T> list) where T : Object
         {
-            sb.AppendLine($"        {name} = {"{"}");
+            AppendLine(sb, space, $"{name} = {"{"}");
             for (var i = 0; i < list.Count; i++)
             {
                 var itemName = list[i].name.Substring(2);
-                var line = $"            {itemName} = binder.{name}[{i}],";
-                sb.AppendLine(line);
+                var line = WrapComponent<T>($"binder.{name}[{i}]");
+                line = $"{itemName} = {line},";
+                AppendLine(sb, space + 4, line);
             }
 
-            sb.AppendLine("        },");
+            AppendLine(sb, space, "},");
+        }
+
+        private string WrapComponent<T>(string exp) where T : Object
+        {
+            if (typeof(T) == typeof(ButtonView))
+            {
+                return $"ButtonViewWrap({exp})";
+            }
+
+            return exp;
+        }
+
+        private void DisposeComponent<T>(StringBuilder stringBuilder, int space, string name, List<T> list)
+            where T : Object
+        {
+            if (typeof(T) == typeof(ButtonView))
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var itemName = list[i].name.Substring(2);
+                    AppendLine(stringBuilder, space, $"__return__.{name}.{itemName}:dispose()");
+                }
+            }
+        }
+
+        private string GetPrefabPath()
+        {
+            var b = target as LuaViewBinder;
+            var path = PrefabStageUtility.GetPrefabStage(b.gameObject).prefabAssetPath;
+            return path;
         }
     }
 #endif

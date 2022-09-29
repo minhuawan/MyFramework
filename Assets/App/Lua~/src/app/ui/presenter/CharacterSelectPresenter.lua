@@ -3,9 +3,9 @@
 local M = class("CharacterSelectPresenter", require("app.ui.base.mvp.Presenter"))
 
 function M:didAppeared()
-    self._view.backEvent:subscribe(bind(self.onBackKey, self))
-    self._view.startEvent:subscribe(bind(self.onStart, self))
-    self._view.characterSelectEvent:subscribe(bind(self.onCharacterSelected, self))
+    self._view.backEvent:subscribe(self.onBackKey, self)
+    self._view.startEvent:subscribe(self.onStart, self)
+    self._view.characterSelectEvent:subscribe(self.onCharacterSelected, self)
 end
 
 function M:onStart()
@@ -13,6 +13,7 @@ function M:onStart()
 end
 
 function M:onCharacterSelected(characterName)
+    log.debug('onCharacterSelected {}', characterName)
     self._view:selectCharacter(characterName)
 end
 

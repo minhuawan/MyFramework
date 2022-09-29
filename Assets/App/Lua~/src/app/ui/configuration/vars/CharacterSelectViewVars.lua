@@ -1,10 +1,13 @@
 --
+-- date: 2022-09-29 23:34:53
+-- file: Assets/AppData/Prefab/STS/View/CharacterSelectView.prefab
 -- Auto generated, do not edit manually
--- date 2022-09-15 23:21:16
 --
+local __return__
+local ButtonViewWrap = require('app.ui.base.ButtonViewWrap')
 return {
     attach = function(binder)
-        return {
+        __return__ = {
             Transforms = {
                 characterInfo = binder.Transforms[0],
                 characterPoster = binder.Transforms[1],
@@ -48,11 +51,18 @@ return {
                 relicsIcon = binder.Images[1],
             },
             ButtonViews = {
-                btnBack = binder.ButtonViews[0],
-                btnStart = binder.ButtonViews[1],
-                buttonIron = binder.ButtonViews[2],
-                buttonSilent = binder.ButtonViews[3],
+                btnBack = ButtonViewWrap(binder.ButtonViews[0]),
+                btnStart = ButtonViewWrap(binder.ButtonViews[1]),
+                buttonIron = ButtonViewWrap(binder.ButtonViews[2]),
+                buttonSilent = ButtonViewWrap(binder.ButtonViews[3]),
             },
+            dispose = function()
+                __return__.ButtonViews.btnBack:dispose()
+                __return__.ButtonViews.btnStart:dispose()
+                __return__.ButtonViews.buttonIron:dispose()
+                __return__.ButtonViews.buttonSilent:dispose()
+            end,
         }
-    end
+        return __return__
+    end,
 }

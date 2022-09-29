@@ -21,12 +21,14 @@ end
 
 function M:dispose()
     if self.disposable:count() > 0 then
-        for _, v in self.disposable:iter() do
+        for i, v in self.disposable:iter() do
             if v.dispose then
                 local ok, msg = pcall(v.dispose, v)
                 if not ok then
                     log.error('disposed view with error, name: {}, msg: {}', self.class.__cname, msg)
                 end
+            else
+                log.warn('disposable object does not contain a `dispose` field, index: {}, self: {}', i, self)
             end
         end
         self.disposable:clear()

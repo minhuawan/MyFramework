@@ -1,11 +1,26 @@
 ---@class observable
 local M = class("observable")
 
----@param subject subject
-function M:ctor(subject)
-    assert(subject and subject.class.__cname == "subject", 'invalid subject')
-    self._subject = subject
-    return subject
+function M:ctor(...)
+    local count = select('#', ...)
+    assert(count >= 1, 'subjects are empty')
+    if count == 1 then
+        ---@type subject
+        local subject = select(1, ...)
+        assert(subject and subject.class.__cname == "subject", 'invalid subject')
+        self._subject = subject
+    else
+        local pack = table.pack(...)
+        self._subject = require("core.reactive.subject")()
+        local function onNext(...)
+            self._subject:onNext(...)
+        end
+        ---@param subject subject
+        for i, subject in ipairs(pack) do
+            assert(subject and subject.class.__cname == "subject", 'invalid subject at ' .. tostring(i))
+            subject:subscribe(onNext)
+        end
+    end
 end
 
 ---@return subscription
@@ -25,10 +40,8 @@ end
 --
 -- extension
 --
----@param ob observable
 ---@reutrn observable
-function M:merge(ob)
-    assert(ob and ob.class.__cname == "observable", 'invalid observable')
+function M:merge(...)
     local subject = require("core.reactive.subject")
     local sj = subject()
     local new_ob = M(sj)
@@ -36,7 +49,12 @@ function M:merge(ob)
         sj:onNext(...)
     end
     self:subscribe(fn)
-    ob:subscribe(fn)
+    ---@param ob observable
+    for i, ob in ipairs(table.pack(...)) do
+        assert(ob and ob.class.__cname == "observable", 'invalid observable at ' .. tostring(i))
+        ob:subscribe(fn)
+    end
+
     return new_ob
 end
 
@@ -58,9 +76,16 @@ function M:selectField(key)
     end)
 end
 
-function M:selectTo(v)
+function M:selectTo(...)
+    local pack = table.pack(...)
     return self:select(function()
-        return v
+        return table.unpack(pack)
+    end)
+end
+
+function M:selectFrom(tbl)
+    return self:select(function(k)
+        return tbl[k]
     end)
 end
 

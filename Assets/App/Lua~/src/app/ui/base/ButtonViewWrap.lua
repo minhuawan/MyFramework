@@ -13,12 +13,14 @@ function M:ctor(buttonView)
     self._buttonView.onClick:AddListener(function()
         self.clickSubject:onNext()
     end)
+    log.debug("click register")
 
     ---@public
     self.clickEvent = observable(self.clickSubject)
 end
 
 function M:dispose()
+    log.debug("click disposed")
     self._buttonView.onClick:RemoveAllListeners()
     self._buttonView.onClick:Invoke()
     self._buttonView = nil

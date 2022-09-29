@@ -1,10 +1,13 @@
 --
+-- date: 2022-09-29 23:34:17
+-- file: Assets/AppData/Prefab/STS/View/MainView.prefab
 -- Auto generated, do not edit manually
--- date 2022-07-31 14:25:11
 --
+local __return__
+local ButtonViewWrap = require('app.ui.base.ButtonViewWrap')
 return {
     attach = function(binder)
-        return {
+        __return__ = {
             Transforms = {
                 avatar = binder.Transforms[0],
                 nickname = binder.Transforms[1],
@@ -41,14 +44,24 @@ return {
                 btnExit = binder.Images[6],
             },
             ButtonViews = {
-                btnEdit = binder.ButtonViews[0],
-                btnStart = binder.ButtonViews[1],
-                btnWiki = binder.ButtonViews[2],
-                btnAnalysis = binder.ButtonViews[3],
-                btnSetting = binder.ButtonViews[4],
-                btnPatch = binder.ButtonViews[5],
-                btnExit = binder.ButtonViews[6],
+                btnEdit = ButtonViewWrap(binder.ButtonViews[0]),
+                btnStart = ButtonViewWrap(binder.ButtonViews[1]),
+                btnWiki = ButtonViewWrap(binder.ButtonViews[2]),
+                btnAnalysis = ButtonViewWrap(binder.ButtonViews[3]),
+                btnSetting = ButtonViewWrap(binder.ButtonViews[4]),
+                btnPatch = ButtonViewWrap(binder.ButtonViews[5]),
+                btnExit = ButtonViewWrap(binder.ButtonViews[6]),
             },
+            dispose = function()
+                __return__.ButtonViews.btnEdit:dispose()
+                __return__.ButtonViews.btnStart:dispose()
+                __return__.ButtonViews.btnWiki:dispose()
+                __return__.ButtonViews.btnAnalysis:dispose()
+                __return__.ButtonViews.btnSetting:dispose()
+                __return__.ButtonViews.btnPatch:dispose()
+                __return__.ButtonViews.btnExit:dispose()
+            end,
         }
-    end
+        return __return__
+    end,
 }

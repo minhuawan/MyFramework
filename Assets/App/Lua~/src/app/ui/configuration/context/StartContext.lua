@@ -1,7 +1,7 @@
 return {
     mvp = {
         model = require("app.ui.model.StartModel"),
-        view = require("app.ui.view.StarView"),
+        view = require("app.ui.view.StartView"),
         presenter = require("app.ui.presenter.StartPresenter")
     },
     type = 'single',
