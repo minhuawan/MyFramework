@@ -40,28 +40,74 @@ function M:merge(ob)
     return new_ob
 end
 
-function M:select(selectFn)
+function M:select(selectFn, ...)
+    local outer_p = table.pack(...)
     local subject = require("core.reactive.subject")
     local sj = subject()
     local new_ob = M(sj)
     local fn = function(...)
-        sj:onNext(selectFn(...))
+        sj:onNext(selectFn(..., table.unpack(outer_p)))
     end
     self:subscribe(fn)
     return new_ob
 end
 
-function M:where(whereFn)
+function M:selectField(key)
+    return self:select(function(i)
+        return i[key]
+    end)
+end
+
+function M:selectTo(v)
+    return self:select(function()
+        return v
+    end)
+end
+
+function M:where(whereFn, ...)
+    local outer_p = table.pack(...)
     local subject = require("core.reactive.subject")
     local sj = subject()
     local new_ob = M(sj)
     local fn = function(...)
-        if whereFn(...) then
+        if whereFn(..., table.unpack(outer_p)) == true then
             sj:onNext(...)
         end
     end
     self:subscribe(fn)
     return new_ob
+end
+
+function M:whereEquation(e, v)
+    return self:where(function(i)
+        if e == '==' then
+            return i == v
+        elseif e == '>' then
+            return i > v
+        elseif e == '<' then
+            return i < v
+        elseif e == '>=' then
+            return i >= v
+        elseif e == '<=' then
+            return i <= v
+        elseif e == '~=' then
+            return i ~= v
+        else
+            assert(false, 'invalid eType: ' .. tostring(e))
+        end
+    end)
+end
+
+function M:whereIn(tbl)
+    assert(type(tbl) == 'table', 'invalid argument: tbl')
+    return self:where(function(i)
+        for k, v in pairs(tbl) do
+            if v == i then
+                return true
+            end
+        end
+        return false
+    end)
 end
 
 return M

@@ -9,25 +9,10 @@ function M:initialize(model)
     self._vars = require("app.ui.configuration.vars.StartViewVars").attach(self.binder)
     self.btnBack = self.disposable:append(ButtonViewWrap(self._vars.ButtonViews.btnBack))
 
-    -- todo 这里要想办法包一层...
-    local menu1 = ButtonViewWrap(self._vars.ButtonViews.menu1)
-    local t1 = {
-        menu1
-    }
-    local t2 = {
+    self.event = ButtonViewWrap(self._vars.ButtonViews.menu1).clickEvent:selectTo(1)
+            :merge(ButtonViewWrap(self._vars.ButtonViews.menu2).clickEvent:selectTo(2))
+            :merge(ButtonViewWrap(self._vars.ButtonViews.menu2).clickEvent:selectTo(2))
 
-    }
-    local sj = subject()
-    self.modeEvent = observable(sj)
-    self.disposable:append(self.modeEvent)
-    self.disposable:append(sj)
-    menu1.clickEvent:subscribe(function()
-
-    end)
-
-
-    local bts = { self._vars.ButtonViews.menu1 }
-    local peer = nil
-    self.modeEvent = self.disposable:append(ButtonGroupEvent(bts, peer))
+    self.disposable:append(self.event)
 end
 return M

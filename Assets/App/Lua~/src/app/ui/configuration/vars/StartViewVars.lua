@@ -21,6 +21,7 @@ return {
             ButtonViews = {
                 btnBack = binder.ButtonViews[0],
                 menu1 = binder.ButtonViews[1],
+                menu2 = binder.ButtonViews[1],
             },
         }
     end
