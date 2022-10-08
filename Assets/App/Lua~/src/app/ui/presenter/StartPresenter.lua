@@ -8,10 +8,11 @@ function M:didAppeared()
 end
 
 function M:onModeSelected(model)
-    self._context:moveNextState()
-
-    local configuration = require("app.ui.configuration.context.CharacterSelectContext")
-    App.ui.UIManager:navigateTo(configuration)
+    if model == 'normal'  then
+        self._context:moveNextState()
+        local configuration = require("app.ui.configuration.context.CharacterSelectContext")
+        App.ui.UIManager:navigateTo(configuration)
+    end
 end
 
 return M
