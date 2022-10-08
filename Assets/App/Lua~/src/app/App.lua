@@ -21,7 +21,7 @@ OnLuaEnvDisposeBefore = function()
     --end
 end
 
-sha2 = require("core.sha2")
+sha = require("core.sha2")
 
 App = {}
 -- require modules before global
