@@ -17,19 +17,20 @@ end
 
 function M:selectCharacter(name)
     self:setCharacterVisible(true)
-    local charMeta = require("app.metadata.character." .. name)
+    local charMeta = App.metadata.load('character', name)
     local id = formatter.int(charMeta.properties.relicsId, "%03d")
-    local relicsMeta = require("app.metadata.relics.relics_" .. id)
+    local relicsMeta = App.metadata.load('relics', 'relics_' .. id)
     self:setCharacterInfo(charMeta, relicsMeta)
 end
 
 function M:setCharacterInfo(charMeta, relicsMeta)
     local description = charMeta.description
     local properties = charMeta.properties
+    App.localization.localizeText('')
     self._vars.Texts.characterName.text = description.name
     self._vars.Texts.title.text = description.title
-    self._vars.Texts.goldText.text = self:localizeText('goldText', properties.gold)
-    self._vars.Texts.hpText.text = self:localizeText('hpText', properties.hp)
+    self._vars.Texts.goldText.text = self:localizeText('goldText', { gold = properties.gold })
+    self._vars.Texts.hpText.text = self:localizeText('hpText', { hp = properties.hp })
     self._vars.Texts.relicsName.text = relicsMeta.name
     self._vars.Texts.relicsDescription.text = relicsMeta.description
 end

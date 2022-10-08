@@ -37,6 +37,8 @@ App = {
     storage = require("core.storage"),
     resources = require("app.asset.resources"),
     task = require("app.task.init"),
+    metadata = require("app.metadata.init"),
+    localization = require("app.localization.init")
 }
 local readonly = require("core.utils.readonly")
 App = readonly(App)

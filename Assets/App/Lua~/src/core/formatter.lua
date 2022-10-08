@@ -16,9 +16,12 @@ function formatter.string(fmt, ...)
 end
 
 function formatter.string2(fmt, t)
+    if not t then
+        return fmt
+    end
     assert(type(t) == 'table', 'invalid parameter: t, type: ' .. type(t))
     local message = tostring(fmt)
-    local str, _ = string.gsub(message, "%$(%w+)", function(k)
+    local str, _ = string.gsub(message, "%{(%w+)%}", function(k)
         return tostring(t[k])
     end)
     return str

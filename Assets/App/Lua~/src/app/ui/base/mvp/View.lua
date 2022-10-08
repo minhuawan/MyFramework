@@ -34,31 +34,11 @@ function M:dispose()
         self.disposable:clear()
     end
     self.disposable = nil
-    self._localizationMeta = nil
-end
-
-function M:requireLocalizationMetadata()
-    if self._localizationMeta then
-        return self._localizationMeta
-    end
-    local name = self.class.__cname
-    self._localizationMeta = require("app.metadata.localization.text.game.ui." .. name)
-    return self._localizationMeta
 end
 
 function M:localizeText(key, ...)
-    log.assert(type(key) == 'string', 'invalid localize key: {}, view: {}', key, self)
-    if not self._localizationMeta then
-        self:requireLocalizationMetadata()
-    end
-    if self._localizationMeta then
-        local fmt = self._localizationMeta[key]
-        if not fmt then
-            log.error('localize key not found in game.metadata, key: {}, view: {}', key, self)
-            return ""
-        end
-        return formatter.string(fmt, ...)
-    end
+    local module = 'text_ui_' .. self.class.__cname
+    return App.localization.localizeText(module, key, ...)
 end
 
 return M

@@ -81,6 +81,11 @@ namespace MyFramework.Runtime.Services.Lua
             var path = filepath.Replace(".", "/");
             path = Path.Combine(UnityEngine.Application.dataPath, "App/Lua~/src", path) + ".lua";
             filepath = path;
+            if (!File.Exists(filepath))
+            {
+                throw new LuaException("file not found, path: " + filepath);
+            }
+
             var content = File.ReadAllText(path);
             return Encoding.UTF8.GetBytes(content);
         }
