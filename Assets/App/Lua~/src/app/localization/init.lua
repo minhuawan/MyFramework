@@ -10,7 +10,6 @@ end
 
 function M:preload()
     self.map = {}
-    self:requireModule('_common')
 end
 
 function M:requireModule(name)
@@ -34,7 +33,7 @@ function M:changeLanguage(code, force)
     self:preload()
 end
 
-function M:localizeText(module, key, param)
+function M:getText(module, key, ...)
     log.assert(type(module) == 'string' and module ~= '', 'invalid module: `{}`', module)
     log.assert(type(key) == 'string' and key ~= '', 'invalid key: `{}`', key)
     local mod = self.map[module]
@@ -46,7 +45,7 @@ function M:localizeText(module, key, param)
         log.error('localize key not found in {}, key: {}', module, key)
         return
     end
-    return formatter.string2(fmt, param)
+
 end
 
 function M:localizeDate(timestamp)
@@ -56,6 +55,5 @@ end
 local manager = M()
 manager:init()
 return {
-    localizeText = bind(manager.localizeText, manager),
-    changeLanguage = bind(manager.changeLanguage, manager)
+    LocalizationManager = manager
 }

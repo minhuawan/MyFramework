@@ -36,9 +36,4 @@ function M:dispose()
     self.disposable = nil
 end
 
-function M:localizeText(key, ...)
-    local module = 'text_ui_' .. self.class.__cname
-    return App.localization.localizeText(module, key, ...)
-end
-
 return M

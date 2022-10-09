@@ -1,3 +1,0 @@
-return {
-    ['app-name'] = 'Demo'
-}

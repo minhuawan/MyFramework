@@ -24,13 +24,13 @@ function M:selectCharacter(name)
 end
 
 function M:setCharacterInfo(charMeta, relicsMeta)
+    local manager = App.localization.LocalizationManager
     local description = charMeta.description
     local properties = charMeta.properties
-    App.localization.localizeText('')
     self._vars.Texts.characterName.text = description.name
     self._vars.Texts.title.text = description.title
-    self._vars.Texts.goldText.text = self:localizeText('goldText', { gold = properties.gold })
-    self._vars.Texts.hpText.text = self:localizeText('hpText', { hp = properties.hp })
+    self._vars.Texts.goldText.text = manager:getText('ui', 'CharacterOption', 'TEXT', 5, properties.gold)
+    self._vars.Texts.hpText.text =
     self._vars.Texts.relicsName.text = relicsMeta.name
     self._vars.Texts.relicsDescription.text = relicsMeta.description
 end
