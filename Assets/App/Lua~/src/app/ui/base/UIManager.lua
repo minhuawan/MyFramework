@@ -3,7 +3,6 @@ local SingleContextManager = require("app.ui.base.SingleContextManager")
 ---@class UIManager
 local M = class("UIManager")
 
-
 function M:ctor()
     self:initialize()
 end
@@ -16,6 +15,10 @@ function M:initialize()
 end
 
 function M:navigateTo(configuration)
+    local tye = type(configuration)
+    if tye == 'table' then
+
+    end
     assert(type(configuration) == 'table', 'invalid configuration')
     if configuration.type == 'single' then
         self._single:singleShow(configuration)
@@ -39,7 +42,7 @@ function M:dispose()
         self._escapeKeyListener = nil
     end
 end
-
+CharacterSelectView
 function M:onBackKeyFromKeyboard()
     self:onBackKey()
 end

@@ -20,20 +20,19 @@ function M:selectCharacter(name)
     local charMeta = App.metadata.load('character', name)
     local id = formatter.int(charMeta.properties.relicsId, "%03d")
     local relicsMeta = App.metadata.load('relics', 'relics_' .. id)
-    self:setCharacterInfo(charMeta, relicsMeta)
-end
-
-function M:setCharacterInfo(charMeta, relicsMeta)
-    local manager = App.localization.LocalizationManager
     local description = charMeta.description
     local properties = charMeta.properties
+    local uiLocalizeModule = App.localization.LocalizationManager:getUIModule()
+
     self._vars.Texts.characterName.text = description.name
     self._vars.Texts.title.text = description.title
-    self._vars.Texts.goldText.text = manager:getText('ui', 'CharacterOption', 'TEXT', 5, properties.gold)
+    self._vars.Texts.goldText.text = localizeModule:getText('CharacterOption', 5) manager:getText('ui', 'CharacterOption', 'TEXT', 5, properties.gold)
+    self._vars.Texts.goldText.text = uiLocalizeModule
     self._vars.Texts.hpText.text =
     self._vars.Texts.relicsName.text = relicsMeta.name
     self._vars.Texts.relicsDescription.text = relicsMeta.description
 end
+
 
 function M:setCharacterVisible(visible)
     self._vars.GameObjects.characterInfo:SetActive(visible == true)
