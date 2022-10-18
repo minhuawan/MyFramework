@@ -1,10 +1,11 @@
 ---@class TextLocalizeModule
 local M = class("LocalizeModule")
 
-function M:ctor(texts)
-    log.assert(type(texts) == 'table', 'invalid data')
-    ---@protected
-    self.texts = texts
+function M:ctor(dataMap)
+    log.assert(type(dataMap) == 'table', 'invalid data')
+    self.dataMap = dataMap
 end
+
+
 
 return M

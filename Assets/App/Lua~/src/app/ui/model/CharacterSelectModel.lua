@@ -3,8 +3,8 @@ local M = class("CharacterSelectModel", require("app.ui.base.mvp.Model"))
 
 
 function M:initialize()
-
 end
+
 
 function M:getPosterPath()
     -- todo

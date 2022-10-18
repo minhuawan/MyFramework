@@ -1,4 +1,4 @@
-local LocalizeModule = require("app.localization.modules.TextLocalizeModule")
+local TextLocalizeModule = require("app.localization.modules.TextLocalizeModule")
 ---@class LocalizationManager
 local M = class("LocalizationManager")
 
@@ -19,10 +19,12 @@ function M:requireModule(name)
     if not self.moduleMap:has(name) then
         log.assert(self.languageCode, 'invalid language code: {}', self.languageCode)
         local path = formatter.string("localization/{}/{}.json", self.languageCode, name)
-        local data = App.resources.load(path)
-        log.assert(data, 'invalid path: {}', path)
-        self.moduleMap:set(name, data)
-        return data
+        local json_str = App.resources.load(path)
+        log.assert(json_str, 'invalid path: {}', path)
+        local data = json.decode(json_str)
+        local module = TextLocalizeModule(data)
+        self.moduleMap:set(name, module)
+        return module
     else
         return self.moduleMap:get(name)
     end
@@ -54,9 +56,9 @@ function M:localizeDate(timestamp)
     assert(false, 'unimplemented')
 end
 
----@return UILocalizeModule
-function M:getUIModule()
-    return self:requireModule('ui')
+---@return TextLocalizeModule
+function M:getTextModule(name)
+    return self:requireModule(name)
 end
 
 return M

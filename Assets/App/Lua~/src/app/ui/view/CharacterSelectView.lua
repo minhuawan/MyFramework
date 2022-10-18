@@ -17,22 +17,29 @@ end
 
 function M:selectCharacter(name)
     self:setCharacterVisible(true)
+
     local charMeta = App.metadata.load('character', name)
     local id = formatter.int(charMeta.properties.relicsId, "%03d")
     local relicsMeta = App.metadata.load('relics', 'relics_' .. id)
-    local description = charMeta.description
-    local properties = charMeta.properties
-    local uiLocalizeModule = App.localization.LocalizationManager:getUIModule()
 
-    self._vars.Texts.characterName.text = description.name
-    self._vars.Texts.title.text = description.title
-    self._vars.Texts.goldText.text = localizeModule:getText('CharacterOption', 5) manager:getText('ui', 'CharacterOption', 'TEXT', 5, properties.gold)
-    self._vars.Texts.goldText.text = uiLocalizeModule
-    self._vars.Texts.hpText.text =
+    local character = App.localization.LocalizationManager:getTextModule('characters')
+    local selectCharacter = character[name]
+    local properties = charMeta.properties
+    local ui = App.localization.LocalizationManager:getTextModule('ui')
+    local texts = ui.dataMap.CharacterOption.TEXT
+
+
+    local char = App.battle.CharacterManager:getCharacter(name)
+
+    self._vars.Texts.characterName.text = char.name
+    self._vars.Texts.title.text = char.title
+    local goldText = formatter.string("{}{}", texts[5], properties.gold)
+    local hpText = formatter.string("{}{}", texts[6], properties.hp)
+    self._vars.Texts.goldText.text = info.gold
+    self._vars.Texts.hpText.text = info.initialHp
     self._vars.Texts.relicsName.text = relicsMeta.name
     self._vars.Texts.relicsDescription.text = relicsMeta.description
 end
-
 
 function M:setCharacterVisible(visible)
     self._vars.GameObjects.characterInfo:SetActive(visible == true)

@@ -42,7 +42,7 @@ function M:dispose()
         self._escapeKeyListener = nil
     end
 end
-CharacterSelectView
+
 function M:onBackKeyFromKeyboard()
     self:onBackKey()
 end

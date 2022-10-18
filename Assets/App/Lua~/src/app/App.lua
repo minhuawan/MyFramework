@@ -38,7 +38,8 @@ App = {
     resources = require("app.asset.resources"),
     task = require("app.task.init"),
     metadata = require("app.metadata.init"),
-    localization = require("app.localization.init")
+    localization = require("app.localization.init"),
+    battle = require("app.battle.init"),
 }
 local readonly = require("core.utils.readonly")
 App = readonly(App)
