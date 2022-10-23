@@ -52,4 +52,11 @@ function formatter.int(num, fmt)
     return table.concat(parts, ',')
 end
 
+formatter.localize_rep = function(txt)
+    local r1, _ = string.gsub(txt, " NL ", function()
+        return '\n'
+    end)
+    local r2, _ = string.gsub(r1, "#(%w)", function(tag)
 
+    end)
+end

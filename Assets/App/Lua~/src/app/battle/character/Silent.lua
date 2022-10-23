@@ -7,11 +7,7 @@ function M:initialize()
     self.initialHp = 60
     self.maxHp = 60
     self.gold = 100
-end
-
-function M:getTitle()
-    local player = App.localization.LocalizationManager:requireModule("ui").dataMap['AbstractPlayer']
-    return player[2]
+    self.currentHp = self.maxHp
 end
 
 

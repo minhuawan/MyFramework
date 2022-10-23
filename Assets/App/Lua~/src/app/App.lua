@@ -30,16 +30,18 @@ require("core.globals")
 
 -- modules
 App = {
-    asset = require("app.asset.init"),
-    ui = require("app.ui.init"),
-    network = require("app.network.init"),
-    device = require("core.device"),
     storage = require("core.storage"),
+    device = require("core.device"),
     resources = require("app.asset.resources"),
-    task = require("app.task.init"),
-    metadata = require("app.metadata.init"),
-    localization = require("app.localization.init"),
-    battle = require("app.battle.init"),
 }
+
+App.asset = require("app.asset.init")()
+App.ui = require("app.ui.init")()
+App.network = require("app.network.init")()
+App.task = require("app.task.init")()
+App.metadata = require("app.metadata.init")()
+App.localization = require("app.localization.init")()
+App.battle = require("app.battle.init")()
+
 local readonly = require("core.utils.readonly")
 App = readonly(App)

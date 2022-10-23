@@ -94,7 +94,21 @@ local observable = require("core.reactive.observable")
 
 
 -- test map
-local sj1 = subject()
-local sj2 = subject()
+--local sj1 = subject()
+--local sj2 = subject()
+--
+--observable(sj1, sj2):selectFrom({}):subscribe(_G.print)
 
-observable(sj1, sj2):selectFrom({}):subscribe(_G.print)
+local raw = "abc NL def NL 123 #y456#r"
+local after = string.gsub(raw, "#(%w)", function(tag)
+    print('capture', tag)
+    if tag == 'y' then
+        return '#FF0000'
+    end
+end)
+
+print('raw:')
+print(raw)
+print('')
+print('after:')
+print(after)

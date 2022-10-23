@@ -22,6 +22,7 @@ function M:requireModule(name)
         local json_str = App.resources.load(path)
         log.assert(json_str, 'invalid path: {}', path)
         local data = json.decode(json_str)
+        log.assert(type(data) == 'table', 'invalid data from path: {}', path)
         local module = TextLocalizeModule(data)
         self.moduleMap:set(name, module)
         return module

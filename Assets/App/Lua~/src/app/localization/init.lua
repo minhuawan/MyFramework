@@ -1,3 +1,5 @@
-return {
-    LocalizationManager = require("app.localization.LocalizationManager")()
-}
+return function()
+    return {
+        LocalizationManager = require("app.localization.LocalizationManager")()
+    }
+end
