@@ -23,8 +23,12 @@ function M:selectCharacter(name)
     self._vars.Texts.title.text = character:getLocalizedTitle()
     self._vars.Texts.goldText.text = character:getCurrentGoldText()
     self._vars.Texts.hpText.text = character:getCurrentHpText()
-    self._vars.Texts.relicsName.text = 'N/A' --relicsMeta.name
-    self._vars.Texts.relicsDescription.text = 'N/A' -- relicsMeta.description
+
+    local relic = character:getDefaultRelic()
+    self._vars.Texts.relicsName.text = relic:getSetId()
+    self._vars.Texts.relicsDescription.text = relic:getUpdatedDescription()
+
+    -- todo change sprites
 end
 
 function M:setCharacterVisible(visible)

@@ -25,14 +25,14 @@ end
 function M:getCurrentGoldText()
     local ui = App.localization.LocalizationManager:getTextModule('ui')
     local texts = ui.dataMap.CharacterOption.TEXT
-    local goldText = formatter.string("{}{}", texts[5], self.gold)
+    local goldText = formatter.localize_fmt("{}{}", texts[5], self.gold)
     return goldText
 end
 
 function M:getCurrentHpText()
     local ui = App.localization.LocalizationManager:getTextModule('ui')
     local texts = ui.dataMap.CharacterOption.TEXT
-    local hpText = formatter.string("{}{}/{}", texts[6], self.currentHp, self.maxHp)
+    local hpText = formatter.localize_fmt("{}{}/{}", texts[6], self.currentHp, self.maxHp)
     return hpText
 end
 
@@ -42,6 +42,11 @@ end
 
 function M:getLocalizedTitle()
     return self.localizedTitle
+end
+
+---@return AbstractRelic
+function M:getDefaultRelic()
+    log.unimplemented()
 end
 
 return M

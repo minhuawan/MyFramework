@@ -1,6 +1,8 @@
 return function()
-    local CharacterManager = require("app.battle.character.CharacterManager")
+    local CharacterManager = require("app.battle.characters.CharacterManager")
+    local RelicsManager = require("app.battle.relics.RelicsManager")
     return {
-        CharacterManager = CharacterManager()
+        CharacterManager = CharacterManager(),
+        RelicsManager = RelicsManager(),
     }
 end

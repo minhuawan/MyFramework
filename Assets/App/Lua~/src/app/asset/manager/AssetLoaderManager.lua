@@ -7,4 +7,6 @@ function M:initialize()
     self._manifest = json.decode(str)
 end
 
+
+
 return M

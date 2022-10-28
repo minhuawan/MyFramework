@@ -16,7 +16,11 @@ local function log2CSharp(type, message)
 end
 
 local function format(tag, fmt, ...)
-    fmt = tostring(tag) .. ' ' .. tostring(fmt)
+    if fmt then
+        fmt = tostring(tag) .. ' ' .. tostring(fmt)
+    else
+        fmt = tostring(tag)
+    end
     return formatter.string(fmt, ...)
 end
 
@@ -51,6 +55,10 @@ log = {
             local message = format("[AST]", fmt, ...)
             assert(false, message)
         end
+    end,
+    unimplemented = function(fmt, ...)
+        local message = format("[AST] unimplemented ", fmt, ...)
+        assert(false, message)
     end,
     traceback = debug.traceback,
 }

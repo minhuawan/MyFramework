@@ -52,11 +52,18 @@ function formatter.int(num, fmt)
     return table.concat(parts, ',')
 end
 
-formatter.localize_rep = function(txt)
+local COLOR_TAG = {
+
+}
+
+
+formatter.localize_fmt = function(fmt, ...)
+    local txt = formatter.string(fmt, ...)
     local r1, _ = string.gsub(txt, " NL ", function()
         return '\n'
     end)
-    local r2, _ = string.gsub(r1, "#(%w)", function(tag)
-
+    local r2, _ = string.gsub(r1, "#%w", function(tag)
+        return COLOR_TAG[tag]
     end)
+    return r2
 end

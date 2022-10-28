@@ -1,4 +1,4 @@
-local AbstractCharacter = require("app.battle.character.AbstractCharacter")
+local AbstractCharacter = require("app.battle.characters.AbstractCharacter")
 ---@class Silent : AbstractCharacter
 local M = class("Silent", AbstractCharacter)
 
@@ -8,6 +8,10 @@ function M:initialize()
     self.maxHp = 60
     self.gold = 100
     self.currentHp = self.maxHp
+end
+
+function M:getDefaultRelic()
+    return App.battle.RelicsManager:createRelicInst("Ring of the Snake")
 end
 
 

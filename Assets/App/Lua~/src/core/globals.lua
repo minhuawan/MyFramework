@@ -59,6 +59,17 @@ function global_get(k)
     return _G[k]
 end
 
+
+function string.trim(str)
+    return (str:gsub("^%s*(.-)%s*$", "%1"))
+end
+
+function string.capitalize(str)
+    local c = string.sub(str, 1, 1)
+    local rest = string.sub(str, 2, #str)
+    return string.upper(c) .. rest
+end
+
 -- disable global set implicit
 setmetatable(_G, { __newindex = function(g, k, v)
     log.error("set global ({}) error, cannot set value implicit or with _G, use global_set", k)

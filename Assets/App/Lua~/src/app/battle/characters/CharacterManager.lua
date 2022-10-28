@@ -9,7 +9,7 @@ local M = class("CharacterManager")
 function M:ctor()
     self.characters = {}
     for _, name in ipairs(CHARACTERS) do
-        local char = require('app.battle.character.' .. name)(name)
+        local char = require('app.battle.characters.' .. name)(name)
         self.characters[name] = char
     end
 end
