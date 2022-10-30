@@ -24,13 +24,16 @@ function M:ctor(configuration)
         log.exception("[MvpContext] presenter is nil value")
     end
 
+    log.debug("base canvas order +1")
     CanvasSortingBaseValue = CanvasSortingBaseValue + 1
     if self.configuration.type == 'switchable' then
         self.canvasOrder = CanvasSortingBaseValue
+        log.debug("canvas order = base = {} at {}", self.canvasOrder, self.presenter)
     elseif configuration.type == 'single' then
         self.canvasOrder = CanvasSortingBaseValue + 1000
+        log.debug("canvas order = base + 1000 = {} at {}", self.canvasOrder, self.presenter)
     else
-        log.warn('[MvpContext] unknown type {}', self.configuration.type)
+        log.warn('[MvpContext] unknown type {} at {}', self.configuration.type, self.presenter)
         self.canvasOrder = CanvasSortingBaseValue
     end
 
@@ -65,7 +68,7 @@ function M:moveNextState(from)
     end
     if self._state == MvpContextState.Initialize and from ~= 'create-view-async' then
         -- to avoid `move state` duplicate in async method performing
-        log.warn('[MvpContext] can not move next, because in `initialize` move without force, target: {}', self.configuration.prefab)
+        log.error('[MvpContext] can not move next, because in `initialize` move without force, target: {}', self.configuration.prefab)
         return
     end
     -- log.verbose("[MvpContext] perform moveNextState, current state {}, self: {}", self._state, self)
@@ -78,7 +81,7 @@ function M:moveNextState(from)
         self.presenter:disappear()
     elseif self._state == MvpContextState.Dispose then
         -- self:dispose()
-        -- delay perform
+        -- delay perform after invoke _stateListeners
     else
         log.error("[MvpContext] move next state error, state is {}", self._state)
         return
@@ -135,9 +138,13 @@ function M:createViewAsync(next)
 end
 
 function M:dispose()
-    self.presenter:dispose()
+    if self.disposed then
+        return
+    end
+    self.disposed = true
     if self._task then
         App.task.TaskFactory:disposeTask(self._task)
+        self._task = nil
     end
     if self.view then
         self.view:dispose()
@@ -148,6 +155,9 @@ function M:dispose()
     end
     self._stateListeners:clear()
     CanvasSortingBaseValue = CanvasSortingBaseValue - 1
+    log.verbose("base canvas order -1 at {}", self.presenter)
+    self.presenter:dispose()
+    self.presenter = nil
 end
 
 return M

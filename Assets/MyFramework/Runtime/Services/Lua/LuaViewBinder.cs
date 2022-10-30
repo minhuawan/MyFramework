@@ -207,8 +207,15 @@ namespace MyFramework.Runtime.Services.Lua
         private string GetPrefabPath()
         {
             var b = target as LuaViewBinder;
-            var path = PrefabStageUtility.GetPrefabStage(b.gameObject).prefabAssetPath;
-            return path;
+            var prefab = PrefabStageUtility.GetPrefabStage(b.gameObject);
+            if (prefab != null)
+            {
+                return prefab.assetPath;
+            }
+            else
+            {
+                return UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene().path;
+            }
         }
     }
 #endif
