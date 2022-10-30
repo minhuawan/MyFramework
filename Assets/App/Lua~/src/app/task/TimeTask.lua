@@ -77,11 +77,7 @@ function M:tick(realtimeSinceStartup)
 
     self._invokeTime = realtimeSinceStartup
     self._curTimes = self._curTimes + 1
-    local ok, msg = pcall(self._callable)
-    if not ok then
-        log.error('TimeTask perform tick with error msg: {}', msg)
-    end
-    return ok
+    return xpcall(self._callable, __G__TRACEBACK__)
 end
 
 function M:release()

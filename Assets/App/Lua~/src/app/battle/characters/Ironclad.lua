@@ -14,4 +14,8 @@ function M:getDefaultRelic()
     return App.battle.RelicsManager:createRelicInst('Burning Blood')
 end
 
+function M:getSelectImageName()
+    return "ironcladPortrait.jpg"
+end
+
 return M

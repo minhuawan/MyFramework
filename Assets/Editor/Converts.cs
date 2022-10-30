@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -15,7 +16,7 @@ public class Converts
     [MenuItem("Tools/Convert Texture2d To Sprites")]
     public static void ConvertTexture2DToSprite()
     {
-        var guids = AssetDatabase.FindAssets("t: texture2d", new string[] {"Assets/AppData"});
+        var guids = AssetDatabase.FindAssets("t: texture2d", new string[] { "Assets/AppData" });
         foreach (var guid in guids)
         {
             var path = AssetDatabase.GUIDToAssetPath(guid);
@@ -225,7 +226,8 @@ public class Converts
 
     private class Asset
     {
-        [JsonProperty(NullValueHandling= NullValueHandling.Ignore)]
+        public string hash;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string[] dependencies;
     }
 
@@ -301,10 +303,11 @@ public class Converts
             {
                 throw new Exception($"duplicated key {filePath}");
             }
-            
+
             assets.Add(lower, new Asset()
             {
                 dependencies = dependencies.Length > 0 ? dependencies : null,
+                hash = CalclateFileHash(filePath),
             });
         }
 
@@ -317,5 +320,24 @@ public class Converts
         File.WriteAllText(UnityEngine.Application.dataPath + "/App/Lua~/res/assets/manifest.json", jsonStr);
         EditorUtility.DisplayProgressBar("Exporting", "Please wait", 1f);
         EditorUtility.ClearProgressBar();
+    }
+
+    private static string CalclateFileHash(string filePath)
+    {
+        if (!File.Exists(filePath))
+        {
+            return "";
+        }
+        using (var md5 = MD5.Create())
+        {
+            var bytes = File.ReadAllBytes(filePath);
+            var hashs = md5.ComputeHash(bytes);
+            var sb = new StringBuilder();
+            foreach (var h in hashs)
+            {
+                sb.Append(h.ToString("x2"));
+            }
+            return sb.ToString();
+        }
     }
 }

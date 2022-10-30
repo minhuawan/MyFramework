@@ -46,7 +46,8 @@ end
 
 function M:getAssetPath()
     local name = self:getImageName()
-    local path = "images/relics/" .. name
+    log.assert(name, 'invalid name at {}', self)
+    local path = formatter.string("{}/{}", "Assets/AppData/STS/images/relics", name)
     return path
 end
 

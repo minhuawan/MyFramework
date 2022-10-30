@@ -21,4 +21,9 @@ function M:getCharacter(name)
     return char
 end
 
+---@return AbstractCharacter[]
+function M:getAllCharacters()
+    return self.characters
+end
+
 return M

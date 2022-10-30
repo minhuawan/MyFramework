@@ -1,10 +1,12 @@
 local M = class("counter")
 
 function M:ctor(begin, step)
+    begin = begin or 1
+    step = step or 1
     assert(type(begin) == 'number', 'invalid parameter: begin')
     assert(type(step) == 'number', 'invalid parameter: step')
-    self._begin = begin or 1
-    self._step = step or 1
+    self._begin = begin
+    self._step = step
     self._value = self._begin
 end
 

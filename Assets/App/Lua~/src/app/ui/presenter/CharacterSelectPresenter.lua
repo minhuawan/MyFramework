@@ -9,11 +9,9 @@ function M:didAppeared()
 end
 
 function M:onStart()
-    log.debug('onStart')
 end
 
 function M:onCharacterSelected(characterName)
-    log.debug('onCharacterSelected {}', characterName)
     self._view:selectCharacter(characterName)
 end
 

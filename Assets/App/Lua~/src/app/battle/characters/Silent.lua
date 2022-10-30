@@ -14,5 +14,8 @@ function M:getDefaultRelic()
     return App.battle.RelicsManager:createRelicInst("Ring of the Snake")
 end
 
+function M:getSelectImageName()
+    return "silentPortrait.jpg"
+end
 
 return M

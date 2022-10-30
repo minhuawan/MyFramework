@@ -49,4 +49,14 @@ function M:getDefaultRelic()
     log.unimplemented()
 end
 
+function M:getSelectImageName()
+    log.unimplemented()
+end
+
+function M:getSelectAssetPath()
+    local name = self:getSelectImageName()
+    local path = formatter.string("{}/{}", "Assets/AppData/STS/images/ui/charSelect", name)
+    return path
+end
+
 return M
