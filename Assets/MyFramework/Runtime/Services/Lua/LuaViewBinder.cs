@@ -21,6 +21,7 @@ namespace MyFramework.Runtime.Services.Lua
         public List<Text> Texts;
         public List<Image> Images;
         public List<ButtonView> ButtonViews;
+        public List<LuaViewBinder> Binders;
     }
 #if UNITY_EDITOR
     [CustomEditor(typeof(LuaViewBinder))]
@@ -31,6 +32,7 @@ namespace MyFramework.Runtime.Services.Lua
         private List<Text> texts = new List<Text>();
         private List<Image> images = new List<Image>();
         private List<ButtonView> buttonViews = new List<ButtonView>();
+        private List<LuaViewBinder> binders = new List<LuaViewBinder>();
 
         private Regex nameRegex = new Regex("^#_[a-zA-Z][a-zA-Z0-9_]*$");
         private Regex typeRegex = new Regex("");
@@ -40,14 +42,12 @@ namespace MyFramework.Runtime.Services.Lua
             base.OnInspectorGUI();
             if (GUILayout.Button("export"))
             {
-                Export();
+                Export(target as LuaViewBinder, true);
             }
         }
 
-        private void Export()
+        private string Export(LuaViewBinder binder, bool copyToPaste)
         {
-            var binder = target as LuaViewBinder;
-
             transforms.Clear();
             gameObjects.Clear();
             texts.Clear();
@@ -87,16 +87,21 @@ namespace MyFramework.Runtime.Services.Lua
             //         GUIUtility.systemCopyBuffer = luaCode;
             //         break;
             // }
-            var message = luaCode;
-            if (message.Length > 600)
+            if (copyToPaste)
             {
-                message = message.Substring(0, 600) + "\n......";
+                var message = luaCode;
+                if (message.Length > 600)
+                {
+                    message = message.Substring(0, 600) + "\n......";
+                }
+
+                if (EditorUtility.DisplayDialog("Result", message, "Copy"))
+                {
+                    GUIUtility.systemCopyBuffer = luaCode;
+                }
             }
 
-            if (EditorUtility.DisplayDialog("Result", message, "Copy"))
-            {
-                GUIUtility.systemCopyBuffer = luaCode;
-            }
+            return luaCode;
         }
 
 
@@ -109,22 +114,29 @@ namespace MyFramework.Runtime.Services.Lua
                 Debug.LogError("null!!");
             }
 
-            var text = child.GetComponent<Text>();
-            if (text != null)
+            var binder = child.GetComponent<LuaViewBinder>();
+            if (binder != null)
             {
-                texts.Add(text);
+                // nested
+                Export(binder);
+                return;
             }
 
-            var image = child.GetComponent<Image>();
-            if (image != null)
-            {
-                images.Add(image);
-            }
+            TryAdd<UnityEngine.UI.Text>(child, texts);
+            TryAdd<UnityEngine.UI.Image>(child, images);
+            TryAdd<ButtonView>(child, buttonViews);
+            TryAdd<LuaViewBinder>(child, binders);
+        }
 
-            var buttonView = child.GetComponent<ButtonView>();
-            if (buttonView != null)
+        private void TryAdd<T>(Transform child, List<T> list) where T : UnityEngine.Component
+        {
+            if (child != null && list != null)
             {
-                buttonViews.Add(buttonView);
+                var cmp = child.GetComponent<T>();
+                if (cmp != null)
+                {
+                    list.Add(cmp);
+                }
             }
         }
 
@@ -157,6 +169,7 @@ namespace MyFramework.Runtime.Services.Lua
             ExportComponent<Text>(sb, 12, "Texts", binder.texts);
             ExportComponent<Image>(sb, 12, "Images", binder.images);
             ExportComponent<ButtonView>(sb, 12, "ButtonViews", binder.buttonViews);
+            ExportComponent<LuaViewBinder>(sb, 12, "Binders", binder.binders);
             AppendLine(sb, 12, "dispose = function()");
             DisposeComponent<ButtonView>(sb, 16, "ButtonViews", binder.buttonViews);
             AppendLine(sb, 12, "end,");
