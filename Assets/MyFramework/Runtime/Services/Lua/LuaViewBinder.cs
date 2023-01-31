@@ -21,7 +21,6 @@ namespace MyFramework.Runtime.Services.Lua
         public List<Text> Texts;
         public List<Image> Images;
         public List<ButtonView> ButtonViews;
-        public List<LuaViewBinder> Binders;
     }
 #if UNITY_EDITOR
     [CustomEditor(typeof(LuaViewBinder))]
@@ -32,7 +31,6 @@ namespace MyFramework.Runtime.Services.Lua
         private List<Text> texts = new List<Text>();
         private List<Image> images = new List<Image>();
         private List<ButtonView> buttonViews = new List<ButtonView>();
-        private List<LuaViewBinder> binders = new List<LuaViewBinder>();
 
         private Regex nameRegex = new Regex("^#_[a-zA-Z][a-zA-Z0-9_]*$");
         private Regex typeRegex = new Regex("");
@@ -42,12 +40,14 @@ namespace MyFramework.Runtime.Services.Lua
             base.OnInspectorGUI();
             if (GUILayout.Button("export"))
             {
-                Export(target as LuaViewBinder, true);
+                Export();
             }
         }
 
-        private string Export(LuaViewBinder binder, bool copyToPaste)
+        private void Export()
         {
+            var binder = target as LuaViewBinder;
+
             transforms.Clear();
             gameObjects.Clear();
             texts.Clear();
@@ -87,21 +87,16 @@ namespace MyFramework.Runtime.Services.Lua
             //         GUIUtility.systemCopyBuffer = luaCode;
             //         break;
             // }
-            if (copyToPaste)
+            var message = luaCode;
+            if (message.Length > 600)
             {
-                var message = luaCode;
-                if (message.Length > 600)
-                {
-                    message = message.Substring(0, 600) + "\n......";
-                }
-
-                if (EditorUtility.DisplayDialog("Result", message, "Copy"))
-                {
-                    GUIUtility.systemCopyBuffer = luaCode;
-                }
+                message = message.Substring(0, 600) + "\n......";
             }
 
-            return luaCode;
+            if (EditorUtility.DisplayDialog("Result", message, "Copy"))
+            {
+                GUIUtility.systemCopyBuffer = luaCode;
+            }
         }
 
 
@@ -114,29 +109,22 @@ namespace MyFramework.Runtime.Services.Lua
                 Debug.LogError("null!!");
             }
 
-            var binder = child.GetComponent<LuaViewBinder>();
-            if (binder != null)
+            var text = child.GetComponent<Text>();
+            if (text != null)
             {
-                // nested
-                Export(binder);
-                return;
+                texts.Add(text);
             }
 
-            TryAdd<UnityEngine.UI.Text>(child, texts);
-            TryAdd<UnityEngine.UI.Image>(child, images);
-            TryAdd<ButtonView>(child, buttonViews);
-            TryAdd<LuaViewBinder>(child, binders);
-        }
-
-        private void TryAdd<T>(Transform child, List<T> list) where T : UnityEngine.Component
-        {
-            if (child != null && list != null)
+            var image = child.GetComponent<Image>();
+            if (image != null)
             {
-                var cmp = child.GetComponent<T>();
-                if (cmp != null)
-                {
-                    list.Add(cmp);
-                }
+                images.Add(image);
+            }
+
+            var buttonView = child.GetComponent<ButtonView>();
+            if (buttonView != null)
+            {
+                buttonViews.Add(buttonView);
             }
         }
 
@@ -157,6 +145,8 @@ namespace MyFramework.Runtime.Services.Lua
             AppendLine(sb, 0, "--");
             AppendLine(sb, 0, "-- date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             AppendLine(sb, 0, "-- file: " + GetPrefabPath());
+            AppendLine(sb, 0,
+                "-- path: " + MyFramework.Utils.TransformUtils.GetHierarchyPath((target as LuaViewBinder).transform));
             AppendLine(sb, 0, "-- Auto generated, do not edit manually");
             AppendLine(sb, 0, "--");
             AppendLine(sb, 0, "local __return__");
@@ -169,7 +159,6 @@ namespace MyFramework.Runtime.Services.Lua
             ExportComponent<Text>(sb, 12, "Texts", binder.texts);
             ExportComponent<Image>(sb, 12, "Images", binder.images);
             ExportComponent<ButtonView>(sb, 12, "ButtonViews", binder.buttonViews);
-            ExportComponent<LuaViewBinder>(sb, 12, "Binders", binder.binders);
             AppendLine(sb, 12, "dispose = function()");
             DisposeComponent<ButtonView>(sb, 16, "ButtonViews", binder.buttonViews);
             AppendLine(sb, 12, "end,");
