@@ -24,14 +24,14 @@ function M:ctor(configuration)
         log.exception("[MvpContext] presenter is nil value")
     end
 
-    log.debug("base canvas order +1")
+    --log.debug("base canvas order +1")
     CanvasSortingBaseValue = CanvasSortingBaseValue + 1
     if self.configuration.type == 'switchable' then
         self.canvasOrder = CanvasSortingBaseValue
-        log.debug("canvas order = base = {} at {}", self.canvasOrder, self.presenter)
+        --log.debug("canvas order = base = {} at {}", self.canvasOrder, self.presenter)
     elseif configuration.type == 'single' then
         self.canvasOrder = CanvasSortingBaseValue + 1000
-        log.debug("canvas order = base + 1000 = {} at {}", self.canvasOrder, self.presenter)
+        --log.debug("canvas order = base + 1000 = {} at {}", self.canvasOrder, self.presenter)
     else
         log.warn('[MvpContext] unknown type {} at {}', self.configuration.type, self.presenter)
         self.canvasOrder = CanvasSortingBaseValue
@@ -155,7 +155,7 @@ function M:dispose()
     end
     self._stateListeners:clear()
     CanvasSortingBaseValue = CanvasSortingBaseValue - 1
-    log.verbose("base canvas order -1 at {}", self.presenter)
+    --log.verbose("base canvas order -1 at {}", self.presenter)
     self.presenter:dispose()
     self.presenter = nil
 end

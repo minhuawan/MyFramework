@@ -1,13 +1,16 @@
 ﻿#if UNITY_EDITOR
+using System.IO;
+using MyFramework.Utils;
+using UnityEditor;
+using UnityEditor.Experimental.SceneManagement;
 #endif
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using MyFramework.Runtime.Services.UI;
-using UnityEditor;
-using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -21,46 +24,46 @@ namespace MyFramework.Runtime.Services.Lua
         public List<Text> Texts;
         public List<Image> Images;
         public List<ButtonView> ButtonViews;
-    }
+
+        //
+        // UNITY EDITOR EXTENSION START
+        //
 #if UNITY_EDITOR
-    [CustomEditor(typeof(LuaViewBinder))]
-    public class LuaViewBinderEditor : Editor
-    {
-        private List<Transform> transforms = new List<Transform>();
-        private List<GameObject> gameObjects = new List<GameObject>();
-        private List<Text> texts = new List<Text>();
-        private List<Image> images = new List<Image>();
-        private List<ButtonView> buttonViews = new List<ButtonView>();
+        public static Regex RegexName = new Regex("^#_[a-zA-Z][a-zA-Z0-9_]*$");
+        public static Regex RegexSaveFileName = new Regex("^[a-zA-Z0-9_]*$");
 
-        private Regex nameRegex = new Regex("^#_[a-zA-Z][a-zA-Z0-9_]*$");
-        private Regex typeRegex = new Regex("");
-
-        public override void OnInspectorGUI()
+        private void Clear()
         {
-            base.OnInspectorGUI();
-            if (GUILayout.Button("export"))
-            {
-                Export();
-            }
+            GameObjects.Clear();
+            Transforms.Clear();
+            Texts.Clear();
+            Images.Clear();
+            ButtonViews.Clear();
         }
 
-        private void Export()
+        public void GenLuaCodeAndSaveFile(string filePath)
         {
-            var binder = target as LuaViewBinder;
+            var directoryName = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directoryName))
+            {
+                Directory.CreateDirectory(directoryName);
+            }
 
-            transforms.Clear();
-            gameObjects.Clear();
-            texts.Clear();
+            File.WriteAllText(filePath, GenLuaCode());
+        }
 
-            var children = binder.GetComponentsInChildren<Transform>(true);
+        public string GenLuaCode()
+        {
+            Clear();
+            var children = GetComponentsInChildren<Transform>(true);
             foreach (var child in children)
             {
                 if (child.name.StartsWith("#_", StringComparison.Ordinal))
                 {
-                    if (!nameRegex.IsMatch(child.name))
+                    if (!RegexName.IsMatch(child.name))
                     {
                         Debug.LogError(
-                            $"invalid export name: {child.name}, does not match regex: {nameRegex.ToString()}");
+                            $"invalid export name: {child.name}, does not match regex: {RegexName.ToString()}");
                         continue;
                     }
 
@@ -68,15 +71,10 @@ namespace MyFramework.Runtime.Services.Lua
                 }
             }
 
-
-            binder.GameObjects = gameObjects;
-            binder.Transforms = transforms;
-            binder.Texts = texts;
-            binder.Images = images;
-            binder.ButtonViews = buttonViews;
-            EditorUtility.SetDirty(binder.gameObject);
+            EditorUtility.SetDirty(gameObject);
 
             var luaCode = ExportLuaCode();
+            return luaCode;
             // var select = EditorUtility.DisplayDialogComplex("Result", luaCode, "CopyToFile", "Close", "Copy");
             // switch (select)
             // {
@@ -87,23 +85,13 @@ namespace MyFramework.Runtime.Services.Lua
             //         GUIUtility.systemCopyBuffer = luaCode;
             //         break;
             // }
-            var message = luaCode;
-            if (message.Length > 600)
-            {
-                message = message.Substring(0, 600) + "\n......";
-            }
-
-            if (EditorUtility.DisplayDialog("Result", message, "Copy"))
-            {
-                GUIUtility.systemCopyBuffer = luaCode;
-            }
         }
 
 
         private void DealChild(Transform child)
         {
-            transforms.Add(child);
-            gameObjects.Add(child.gameObject);
+            Transforms.Add(child);
+            GameObjects.Add(child.gameObject);
             if (child.gameObject == null)
             {
                 Debug.LogError("null!!");
@@ -112,19 +100,19 @@ namespace MyFramework.Runtime.Services.Lua
             var text = child.GetComponent<Text>();
             if (text != null)
             {
-                texts.Add(text);
+                Texts.Add(text);
             }
 
             var image = child.GetComponent<Image>();
             if (image != null)
             {
-                images.Add(image);
+                Images.Add(image);
             }
 
             var buttonView = child.GetComponent<ButtonView>();
             if (buttonView != null)
             {
-                buttonViews.Add(buttonView);
+                ButtonViews.Add(buttonView);
             }
         }
 
@@ -140,13 +128,16 @@ namespace MyFramework.Runtime.Services.Lua
 
         private string ExportLuaCode()
         {
-            var binder = this;
+            var path = GetPrefabPath();
+            var fullPath = UnityEngine.Application.dataPath + "/" + path.Substring("Assets/".Length);
+            var fileHash = HashUtils.FileHash(fullPath);
             var sb = new StringBuilder();
             AppendLine(sb, 0, "--");
-            AppendLine(sb, 0, "-- date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-            AppendLine(sb, 0, "-- file: " + GetPrefabPath());
+            AppendLine(sb, 0, "-- file: " + path);
+            AppendLine(sb, 0, "-- hash: " + fileHash);
+            // AppendLine(sb, 0, "-- date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             AppendLine(sb, 0,
-                "-- path: " + MyFramework.Utils.TransformUtils.GetHierarchyPath((target as LuaViewBinder).transform));
+                "-- path: " + MyFramework.Utils.TransformUtils.GetHierarchyPath(transform));
             AppendLine(sb, 0, "-- Auto generated, do not edit manually");
             AppendLine(sb, 0, "--");
             AppendLine(sb, 0, "local __return__");
@@ -154,13 +145,13 @@ namespace MyFramework.Runtime.Services.Lua
             AppendLine(sb, 0, "return {");
             AppendLine(sb, 4, "attach = function(binder)");
             AppendLine(sb, 8, "__return__ = {");
-            ExportComponent<Transform>(sb, 12, "Transforms", binder.transforms);
-            ExportComponent<GameObject>(sb, 12, "GameObjects", binder.gameObjects);
-            ExportComponent<Text>(sb, 12, "Texts", binder.texts);
-            ExportComponent<Image>(sb, 12, "Images", binder.images);
-            ExportComponent<ButtonView>(sb, 12, "ButtonViews", binder.buttonViews);
+            ExportComponent<Transform>(sb, 12, "Transforms", Transforms);
+            ExportComponent<GameObject>(sb, 12, "GameObjects", GameObjects);
+            ExportComponent<Text>(sb, 12, "Texts", Texts);
+            ExportComponent<Image>(sb, 12, "Images", Images);
+            ExportComponent<ButtonView>(sb, 12, "ButtonViews", ButtonViews);
             AppendLine(sb, 12, "dispose = function()");
-            DisposeComponent<ButtonView>(sb, 16, "ButtonViews", binder.buttonViews);
+            DisposeComponent<ButtonView>(sb, 16, "ButtonViews", ButtonViews);
             AppendLine(sb, 12, "end,");
             AppendLine(sb, 8, "}");
             AppendLine(sb, 8, "return __return__");
@@ -206,18 +197,130 @@ namespace MyFramework.Runtime.Services.Lua
             }
         }
 
-        private string GetPrefabPath()
+        public string GetPrefabPath()
         {
-            var b = target as LuaViewBinder;
-            var prefab = PrefabStageUtility.GetPrefabStage(b.gameObject);
+            var prefab = PrefabStageUtility.GetPrefabStage(gameObject);
             if (prefab != null)
             {
                 return prefab.assetPath;
             }
             else
             {
+                var path = AssetDatabase.GetAssetPath(gameObject);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    return path;
+                }
+
                 return UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene().path;
             }
+        }
+
+        [MenuItem("MyFramework/Lua/CleanAllGenLuaFiles")]
+        public static void CleanAllGenLuaFiles()
+        {
+            var path = LuaViewBinderEditor.LuaGenCodePrefix;
+            if (!Directory.Exists(path))
+                return;
+            Directory.Delete(path, true);
+        }
+
+        [MenuItem("MyFramework/Lua/GenAllLuaFiles")]
+        public static void GenAllLuaFiles()
+        {
+            var viewDir = LuaViewBinderEditor.PrefabViewFullPath;
+            var di = new DirectoryInfo(viewDir);
+            var pf = di.GetFiles("*.prefab", SearchOption.AllDirectories);
+            var dataPath = UnityEngine.Application.dataPath;
+            foreach (var fi in pf)
+            {
+                var assetPath = fi.FullName;
+                assetPath = "Assets/" + assetPath.Substring(dataPath.Length + 1);
+                assetPath = assetPath.Replace("\\", "/");
+                Debug.Log(assetPath);
+                var binder = UnityEditor.AssetDatabase.LoadAssetAtPath<LuaViewBinder>(assetPath);
+                if (binder == null)
+                {
+                    Debug.LogError($"Gen failed at `{assetPath}`");
+                    continue;
+                }
+                var fullPath = LuaViewBinderEditor.GetLuaCodeFilePath(binder);
+                binder.GenLuaCodeAndSaveFile(fullPath);
+            }
+        }
+#endif
+    }
+
+    //
+    // INSPECTOR BUTTON 
+    //
+#if UNITY_EDITOR
+    [CustomEditor(typeof(LuaViewBinder))]
+    public class LuaViewBinderEditor : Editor
+    {
+        public static string LuaGenCodePrefix => Path.Combine(UnityEngine.Application.dataPath,
+            "App", "Lua~", "src",
+            "app", "ui", "generated"
+        );
+
+        public static string PrefabViewFullPath => Path.Combine(UnityEngine.Application.dataPath,
+            "AppData", "Prefab", "STS", "View");
+
+        public static string PrefabViewAssetPath = Path.Combine("AppData", "Prefab", "STS", "View");
+
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+            if (GUILayout.Button("GenLuaCode"))
+            {
+                var binder = target as LuaViewBinder;
+                var luaCode = binder.GenLuaCode();
+                var message = luaCode;
+                if (message.Length > 600)
+                {
+                    message = message.Substring(0, 600) + "\n......";
+                }
+
+                if (EditorUtility.DisplayDialog("Result", message, "Copy"))
+                {
+                    GUIUtility.systemCopyBuffer = luaCode;
+                }
+            }
+
+            if (GUILayout.Button("GenLuaCodeAndSaveFile"))
+            {
+                var binder = target as LuaViewBinder;
+                binder.GenLuaCodeAndSaveFile(GetLuaCodeFilePath(binder));
+            }
+        }
+
+        public static string GetLuaCodeFilePath(LuaViewBinder binder)
+        {
+            var path = binder.GetPrefabPath();
+            // default start with : Assets/AppData/Prefab/STS/View/ 
+            var substring = path.Substring("Assets/AppData/Prefab/STS/View/".Length);
+            var parts = substring.Split('/');
+            var newPath = string.Join("/", parts.Take(parts.Length - 1).Select(p => p.ToLower()));
+            var fileName = parts.Last().Split('.').First();
+            fileName = $"{fileName}Vars";
+            if (!LuaViewBinder.RegexSaveFileName.IsMatch(newPath))
+            {
+                Debug.LogError($"Invalid path: `{newPath}` at `{path}`");
+                return null;
+            }
+
+            if (!LuaViewBinder.RegexSaveFileName.IsMatch(fileName))
+            {
+                Debug.LogError($"Invalid file name: `{fileName}` at `{path}`");
+                return null;
+            }
+
+
+            newPath = Path.Combine(LuaGenCodePrefix, newPath, fileName + ".lua");
+
+            Debug.Log($"Save path: {newPath}");
+            return newPath;
         }
     }
 #endif

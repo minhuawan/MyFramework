@@ -1746,7 +1746,6 @@ MonoBehaviour:
   - {fileID: 5341444749694337424}
   - {fileID: 1849304477701358561}
   - {fileID: 2269751330331884562}
-  Binders: []
 --- !u!1 &4193211399453942775
 GameObject:
   m_ObjectHideFlags: 0
@@ -2057,7 +2056,6 @@ MonoBehaviour:
   - {fileID: 5341444749694337424}
   - {fileID: 1849304477701358561}
   - {fileID: 2269751330331884562}
-  Binders: []
 --- !u!1 &5503863782878727844
 GameObject:
   m_ObjectHideFlags: 0
@@ -2422,7 +2420,6 @@ MonoBehaviour:
   - {fileID: 3384813372533001677}
   - {fileID: 8519941568381953561}
   - {fileID: 8182550999680219217}
-  Binders: []
 --- !u!1 &6616225054101410755
 GameObject:
   m_ObjectHideFlags: 0
