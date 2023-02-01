@@ -35,22 +35,21 @@ function M:didDisappeared()
 end
 
 function M:dispose()
-    if self.disposable then
-        if self.disposable:count() > 0 then
-            for i, v in self.disposable:iter() do
-                if v.dispose then
-                    local ok, msg = xpcall(v.dispose, __G__TRACEBACK__)
-                    if not ok then
-                        -- log.error('disposed view with error, name: {}, msg: {}', self.class.__cname, msg)
-                        return
-                    end
-                else
-                    log.warn('disposable object does not contain a `dispose` field, index: {}, self: {}', i, self)
-                end
+    if not self.disposable or self.disposable:count() == 0 then
+        return
+    end
+    for i, v in self.disposable:iter() do
+        if v.dispose then
+            local ok, msg = pcall(v.dispose, v)
+            if not ok then
+                log.error('disposed view with error, index: {}, self: {}, msg: {}', i, self, msg)
+                return
             end
-            self.disposable:clear()
+        else
+            log.warn('disposable object does not contain a `dispose` field, index: {}, self: {}', i, self)
         end
     end
+    self.disposable:clear()
     self.disposable = nil
 end
 

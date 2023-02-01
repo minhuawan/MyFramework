@@ -116,10 +116,10 @@ function M:createViewAsync(next)
     ---@type View
     self.view = self.configuration.mvp.view.new()
     if self.canvasOrder then
-        local canvas = gameObject.transform:Find("Canvas"):GetComponent(typeof(CS.UnityEngine.Canvas))
-        if not canvas then
-            log.error("[MvpContext] can't find canvas object in {}", self.view)
-        end
+        local canvasGameObject = gameObject.transform:Find("Canvas")
+        log.assert(canvasGameObject, "[MvpContext] can't find Canvas gameObject in root, view: {}", self.view)
+        local canvas = canvasGameObject:GetComponent(typeof(CS.UnityEngine.Canvas))
+        log.assert(canvas, "[MvpContext] can't find Canvas component of gameObject, view: {}", self.view)
         canvas.sortingOrder = self.canvasOrder
     end
     gameObject:SetActive(false)
@@ -156,8 +156,10 @@ function M:dispose()
     self._stateListeners:clear()
     CanvasSortingBaseValue = CanvasSortingBaseValue - 1
     --log.verbose("base canvas order -1 at {}", self.presenter)
-    self.presenter:dispose()
-    self.presenter = nil
+    if self.presenter then
+        self.presenter:dispose()
+        self.presenter = nil
+    end
 end
 
 return M

@@ -9,6 +9,8 @@ function M:didAppeared()
 end
 
 function M:onStart()
+    local configuration = require("app.ui.configuration.context.battle.BattleContext")
+    App.ui.UIManager:navigateTo(configuration)
 end
 
 function M:onCharacterSelected(characterName)

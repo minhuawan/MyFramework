@@ -12,6 +12,8 @@ function M:onModeSelected(model)
         self._context:moveNextState()
         local configuration = require("app.ui.configuration.context.CharacterSelectContext")
         App.ui.UIManager:navigateTo(configuration)
+    else
+        log.assert(false, 'unsupported model type `{}`', model)
     end
 end
 

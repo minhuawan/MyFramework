@@ -115,7 +115,7 @@ function M:whereEquation(e, v)
             return i >= v
         elseif e == '<=' then
             return i <= v
-        elseif e == '~=' then
+        elseif e == '~=' or e == '!=' then
             return i ~= v
         else
             assert(false, 'invalid eType: ' .. tostring(e))

@@ -19,6 +19,7 @@ function M:ctor(buttonView)
 end
 
 function M:dispose()
+    self.clickEvent:dispose()
     self._buttonView.onClick:RemoveAllListeners()
     self._buttonView.onClick:Invoke()
     self._buttonView = nil
