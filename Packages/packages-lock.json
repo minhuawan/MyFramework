@@ -9,6 +9,22 @@
       },
       "hash": "b2641a14dfd5baa74c0930bacb68d4a2a4ff9d21"
     },
+    "com.esotericsoftware.spine.spine-csharp": {
+      "version": "https://github.com/EsotericSoftware/spine-runtimes.git?path=spine-csharp/src#4.1",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "6aa54259cbc0ca62c50e55af6793c11627d5dde3"
+    },
+    "com.esotericsoftware.spine.spine-unity": {
+      "version": "https://github.com/EsotericSoftware/spine-runtimes.git?path=spine-unity/Assets/Spine#4.1",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.esotericsoftware.spine.spine-csharp": "4.1.0"
+      },
+      "hash": "6aa54259cbc0ca62c50e55af6793c11627d5dde3"
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
