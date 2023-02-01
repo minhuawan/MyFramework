@@ -4,7 +4,7 @@ local M = class("CharacterSelectView", require("app.ui.base.mvp.View"))
 
 ---@param model CharacterSelectModel
 function M:initialize(model)
-    self._vars = require("app.ui.configuration.vars.CharacterSelectViewVars").attach(self.binder)
+    self._vars = require("app.ui.generated.CharacterSelectViewVars").attach(self.binder)
     self.disposable:append(self._vars)
 
     self.highlightGos = collections.map()

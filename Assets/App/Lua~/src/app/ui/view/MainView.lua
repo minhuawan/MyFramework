@@ -4,7 +4,7 @@ local M = class("MainView", View)
 
 ---@param model MainModel
 function M:initialize(model)
-    self._vars = require("app.ui.configuration.vars.MainViewVars").attach(self.binder)
+    self._vars = require("app.ui.generated.MainViewVars").attach(self.binder)
     self.disposable:append(self._vars)
 
     self.editEvent = self._vars.ButtonViews.btnEdit.clickEvent

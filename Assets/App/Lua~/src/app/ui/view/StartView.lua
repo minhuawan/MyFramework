@@ -2,7 +2,7 @@
 local M = class("StartView", require("app.ui.base.mvp.View"))
 
 function M:initialize(model)
-    self._vars = require("app.ui.configuration.vars.StartViewVars").attach(self.binder)
+    self._vars = require("app.ui.generated.StartViewVars").attach(self.binder)
     self.disposable:append(self._vars)
     self.backEvent = self._vars.ButtonViews.btnBack.clickEvent
 
