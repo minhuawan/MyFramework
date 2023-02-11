@@ -1,3 +1,8 @@
+local assert = assert
+if log and log.assert then
+    assert = log.assert
+end
+
 local subscription = require("core.reactive.subscription")
 ---@class subject
 local M = class("subject")

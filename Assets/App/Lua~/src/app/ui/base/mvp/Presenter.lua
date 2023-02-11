@@ -42,7 +42,7 @@ function M:dispose()
         if v.dispose then
             local ok, msg = pcall(v.dispose, v)
             if not ok then
-                log.error('disposed view with error, index: {}, self: {}, msg: {}', i, self, msg)
+                log.error('disposed view with error, index: {}, self: {}\n\rmsg: {}', i, self, msg)
                 return
             end
         else

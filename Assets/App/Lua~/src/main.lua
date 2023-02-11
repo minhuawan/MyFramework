@@ -11,7 +11,6 @@ end
 
 xpcall(function()
     require("app.App")
-
     local configuration = require("app.ui.configuration.context.MainContext")
     App.ui.UIManager:navigateTo(configuration)
 end, __G__TRACEBACK__)

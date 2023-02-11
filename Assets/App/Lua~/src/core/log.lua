@@ -56,9 +56,10 @@ local LEVELS = {
     ["info"] = { tag = "[INF] ", traceback = false },
     ["warn"] = { tag = "[WAR] ", traceback = false },
     ["error"] = { tag = "[ERR] ", traceback = true },
-    ["assert"] = { tag = "[AST] ", traceback = true },
-    ["assert"] = { tag = "[AST] ", traceback = true },
-    ["assert-unimplemented"] = { tag = "[AST unimplemented] ", traceback = true },
+    -- Lua VM will generate traceback for 'assert' and 'error'
+    ["exception"] = { tag = "[EXP] ", traceback = false }, -- native will call native 'error'
+    ["assert"] = { tag = "[AST] ", traceback = false },
+    ["assert-unimplemented"] = { tag = "[AST unimplemented] ", traceback = false },
 }
 local function makeMessage(level, fmt, ...)
     local config = LEVELS[level]
@@ -68,6 +69,9 @@ local function makeMessage(level, fmt, ...)
     local content = formatter.string(tostring(fmt), ...)
     table.insert(parts, content)
     local message = table.concat(parts)
+    if config.traceback then
+        message = debug.traceback(message, 3) -- from log with type, so it is 3
+    end
     return message
 end
 
@@ -94,18 +98,21 @@ log = {
     end,
     exception = function(fmt, ...)
         local message = makeMessage("exception", fmt, ...)
-        error(message, 2) -- lua native exception
+        -- call native error to interrupt callback
+        error(message, 2)
     end,
     assert = function(exp, fmt, ...)
         if exp then
         else
             local message = makeMessage("assert", fmt, ...)
-            assert(false, message)
+            -- here to call native error to interrupt callback
+            error(message, 2)
         end
     end,
     unimplemented = function(fmt, ...)
         local message = makeMessage("assert-unimplemented", fmt, ...)
-        assert(false, message)
+        -- here to call native error to interrupt callback
+        error(message, 2)
     end,
     traceback = debug.traceback,
 }

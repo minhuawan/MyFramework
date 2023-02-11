@@ -1,3 +1,9 @@
+local assert = assert
+if log and log.assert then
+    assert = log.assert
+end
+
+
 ---@class subscription
 local M = class("subscription")
 
