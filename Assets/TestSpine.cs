@@ -1,18 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+using Spine.Unity;
 using UnityEngine;
 
-public class TestSpine : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-           
-    }
+public class TestSpine : MonoBehaviour {
+    private SkeletonAnimation animation;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+
+    [SpineAnimation] public string animationName;
+
+    private void Awake() {
+        animation = GetComponent<SkeletonAnimation>();
+
+        animation.AnimationState.SetAnimation(0, animationName, true);
     }
 }
