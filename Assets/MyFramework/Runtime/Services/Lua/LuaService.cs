@@ -79,7 +79,7 @@ namespace MyFramework.Runtime.Services.Lua
             if (string.IsNullOrEmpty(filepath))
                 return null;
             var path = filepath.Replace(".", "/");
-            path = Path.Combine(UnityEngine.Application.dataPath, "App/Lua~/src", path) + ".lua";
+            path = Path.Combine(UnityEngine.Application.dataPath, "..", "Lua/src", path) + ".lua";
             filepath = path;
             if (!File.Exists(filepath))
             {

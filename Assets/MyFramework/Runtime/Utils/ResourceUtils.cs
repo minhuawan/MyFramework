@@ -9,7 +9,7 @@ namespace MyFramework.Runtime.Utils
     {
         public static readonly string RootPath =
 #if UNITY_EDITOR
-            Path.Combine(UnityEngine.Application.dataPath, "App/Lua~/res");
+            Path.Combine(UnityEngine.Application.dataPath, "..", "Lua/res");
 #else
                 // todo
 #endif
