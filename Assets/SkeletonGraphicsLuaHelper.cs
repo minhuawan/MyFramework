@@ -4,8 +4,8 @@ using Spine;
 using Spine.Unity;
 using UnityEngine;
 
-public class SkeletonLuaHelper : MonoBehaviour {
-    private SkeletonAnimation skeletonAnimation;
+public class SkeletonGraphicsLuaHelper : MonoBehaviour {
+    private SkeletonGraphic skeletonAnimation;
 
     [SpineAnimation] public string initialAnimationName;
     [SpineSkin] public string initialSkin;
@@ -20,7 +20,7 @@ public class SkeletonLuaHelper : MonoBehaviour {
     private float delaySecondCall;
 
     private void Awake() {
-        skeletonAnimation = GetComponent<SkeletonAnimation>();
+        skeletonAnimation = GetComponent<SkeletonGraphic>();
         skeletonAnimation.AnimationState.SetAnimation(mainTrackIndex, initialAnimationName, initialAnimationLoop);
         skeletonAnimation.AnimationState.Complete += OnTrackCompleted;
 
